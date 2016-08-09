@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="app">
+<head>
+    <meta charset="utf-8"/>
+    <title>聊天系统</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="chat"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <link rel="stylesheet" href="res/bootstrap/dist/css/bootstrap.css" type="text/css"/>
+    <link rel="stylesheet" href="res/font-awesome/css/font-awesome.css" type="text/css"/>
+
+</head>
+<body>
+
+<div id="container"></div>
+
+<div class="notification-container"></div>
+
+<div id="full-image-preview" class="full"></div>
+
+<script src="res/js/jquery-1.11.1.js"></script>
+<script src="res/js/strophe.js"></script>
+<script>
+    Strophe.log = function (level, msg) {
+        // console.log(level + ' ' + msg)
+        if (level >= 3)
+            console.error(msg);
+    }
+</script>
+<script src="res/js/easemob.js"></script>
+<script src="res/js/easemob.im.shim.js"></script>
+<script src="res/js/easemob.im.config.js"></script>
+
+<script src="bundle.js"></script>
+
+</body>
+</html>

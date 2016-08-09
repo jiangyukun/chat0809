@@ -1,0 +1,14 @@
+{
+  "name": "angular-seed",
+  "description": "A starter project for AngularJS",
+  "version": "0.0.0",
+  "homepage": "https://github.com/angular/angular-seed",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "moment": "~2.13.0",
+    "underscore": "",
+    "bootstrap": "~3.3.6",
+    "FortAwesome/Font-Awesome": "~4.6.3"
+  }
+}
