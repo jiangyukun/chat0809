@@ -1,6 +1,7 @@
 /*
  *
  */
+import notificationActions from '../../actions/NotificationActions'
 
 export default  {
     setSession (key, value) {
@@ -24,5 +25,9 @@ export default  {
                 resolve(e.target.result)
             }
         })
+    },
+
+    tip(...arg) {
+        notificationActions.addNotification(...arg)
     }
 }

@@ -22,8 +22,8 @@ class GroupChat extends Component {
     showMessage() {
         let message = this.context.message
         let roomId = this.props.room.roomId
-        return MessageHelper.showMessageToUI(message, roomId, ChatType.GROUP_CHAT, (index, from, data) => {
-            return <Message key={index} name={from} content={data} dir={this.context.curUserId == from ? 'right' : 'left'}/>
+        return MessageHelper.showMessageToUI(message, roomId, ChatType.GROUP_CHAT, (index, msg) => {
+            return <Message key={index} msg={msg} dir={this.context.curUserId == msg.from ? 'right' : 'left'}/>
         })
     }
 

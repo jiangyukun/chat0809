@@ -10,8 +10,8 @@ export default class GroupMembers extends Component {
 
     showGroupMember() {
         return (
-            this.context.groupMembers.map(member => {
-                return (<li key={member.jid}>
+            this.context.groupMembers.map((member, index) => {
+                return (<li key={index}>
                     {member.name}
                 </li>)
             })

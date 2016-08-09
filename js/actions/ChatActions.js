@@ -24,9 +24,9 @@ export default {
         })
     },
 
-    sendMessage (to, type, content) {
+    sendTextMessage (to, type, content) {
         AppDispatcher.dispatch({
-            actionType: ChatConstants.SEND_MESSAGE, to, content, type
+            actionType: ChatConstants.SEND_TEXT_MESSAGE, to, content, type
         })
     },
 

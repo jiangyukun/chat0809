@@ -76,11 +76,13 @@ AppDispatcher.register(function (action) {
             action.failCallback()
             break
 
-        case ChatConstants.SEND_MESSAGE:
+        case ChatConstants.SEND_TEXT_MESSAGE:
             let {to, content, type} = action
 
-            conn.sendTextMessage({type, to, msg: content})
-            MessageHelper.sendTextMessage(message, type, curUserId, to, content)
+            let convertMsg = conn.sendTextMessage({type, to, msg: content})
+            console.log(convertMsg);
+
+            MessageHelper.sendTextMessage(message, type, curUserId, to, convertMsg)
 
             ChatStore.emit(CHANGE_EVENT)
             break
@@ -108,7 +110,7 @@ AppDispatcher.register(function (action) {
 
         case ChatConstants.FETCH_HISTORY_MESSAGE:
             let {user1, user2} = action
-            chatService.fetchHistoryMessage()
+            chatService.fetchHistoryMessage(user1, user2)
             break
 
         case ChatConstants.LOGIN_OUT:
@@ -118,15 +120,15 @@ AppDispatcher.register(function (action) {
 
         case ChatConstants.BEGIN_GROUP_CHAT:
             conn.queryRoomMember(action.roomId).then((result)=> {
-                result.map(member=> {
+                groupMembers = result.map(member=> {
                     let jid = member.jid;
                     let from = (jid.indexOf('_') + 1)
                     let to = jid.indexOf('@')
                     let name = jid.substring(from, to)
-                    groupMembers.push({
+                    return {
                         jid: jid,
                         name: name
-                    })
+                    }
                 })
                 groupMembers.unshift({
                     jid: curUserId,
@@ -151,28 +153,22 @@ conn.onLoginSuccess((userId)=> {
     // fetchPatientListFromServer()
 
     fetchGroupListFromHuanXin()
-    // fetchDoctorListFromServer()
+    fetchDoctorListFromServer()
 })
 
-conn.onTextMessage((textMessage)=> {
-    let {type, from} = textMessage
+const onMessage = (msg)=> {
+    let {type, from} = msg
     // console.log(pictureMessage)
-    MessageHelper.receiveMessage(message, type, from, textMessage)
+    MessageHelper.receiveMessage(message, type, from, msg)
 
     ChatStore.emit(CHANGE_EVENT)
-})
+}
 
-conn.onEmotionMessage(emotionMessage=> {
-    console.log(emotionMessage);
-})
+conn.onTextMessage(onMessage)
 
-conn.onPictureMessage((pictureMessage)=> {
-    let {type, from} = pictureMessage
-    // console.log(pictureMessage)
-    MessageHelper.receiveMessage(message, type, from, pictureMessage)
+conn.onEmotionMessage(onMessage)
 
-    ChatStore.emit(CHANGE_EVENT)
-})
+conn.onPictureMessage(onMessage)
 
 function fetchPatientListFromHuanXin() {
     conn.getRoster().then((result)=> {

@@ -18,18 +18,55 @@ class Message extends Component {
     }
 
     showContent() {
-        let {type, data} = this.props.msg
+        let {type} = this.props.msg
 
-        if (type == MessageType.TEXT) {
+        switch (type) {
+            case MessageType.TEXT:
+                return this.showTextContent()
+                break
+
+            case MessageType.IMAGE:
+                return this.showImageContent()
+                break
+
+            case MessageType.VOICE:
+
+                break
+        }
+    }
+
+    showTextContent() {
+        let data = this.props.msg.data
+        console.log(data);
+        if (typeof data == 'string') {
             return <span className="message-content">{data}</span>
         }
+        return (
+            <span className="message-content">
+                {
+                    data.map((item, index)=> {
+                        var res
+                        if (item.type == 'txt') {
+                            res = item.data
+                        } else if (item.type == 'emotion') {
+                            res = <span className="emotion-container"><img src={item.data}/></span>
+                        } else {
+                            res = <span>未知类型({item.type})</span>
+                        }
+                        return <span key={index}>{res}</span>
+                    })
+                }
+            </span>
+        )
+    }
+
+    showImageContent() {
+        let data = this.props.msg.data
         let urlOrDataUrl = this.state.dataUrl
 
         if (typeof data != 'string') {
             if (!urlOrDataUrl) {
-                util.getDataUrl(data).then(dataUrl => {
-                    this.setState({dataUrl})
-                })
+                util.getDataUrl(data).then(dataUrl => this.setState({dataUrl}))
             }
         } else if (data) {
             urlOrDataUrl = data

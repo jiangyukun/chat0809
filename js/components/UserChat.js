@@ -22,6 +22,7 @@ export default class UserChat extends Component {
     showMessage() {
         let message = this.context.message
         let name = this.props.user.name
+        // chatActions.readMessage(name, ChatType.CHAT)
         return MessageHelper.showMessageToUI(message, name, ChatType.CHAT, (index, msg) => {
             return <Message key={index} msg={msg} dir={this.context.curUserId == msg.from ? 'right' : 'left'}/>
         })
@@ -40,7 +41,7 @@ export default class UserChat extends Component {
                 <div className="row">
                     <div className="col-xs-8 user-chat-box">
                         <div className="row message-box-title">
-                            <span>与 {to} 聊天中</span>
+                            <span>与 {nickname}{nickname != to && '(' + to + ')'} 聊天中</span>
                         </div>
                         <div className="row history-message">
                             {this.showMessage()}

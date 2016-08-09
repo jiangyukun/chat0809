@@ -7,7 +7,7 @@ export default keyMirror({
     LOGIN: null,
     CHECK_LOGIN_INFO: null,
     LOGIN_OUT: null,
-    SEND_MESSAGE: null,
+    SEND_TEXT_MESSAGE: null,
     READ_MESSAGE: null,
     SEND_IMAGE_MESSAGE: null,
     SEND_VOICE_MESSAGE: null,
@@ -23,6 +23,7 @@ export let ChatType = {
 export let MessageType = {
     TEXT: 'text',
     IMAGE: 'image',
+    EMOTION: 'emotion',
     VOICE: 'voice'
 }
 

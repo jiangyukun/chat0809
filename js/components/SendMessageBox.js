@@ -40,15 +40,14 @@ export default class SendMessageBox extends Component {
     }
 
     emotionSelected(key) {
-        // console.log(key)
         this.setState({
             newMessage: this.state.newMessage + key,
             showEmotions: false
         })
     }
 
-    sendMessage() {
-        chatActions.sendMessage(this.props.to, this.props.type, this.state.newMessage)
+    sendTextMessage() {
+        chatActions.sendTextMessage(this.props.to, this.props.type, this.state.newMessage)
     }
 
     sendImageMessage(file) {
@@ -86,12 +85,12 @@ export default class SendMessageBox extends Component {
 
                     <div className="pull-right">
                         <input type="button" value="发送" className="btn btn-primary"
-                               disabled={this.state.newMessage ? '' : 'disabled'} onClick={()=> {this.sendMessage()}}/>
+                               disabled={this.state.newMessage ? '' : 'disabled'} onClick={()=> {this.sendTextMessage()}}/>
                     </div>
                 </div>
                 <div className="input-box">
                     <div className="input-wrap">
-                        <textarea onChange={(event)=> {this.onChange(event)}} value={this.state.newMessage}></textarea>
+                        <textarea onChange={e=> {this.onChange(e)}} value={this.state.newMessage}></textarea>
                     </div>
                 </div>
             </div>

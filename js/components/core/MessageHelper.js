@@ -62,12 +62,12 @@ export default class MessageHelper {
         })
     }
 
-    static sendTextMessage(message, type, from, to, content) {
+    static sendTextMessage(message, type, from, to, data) {
         let msg = MessageHelper.getMessageByName(message, to, type)
         msg.reads.push({
             from, to,
             type: MessageType.TEXT,
-            data: content
+            data: data
         })
     }
 
@@ -98,7 +98,6 @@ export default class MessageHelper {
     }
 
     static showMessageToUI(message, key, type, callback) {
-        MessageHelper.readMessage(message, key, type)
         let msg = MessageHelper.getMessageByName(message, key, type)
         return msg.reads.map((msg, index)=> {
             return callback(index, msg)

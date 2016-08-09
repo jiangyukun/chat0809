@@ -1,7 +1,7 @@
 /**
  * Created by jiangyukun on 2016/8/8.
  */
-
+import {NotificationType} from '../constants/ChatConstants'
 import util from '../components/core/util'
 
 let USER_NOT_FOUND = 3
@@ -12,7 +12,8 @@ let conn = new Easemob.im.Connection({
 })
 let curUserId
 
-function empty() {
+function empty(message) {
+    util.tip(NotificationType.ERROR, '不支持的类型：' + message.type)
 }
 
 let loginSuccessList = [], loginFailureList = []
@@ -72,22 +73,26 @@ export function queryRoomMember(roomId) {
             roomId: roomId,
             success(result) {
                 resolve(result)
+            },
+            error() {
+                reject()
             }
         })
     })
 }
 
-export function sendTextMessage(msg) {
-    conn.sendTextMessage(msg)
+export function sendTextMessage(textMessage) {
+    conn.sendTextMessage(textMessage)
+    return convertTextMessage(textMessage.msg)
 }
 
 export function sendPicture(msg) {
     conn.sendPicture({
         onFileUploadError(error) {
-            console.log(error);
+            console.log(error)
         },
         onFileUploadComplete(data) {
-            console.log(data);
+            console.log(data)
         },
         ...msg
     })
@@ -234,10 +239,30 @@ function initEmotion() {
             '[(D)]': 'ee_35.png'
         }
     };
-
 }
 
 initEmotion()
+
+function encode(str) {
+    if (!str || str.length === 0) return "";
+    var s = '';
+    s = str.replace(/&amp;/g, "&");
+    s = s.replace(/<(?=[^o][^)])/g, "&lt;");
+    s = s.replace(/>/g, "&gt;");
+    //s = s.replace(/\'/g, "&#39;");
+    s = s.replace(/\"/g, "&quot;");
+    s = s.replace(/\n/g, "<br>");
+    return s;
+}
+
+function convertTextMessage(msg) {
+    let emotion = Easemob.im.EMOTIONS
+
+    for (let face in emotion.map) {
+
+    }
+    return Easemob.im.Utils.parseLink(Easemob.im.Utils.parseEmotions(encode(msg)))
+}
 
 // 测试 roomId 225659018968826308
 // login('bkts1', '198811');
