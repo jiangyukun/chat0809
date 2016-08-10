@@ -13,7 +13,7 @@ let conn = new Easemob.im.Connection({
 let curUserId
 
 function empty(message) {
-    util.tip(NotificationType.ERROR, '不支持的类型：' + message.type)
+    util.tip(NotificationType.ERROR, '暂不支持的类型：' + message.type)
 }
 
 let loginSuccessList = [], loginFailureList = []
@@ -130,7 +130,6 @@ export function onTextMessage(callback) {
 }
 
 let emotionMessage = empty
-
 export function onEmotionMessage(callback) {
     emotionMessage = callback
 }
@@ -140,8 +139,9 @@ export function onPictureMessage(callback) {
     pictureMessage = callback
 }
 
-function handleAudioMessage(audioMessageInfo) {
-    console.log(audioMessageInfo)
+let audioMessage = empty
+export function onAudioMessage(callback) {
+    audioMessage = callback
 }
 
 function init() {
@@ -168,25 +168,25 @@ function init() {
             pictureMessage(message)
         },
         onAudioMessage (message) {
-            handleAudioMessage(message)
+            audioMessage(message)
         },
         onLocationMessage (message) {
-            handleLocationMessage(message)
+            empty(message)
         },
         onFileMessage (message) {
-            handleFileMessage(message)
+            empty(message)
         },
         onVideoMessage (message) {
-            handleVideoMessage(message)
+            empty(message)
         },
         onPresence (message) {
-            handlePresence(message)
+            empty(message)
         },
         onRoster (message) {
-            handleRoster(message)
+            empty(message)
         },
         onInviteMessage (message) {
-            handleInviteMessage(message)
+            empty(message)
         },
         onError (message) {
             if (error.type == USER_NOT_FOUND) {
@@ -238,7 +238,7 @@ function initEmotion() {
             '[(W)]': 'ee_34.png',
             '[(D)]': 'ee_35.png'
         }
-    };
+    }
 }
 
 initEmotion()

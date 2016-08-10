@@ -2,6 +2,8 @@
  * jiangyukun on 2016-07-29 19:25
  */
 import React, {Component} from 'react'
+
+import Audio from './common/Audio'
 import {MessageType} from '../constants/ChatConstants'
 import util from './core/util'
 import classnames from 'classnames'
@@ -11,10 +13,6 @@ class Message extends Component {
     constructor(props) {
         super(props)
         this.state = {dataUrl: ''}
-    }
-
-    showImagePreview() {
-        ImagePreviewActions.show(this.state.dataUrl)
     }
 
     showContent() {
@@ -29,15 +27,14 @@ class Message extends Component {
                 return this.showImageContent()
                 break
 
-            case MessageType.VOICE:
-
+            case MessageType.AUDIO:
+                return this.showAudioContent()
                 break
         }
     }
 
     showTextContent() {
         let data = this.props.msg.data
-        console.log(data);
         if (typeof data == 'string') {
             return <span className="message-content">{data}</span>
         }
@@ -46,7 +43,7 @@ class Message extends Component {
                 {
                     data.map((item, index)=> {
                         var res
-                        if (item.type == 'txt') {
+                        if (item.type == MessageType.TEXT) {
                             res = item.data
                         } else if (item.type == 'emotion') {
                             res = <span className="emotion-container"><img src={item.data}/></span>
@@ -73,9 +70,19 @@ class Message extends Component {
         }
         return (
             <div className="message-image-container">
-                {urlOrDataUrl && <img src={urlOrDataUrl} className="img-responsive" onClick={this.showImagePreview.bind(this)}/>}
+                {urlOrDataUrl && <img src={urlOrDataUrl} className="img-responsive" onClick={e=>this.showImagePreview()}/>}
             </div>
         )
+    }
+
+    showImagePreview() {
+        ImagePreviewActions.show(this.state.dataUrl)
+    }
+
+    showAudioContent() {
+        let audioUrl = this.props.msg.data
+        console.log(audioUrl);
+        return <Audio audioUrl={audioUrl}/>
     }
 
     render() {

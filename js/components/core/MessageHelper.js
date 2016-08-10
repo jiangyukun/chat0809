@@ -10,13 +10,15 @@ export default class MessageHelper {
             msg = {
                 jid, name, type,
                 reads: [],
-                unreads: []
+                unreads: [],
+                historyMessages: []
             }
         } else {
             msg = {
                 roomId, name, type,
                 reads: [],
-                unreads: []
+                unreads: [],
+                historyMessages: []
             }
         }
         message.push(msg)
@@ -53,10 +55,14 @@ export default class MessageHelper {
         }
         let msgType = MessageType.TEXT
         data = msgInfo.data
-        if (msgInfo.thumb || msgInfo.url) {
+        if (msgInfo.hasOwnProperty('thumb')) {
             data = msgInfo.url
             msgType = MessageType.IMAGE
+        } else if (msgInfo.filename == 'audio' || msgInfo.filename.indexOf('.amr') != -1 || msgInfo.filename.indexOf('.mp3') != -1) {
+            data = msgInfo.url
+            msgType = MessageType.AUDIO
         }
+
         msg.unreads.push({
             from, data, type: msgType
         })

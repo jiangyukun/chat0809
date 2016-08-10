@@ -6,7 +6,7 @@ import Message from './Message'
 import SendMessageBox from './SendMessageBox'
 import {ChatType} from '../constants/ChatConstants'
 import MessageHelper from './core/MessageHelper'
-import DoctorChatRecord from './DoctorChatRecord'
+import HistoryMessage from './HistoryMessage'
 
 export default class UserChat extends Component {
     static contextTypes = {
@@ -33,8 +33,10 @@ export default class UserChat extends Component {
     }
 
     render() {
+        let message = this.context.message
         let to = this.props.user.name
         let nickname = this.props.user.nickname
+        let historyMessageList = MessageHelper.getMessageByName(message, to, ChatType.CHAT).historyMessages
 
         return (
             <div className="col-xs-9 message-box">
@@ -50,7 +52,7 @@ export default class UserChat extends Component {
                     </div>
                     <div className="col-xs-4">
                         <div className="row">
-                            <DoctorChatRecord />
+                            <HistoryMessage historyMessage={historyMessageList}/>
                         </div>
                     </div>
                 </div>

@@ -4,6 +4,7 @@
 import React, {Component, PropTypes} from 'react'
 import {routerShape} from 'react-router'
 import chatActions from '../actions/ChatActions'
+import Audio from './common/Audio'
 
 export default class Header extends Component {
     static contextTypes = {
@@ -13,7 +14,7 @@ export default class Header extends Component {
 
     exit() {
         chatActions.exitChatSystem()
-        this.context.router.push('/signin');
+        this.context.router.push('/signin')
     }
 
     render() {
@@ -32,7 +33,12 @@ export default class Header extends Component {
                         </div>
                     </div>
                 </header>
+                {
+                    /*<div className="row">
+                        <Audio audioUrl="http://192.168.1.131:8080/backend/chat-system/audio/boy.mp3"/>
+                    </div>*/
+                }
             </div>
-        );
+        )
     }
 }

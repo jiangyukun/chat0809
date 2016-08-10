@@ -118,17 +118,25 @@ AppDispatcher.register(function (action) {
             conn.closeConn()
             break
 
+        case ChatConstants.BEGIN_USER_CHAT:
+            MessageHelper.readMessage(message, action.name, ChatType.CHAT)
+            chatService.fetchHistoryMessage(curUserId, action.name, 0).then(historyMessageList=> {
+                let msg = MessageHelper.getMessageByName(message, action.name, ChatType.CHAT)
+                msg.historyMessages = historyMessageList
+                ChatStore.emit(CHANGE_EVENT)
+            })
+            ChatStore.emit(CHANGE_EVENT)
+            break
+
         case ChatConstants.BEGIN_GROUP_CHAT:
+            MessageHelper.readMessage(message, action.roomId, ChatType.GROUP_CHAT)
             conn.queryRoomMember(action.roomId).then((result)=> {
                 groupMembers = result.map(member=> {
                     let jid = member.jid;
                     let from = (jid.indexOf('_') + 1)
                     let to = jid.indexOf('@')
                     let name = jid.substring(from, to)
-                    return {
-                        jid: jid,
-                        name: name
-                    }
+                    return {jid, name}
                 })
                 groupMembers.unshift({
                     jid: curUserId,
@@ -136,6 +144,7 @@ AppDispatcher.register(function (action) {
                 })
                 ChatStore.emit(CHANGE_EVENT)
             })
+            ChatStore.emit(CHANGE_EVENT)
             break
 
         default:
@@ -149,8 +158,8 @@ export default ChatStore
 
 conn.onLoginSuccess((userId)=> {
     curUserId = userId
-    fetchPatientListFromHuanXin()
-    // fetchPatientListFromServer()
+    // fetchPatientListFromHuanXin()
+    fetchPatientListFromServer()
 
     fetchGroupListFromHuanXin()
     fetchDoctorListFromServer()
@@ -165,10 +174,9 @@ const onMessage = (msg)=> {
 }
 
 conn.onTextMessage(onMessage)
-
 conn.onEmotionMessage(onMessage)
-
 conn.onPictureMessage(onMessage)
+conn.onAudioMessage(onMessage)
 
 function fetchPatientListFromHuanXin() {
     conn.getRoster().then((result)=> {
@@ -240,4 +248,4 @@ function fetchDoctorListFromServer() {
     })
 }
 
-// chatService.fetchHistoryMessage('test', 'test0')
+// chatService.fetchHistoryMessage('test0', 'test', 0)

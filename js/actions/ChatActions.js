@@ -42,15 +42,21 @@ export default {
         })
     },
 
+    beginUserChat(name) {
+        AppDispatcher.dispatch({
+            actionType: ChatConstants.BEGIN_USER_CHAT, name
+        })
+    },
+
     sendImageMessage(to, type, image)  {
         AppDispatcher.dispatch({
             actionType: ChatConstants.SEND_IMAGE_MESSAGE, to, type, image
         })
     },
 
-    sendVoiceMessage(to, type, voice) {
+    sendAudioMessage(to, type, voice) {
         AppDispatcher.dispatch({
-            actionType: ChatConstants.SEND_VOICE_MESSAGE, to, type, voice
+            actionType: ChatConstants.SEND_AUDIO_MESSAGE, to, type, audio
         })
     },
     

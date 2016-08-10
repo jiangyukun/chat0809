@@ -111,14 +111,12 @@
     }
 
     .message-content-container {
+        min-width: 30px;
+        min-height: 24px;
         padding: 5px 7px;
         background-color: #CDD7E2;
         border-radius: 8px;
         float: left;
-    }
-
-    .message-content {
-
     }
 
     .group-member-list {

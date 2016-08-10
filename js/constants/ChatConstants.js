@@ -10,7 +10,8 @@ export default keyMirror({
     SEND_TEXT_MESSAGE: null,
     READ_MESSAGE: null,
     SEND_IMAGE_MESSAGE: null,
-    SEND_VOICE_MESSAGE: null,
+    SEND_AUDIO_MESSAGE: null,
+    BEGIN_USER_CHAT: null,
     BEGIN_GROUP_CHAT: null,
     FETCH_HISTORY_MESSAGE: null
 })
@@ -21,10 +22,11 @@ export let ChatType = {
 }
 
 export let MessageType = {
-    TEXT: 'text',
+    TEXT: 'txt',
     IMAGE: 'image',
     EMOTION: 'emotion',
-    VOICE: 'voice'
+    VOICE: 'voice',
+    AUDIO: 'audio'
 }
 
 export let NotificationType = {

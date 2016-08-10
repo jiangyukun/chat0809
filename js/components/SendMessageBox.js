@@ -2,9 +2,9 @@
  * jiangyukun on 2016/8/2.
  */
 import React, {Component, PropTypes} from 'react'
-import SendImage from './SendImage'
-import SendVoice from './SendVoice'
-import SelectEmotions from './common/SelectEmotions'
+import SendImage from './tools/SendImage'
+import SendAudio from './tools/SendAudio'
+import SelectEmotions from './tools/SelectEmotions'
 import chatActions from '../actions/ChatActions'
 
 export default class SendMessageBox extends Component {
@@ -21,8 +21,8 @@ export default class SendMessageBox extends Component {
         this.refs.sendImage.toggle()
     }
 
-    openVoiceDialog() {
-        this.refs.sendVoice.toggle()
+    openAudioDialog() {
+        this.refs.sendAudio.toggle()
     }
 
     clear() {
@@ -54,8 +54,8 @@ export default class SendMessageBox extends Component {
         chatActions.sendImageMessage(this.props.to, this.props.type, file)
     }
 
-    sendVoiceMessage(file) {
-        chatActions.sendVoiceMessage(this.props.to, this.props.type, file)
+    sendAudioMessage(file) {
+        chatActions.sendAudioMessage(this.props.to, this.props.type, file)
     }
 
     render() {
@@ -64,28 +64,28 @@ export default class SendMessageBox extends Component {
                 <div className="tools ">
                     <div className="pull-left">
                         <div className="send-image-icon">
-                            <i className="fa fa-lg fa-file-image-o" onClick={()=> {this.openImageDialog()}}></i>
+                            <i className="fa fa-lg fa-file-image-o" onClick={e=> this.openImageDialog()}></i>
                         </div>
-                        <SendImage ref="sendImage" sendImageMessage={(file)=>{this.sendImageMessage(file)}}/>
+                        <SendImage ref="sendImage" sendImageMessage={file=>this.sendImageMessage(file)}/>
                     </div>
 
                     <div className="pull-left">
                         <div className="emotion">
-                            <i className="fa fa-lg fa-meh-o" onClick={e=>{this.selectEmotion()}}></i>
+                            <i className="fa fa-lg fa-meh-o" onClick={e=>this.selectEmotion()}></i>
                             {this.state.showEmotions && <SelectEmotions select={key=>this.emotionSelected(key)}/>}
                         </div>
                     </div>
 
                     <div className="pull-left">
                         <div className="voice">
-                            <i className="fa fa-lg fa-microphone" onClick={e=>{this.openVoiceDialog()}}></i>
+                            <i className="fa fa-lg fa-microphone" onClick={e=>this.openAudioDialog()}></i>
                         </div>
-                        <SendVoice ref="sendVoice" sendVoiceMessage={(file)=>{this.sendVoiceMessage(file)}}/>
+                        <SendAudio ref="sendAudio" sendAudioMessage={file=>this.sendAudioMessage(file)}/>
                     </div>
 
                     <div className="pull-right">
                         <input type="button" value="发送" className="btn btn-primary"
-                               disabled={this.state.newMessage ? '' : 'disabled'} onClick={()=> {this.sendTextMessage()}}/>
+                               disabled={this.state.newMessage ? '' : 'disabled'} onClick={e=> this.sendTextMessage()}/>
                     </div>
                 </div>
                 <div className="input-box">
