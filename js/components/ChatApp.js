@@ -19,12 +19,7 @@ function getChatState() {
     }
 }
 
-class ChatApp extends Component {
-    constructor(props) {
-        super(props);
-        this.state = getChatState();
-    }
-
+export default class ChatApp extends Component {
     static contextTypes = {
         router: routerShape
     }
@@ -36,6 +31,11 @@ class ChatApp extends Component {
         doctorList: PropTypes.array,
         message: PropTypes.array,
         groupMembers: PropTypes.array
+    }
+
+    constructor(props) {
+        super(props)
+        this.state = getChatState()
     }
 
     getChildContext() {
@@ -57,25 +57,23 @@ class ChatApp extends Component {
             this.refresh()
         }
         ChatStore.addChangeListener(this.changeListener)
+
+        this.reLoginListener = ()=> {
+            this.context.router.back()
+        }
+        ChatStore.addReLoginListener(this.changeListener)
     }
 
     componentWillUnmount() {
         ChatStore.removeChangeListener(this.changeListener)
+        ChatStore.removeReLoginListener(this.reLoginListener)
     }
 
     render() {
         return (
             <div className="chat">
                 <Header />
-                <div className="container-fluid">
-                    <div className="panel">
-                        <div className="panel-heading">
-                        </div>
-                        <div className="panel-body">
-                            <ChatPanel />
-                        </div>
-                    </div>
-                </div>
+                <ChatPanel />
             </div>
         )
     }
@@ -85,4 +83,3 @@ class ChatApp extends Component {
     }
 }
 
-export default ChatApp

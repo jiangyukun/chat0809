@@ -39,21 +39,19 @@ export default class UserChat extends Component {
         let historyMessageList = MessageHelper.getMessageByName(message, to, ChatType.CHAT).historyMessages
 
         return (
-            <div className="col-xs-9 message-box">
-                <div className="row">
-                    <div className="col-xs-8 user-chat-box">
-                        <div className="row message-box-title">
-                            <span>与 {nickname}{nickname != to && '(' + to + ')'} 聊天中</span>
-                        </div>
-                        <div className="row history-message">
-                            {this.showMessage()}
-                        </div>
-                        <SendMessageBox ref="sendMessageBox" to={to} type={ChatType.CHAT}/>
+            <div className="row h100-pct">
+                <div className="col-xs-8 user-chat-box h100-pct">
+                    <div className="message-box-title">
+                        <span>与 {nickname}{nickname != to && '(' + to + ')'} 聊天中</span>
                     </div>
-                    <div className="col-xs-4">
-                        <div className="row">
-                            <HistoryMessage historyMessage={historyMessageList}/>
-                        </div>
+                    <div className="history-message">
+                        {this.showMessage()}
+                    </div>
+                    <SendMessageBox ref="sendMessageBox" to={to} type={ChatType.CHAT}/>
+                </div>
+                <div className="col-xs-4 h100-pct">
+                    <div className="row h100-pct">
+                        <HistoryMessage historyMessage={historyMessageList}/>
                     </div>
                 </div>
             </div>

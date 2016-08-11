@@ -60,7 +60,7 @@ export default class SendMessageBox extends Component {
 
     render() {
         return (
-            <div className="row send-message-box">
+            <div className="send-message-box">
                 <div className="tools ">
                     <div className="pull-left">
                         <div className="send-image-icon">
@@ -77,7 +77,7 @@ export default class SendMessageBox extends Component {
                     </div>
 
                     <div className="pull-left">
-                        <div className="voice">
+                        <div className="audio">
                             <i className="fa fa-lg fa-microphone" onClick={e=>this.openAudioDialog()}></i>
                         </div>
                         <SendAudio ref="sendAudio" sendAudioMessage={file=>this.sendAudioMessage(file)}/>

@@ -1,16 +1,18 @@
 /**
- * jiangyukun on 2016/8/1.
+ * jiangyukun on 2016/8/1
  */
 import {ChatType, MessageType} from '../../constants/ChatConstants'
 export default class MessageHelper {
+
     static initMessage(message, msgInfo) {
-        let {jid, roomId, type, name} = msgInfo
-        let msg;
+        let {roomId, type, name} = msgInfo
+        let msg
         if (type == ChatType.CHAT) {
             msg = {
-                jid, name, type,
+                name, type,
                 reads: [],
                 unreads: [],
+                mark: false,
                 historyMessages: []
             }
         } else {
@@ -18,6 +20,7 @@ export default class MessageHelper {
                 roomId, name, type,
                 reads: [],
                 unreads: [],
+                mark: false,
                 historyMessages: []
             }
         }
@@ -27,7 +30,7 @@ export default class MessageHelper {
 
     static getMessageByName(message, key, type) {
         for (let i = 0; i < message.length; i++) {
-            let msg = message[i];
+            let msg = message[i]
             if (msg.type != type) {
                 continue
             }
@@ -42,7 +45,6 @@ export default class MessageHelper {
     }
 
     static receiveMessage(message, type, from, msgInfo) {
-        console.log(msgInfo);
         let msg, data;
         try {
             if (type == ChatType.GROUP_CHAT) {
@@ -51,16 +53,18 @@ export default class MessageHelper {
                 msg = MessageHelper.getMessageByName(message, from, type)
             }
         } catch (e) {
-            msg = MessageHelper.initMessage(message, msgInfo)
+            msg = MessageHelper.initMessage(message, {name: msgInfo.from, type: msgInfo.type})
         }
         let msgType = MessageType.TEXT
         data = msgInfo.data
         if (msgInfo.hasOwnProperty('thumb')) {
             data = msgInfo.url
             msgType = MessageType.IMAGE
-        } else if (msgInfo.filename == 'audio' || msgInfo.filename.indexOf('.amr') != -1 || msgInfo.filename.indexOf('.mp3') != -1) {
-            data = msgInfo.url
-            msgType = MessageType.AUDIO
+        } else if (msgInfo.hasOwnProperty('filename')) {
+            if (msgInfo.filename == 'audio' || msgInfo.filename.indexOf('.amr') != -1 || msgInfo.filename.indexOf('.mp3') != -1) {
+                data = msgInfo.url
+                msgType = MessageType.AUDIO
+            }
         }
 
         msg.unreads.push({
@@ -86,20 +90,20 @@ export default class MessageHelper {
         })
     }
 
-    static sendVoiceMessage(message, type, from, to, voice) {
+    static sendAudioMessage(message, type, from, to, audio) {
         let msg = MessageHelper.getMessageByName(message, to, type)
         msg.reads.push({
             from, to,
-            type: MessageType.VOICE,
-            data: voice
+            type: MessageType.AUDIO,
+            data: audio
         })
     }
 
     static readMessage(message, key, type) {
         let msg = MessageHelper.getMessageByName(message, key, type)
-        msg.unreads.map((unread=> {
+        msg.unreads.map(unread=> {
             msg.reads.push(unread)
-        }))
+        })
         msg.unreads = []
     }
 
@@ -114,4 +118,12 @@ export default class MessageHelper {
         return MessageHelper.getMessageByName(message, key, type).unreads.length
     }
 
+    static markMessage(message, type, key) {
+        let msg = MessageHelper.getMessageByName(message, key, type)
+        msg.mark = true;
+    }
+
+    static getUnMarkMessage(message) {
+        return message.filter(msg=> msg.mark == false)
+    }
 }

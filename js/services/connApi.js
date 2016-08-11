@@ -52,6 +52,9 @@ export function getRoster() {
         conn.getRoster({
             success (roster) {
                 resolve(roster)
+            },
+            error() {
+                reject()
             }
         })
     })
@@ -62,6 +65,9 @@ export function listRooms() {
         conn.listRooms({
             success (groups) {
                 resolve(groups)
+            },
+            error() {
+                reject()
             }
         })
     })
@@ -120,7 +126,7 @@ function onError(callback) {
 }
 
 let close = empty
-function onClose(callback) {
+export function onClose(callback) {
     close = callback
 }
 
@@ -151,7 +157,7 @@ function init() {
             curUserId = conn.context.userId
             util.setSession('accessToken', conn.context.accessToken)
             util.setSession('username', curUserId)
-            conn.setPresence();
+            conn.setPresence()
             loginSuccessList.map(loginSuccess=>loginSuccess(curUserId))
         },
         onClosed () {
@@ -261,10 +267,14 @@ function convertTextMessage(msg) {
     for (let face in emotion.map) {
 
     }
-    return Easemob.im.Utils.parseLink(Easemob.im.Utils.parseEmotions(encode(msg)))
+    // return Easemob.im.Utils.parseLink(Easemob.im.Utils.parseEmotions(encode(msg)))
+    return msg
 }
 
-// 测试 roomId 225659018968826308
-// login('bkts1', '198811');
-// login('11111111111', 'tiger123456');
-// login('15381080789', 'tiger123456');
+Strophe.log = function (level, msg) {
+    // console.log(level + ' ' + msg)
+    if (level >= 3) {
+        util.tip(NotificationType.ERROR, msg)
+    }
+}
+

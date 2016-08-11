@@ -11,7 +11,12 @@ import UserChat from './UserChat'
 import MessageHelper from './core/MessageHelper'
 import chatActions from '../actions/ChatActions'
 
-class ChatPanel extends Component {
+const PATIENT = 'patient'
+const GROUP = 'group'
+const DOCTOR = 'doctor'
+const OTHER = 'other'
+
+export default class ChatPanel extends Component {
     static contextTypes = {
         patients: PropTypes.array,
         patientGroups: PropTypes.array,
@@ -40,10 +45,6 @@ class ChatPanel extends Component {
         this.setState({searchKey: e.target.value})
     }
 
-    search() {
-        this.setState({searchFlag: true})
-    }
-
     startChat(type, userOrGroup) {
         if (this.beforeActiveChat == userOrGroup) {
             return
@@ -54,12 +55,12 @@ class ChatPanel extends Component {
         this.beforeActiveChat = userOrGroup
         userOrGroup.active = true
         switch (type) {
-            case 'patient':
-            case 'doctor':
-            case 'other':
+            case PATIENT:
+            case DOCTOR:
+            case OTHER:
                 this.userChat(userOrGroup)
                 break
-            case 'group':
+            case GROUP:
                 this.groupChat(userOrGroup)
                 break
             default:
@@ -96,47 +97,63 @@ class ChatPanel extends Component {
     }
 
     render() {
-        let unReadChatCount = 0, unReadGroupCount = 0
+        let unReadPatientCount = 0, unReadDoctorCount = 0, unReadOtherCount = 0, unReadGroupCount = 0
         let message = this.context.message
 
         this.context.patients.map((patient) => {
-            unReadChatCount += MessageHelper.getUnreadCount(message, patient.name, ChatType.CHAT)
+            unReadPatientCount += MessageHelper.getUnreadCount(message, patient.name, ChatType.CHAT)
         })
-
+        this.context.doctorList.map((doctor) => {
+            unReadDoctorCount += MessageHelper.getUnreadCount(message, doctor.name, ChatType.CHAT)
+        })
         this.context.patientGroups.map((patientGroup) => {
             unReadGroupCount += MessageHelper.getUnreadCount(message, patientGroup.roomId, ChatType.GROUP_CHAT)
         })
 
         function unreadMessage(name, type) {
             let count = MessageHelper.getUnreadCount(message, name, type)
-            return count > 0 ? <span className="red">({count})</span> : null
+            return count > 0 ? <span className="red">({count})</span> : ''
         }
 
         function getHeader(type) {
-            let title
+            let title, count = null
             switch (type) {
-                case 'patient':
+                case PATIENT:
                     title = '患者'
-                    if (unReadChatCount > 0) {
-                        return title + <span className="red">({unReadChatCount})</span>
+                    if (unReadPatientCount > 0) {
+                        count = <span className="red">({unReadPatientCount})</span>
                     }
-                    return title
-                case 'group':
+                    break
+                case GROUP:
                     title = '患者群组'
                     if (unReadGroupCount > 0) {
-                        return title + <span className="red">({unReadGroupCount})</span>
+                        count = <span className="red">({unReadGroupCount})</span>
                     }
-                    return title
-                case 'doctor':
-                    return '医生'
-                case 'other':
-                    return '其他'
+                    break
+                case DOCTOR:
+                    title = '医生'
+                    if (unReadDoctorCount > 0) {
+                        count = <span className="red">({unReadDoctorCount})</span>
+                    }
+                    break
+                case OTHER:
+                    title = '其他'
+                    break
                 default:
                     break
             }
+            return (
+                <span>{title}{count}</span>
+            )
         }
 
-        let getList = (type, itemCallback)=> {
+        let getList = type=> {
+            if (type == OTHER) {
+                let otherMessage = MessageHelper.getUnMarkMessage(message)
+                if (!otherMessage || otherMessage.length == 0) {
+                    return null
+                }
+            }
             return (
                 <div>
                     <header className="list-head" onClick={e=> this.collapseList(type)}>
@@ -144,36 +161,58 @@ class ChatPanel extends Component {
                     </header>
                     <Collapse in={this.state.collapse[type]}>
                         <ul>
-                            {getListItem(type, itemCallback)}
+                            {getListItem(type)}
                         </ul>
                     </Collapse>
                 </div>
             )
         }
 
-        let getListItem = (type, itemCallback)=> {
-            let list
+        let getListItem = type=> {
+            let list, chatType = ChatType.CHAT
             switch (type) {
-                case 'patient':
+                case PATIENT:
                     list = this.context.patients
                     break
-                case 'group':
+                case GROUP:
                     list = this.context.patientGroups
+                    chatType = ChatType.GROUP_CHAT
                     break
-                case 'doctor':
+                case DOCTOR:
                     list = this.context.doctorList
                     break
-                case 'other':
-                    list = []
+                case OTHER:
+                    list = MessageHelper.getUnMarkMessage(message)
                     break
             }
             return list.map((item, index) => {
-                let key = this.state.searchKey
-                let searchFlag = this.state.searchFlag
-                if (searchFlag && key && item.nickname && item.nickname.indexOf(key) == -1) {
-                    return null
+                if (type != OTHER) {
+                    if (chatType == ChatType.CHAT) {
+                        MessageHelper.markMessage(message, chatType, item.name)
+                    } else {
+                        MessageHelper.markMessage(message, chatType, item.roomId)
+                    }
                 }
-                return itemCallback(item, index)
+                let key = this.state.searchKey
+                let idInfo = ' '
+                if (key) {
+                    if (chatType == ChatType.CHAT) {
+                        if (item.name != item.nickname) {
+                            idInfo = '(' + item.name + ')'
+                        }
+                        if ((!item.nickname || item.nickname.indexOf(key) == -1) && (!item.name || item.name.indexOf(key) == -1)) return null
+                    }
+                    if (chatType == ChatType.GROUP_CHAT) {
+                        if (!item.name || item.name.indexOf(key) == -1) return null
+                    }
+                }
+
+                return (
+                    <li key={index} className={getItemClass(item)} onClick={e=> this.startChat(type, item)}>
+                        { chatType == ChatType.CHAT ? (item.nickname || item.name) + idInfo : (item.name || item.roomId) }
+                        { chatType == ChatType.CHAT ? unreadMessage(item.name, chatType) : unreadMessage(item.roomId, chatType) }
+                    </li>
+                )
             })
         }
 
@@ -182,51 +221,29 @@ class ChatPanel extends Component {
         }
 
         return (
-            <div className="row chat-box">
-                <div className="col-xs-3 contact-list">
-                    <section className="row">
-                        <div className="col-xs-8">
-                            <input className="form-control" type="text" placeholder="输入账号" value={this.state.searchKey} onChange={e=>this.onChange(e)}/>
+            <div className="chat-body">
+                <div className="container-fluid h100-pct">
+                    <div className="row h100-pct">
+                        <div className="col-xs-3 contact-list">
+                            <section className="row">
+                                <div className="col-xs-12">
+                                    <input className="form-control" type="text" placeholder="输入账号" value={this.state.searchKey} onChange={e=>this.onChange(e)}/>
+                                </div>
+                            </section>
+                            <section className="row mt-15">
+                                {                    getList(PATIENT)              }
+                                {                    getList(GROUP)                 }
+                                {                    getList(DOCTOR)                }
+                                {                    getList(OTHER)                 }
+                            </section>
                         </div>
-                        <div className="col-xs-4">
-                            <button className="btn btn-primary" onClick={()=>this.search()}>搜索</button>
+                        <div className="col-xs-9 message-box">
+                            {this.state.chatType == ChatType.CHAT && <UserChat user={this.state.user}/>}
+                            {this.state.chatType == ChatType.GROUP_CHAT && <GroupChat room={this.state.room}/>}
                         </div>
-                    </section>
-                    <section className="row mt-15">
-                        {
-                            getList('patient', (patient, index)=> {
-                                return (
-                                    <li key={index} className={getItemClass(patient)} onClick={e=> this.startChat('patient', patient)}>
-                                        {patient.nickname || patient.name} {unreadMessage(patient.name, ChatType.CHAT)}
-                                    </li>
-                                )
-                            })
-                        }
-                        {
-                            getList('group', (patientGroup, index)=> {
-                                return (
-                                    <li key={index} className={getItemClass(patientGroup)} onClick={e=> this.startChat('group', patientGroup)}>
-                                        {patientGroup.name} {unreadMessage(patientGroup.roomId, ChatType.GROUP_CHAT)}
-                                    </li>
-                                )
-                            })
-                        }
-                        {
-                            getList('doctor', (doctor, index) => {
-                                return (
-                                    <li key={index} className={getItemClass(doctor)} onClick={e=> this.startChat('doctor', doctor)}>
-                                        {doctor.nickname || doctor.name} {unreadMessage(doctor.name, ChatType.CHAT)}
-                                    </li>
-                                )
-                            })
-                        }
-                    </section>
+                    </div>
                 </div>
-                {this.state.chatType == ChatType.CHAT ? <UserChat user={this.state.user}/> : null}
-                {this.state.chatType == ChatType.GROUP_CHAT ? <GroupChat room={this.state.room}/> : null}
             </div>
         )
     }
 }
-
-export default ChatPanel

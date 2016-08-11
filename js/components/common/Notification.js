@@ -27,7 +27,7 @@ export default class Notification extends Component {
     }
 
     componentWillMount() {
-        setTimeout(() => this.close(), 3000)
+        // setTimeout(() => this.close(), 3000)
     }
 
     render() {

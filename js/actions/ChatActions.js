@@ -54,7 +54,7 @@ export default {
         })
     },
 
-    sendAudioMessage(to, type, voice) {
+    sendAudioMessage(to, type, audio) {
         AppDispatcher.dispatch({
             actionType: ChatConstants.SEND_AUDIO_MESSAGE, to, type, audio
         })

@@ -16,39 +16,40 @@ let doctorList = []
 let message = []
 let groupMembers = []
 let CHANGE_EVENT = 'change'
+let RE_LOGIN_EVENT = 're_login'
 let curUserId
+let chatInfo
 
 let ChatStore = Object.assign({}, EventEmitter.prototype, {
     getLoginUser() {
         return curUserId
     },
-
     getPatientList() {
         return patientList
     },
-
     getDoctorList() {
         return doctorList
     },
-
     getPatientGroupList() {
         return patientGroupList
     },
-
     getMessage() {
         return message
     },
-
     getGroupMembers() {
         return groupMembers
     },
-
     addChangeListener(callback) {
         this.on(CHANGE_EVENT, callback)
     },
-
+    addReLoginListener(callback) {
+        this.on(RE_LOGIN_EVENT, callback)
+    },
     removeChangeListener(listener) {
         this.removeListener(CHANGE_EVENT, listener)
+    },
+    removeReLoginListener(listener) {
+        this.removeListener(RE_LOGIN_EVENT, listener)
     }
 })
 
@@ -100,11 +101,11 @@ AppDispatcher.register(function (action) {
             ChatStore.emit(CHANGE_EVENT)
             break
 
-        case ChatConstants.SEND_VOICE_MESSAGE:
+        case ChatConstants.SEND_AUDIO_MESSAGE:
             conn.sendPicture({
-                file: action.voice, to: action.to
+                file: action.audio, to: action.to
             })
-            MessageHelper.sendVoiceMessage(message, action.type, curUserId, action.to, action.voice)
+            MessageHelper.sendAudioMessage(message, action.type, curUserId, action.to, action.audio)
             ChatStore.emit(CHANGE_EVENT)
             break
 
@@ -119,6 +120,7 @@ AppDispatcher.register(function (action) {
             break
 
         case ChatConstants.BEGIN_USER_CHAT:
+            chatInfo = {id: action.name, type: ChatType.CHAT}
             MessageHelper.readMessage(message, action.name, ChatType.CHAT)
             chatService.fetchHistoryMessage(curUserId, action.name, 0).then(historyMessageList=> {
                 let msg = MessageHelper.getMessageByName(message, action.name, ChatType.CHAT)
@@ -129,8 +131,9 @@ AppDispatcher.register(function (action) {
             break
 
         case ChatConstants.BEGIN_GROUP_CHAT:
+            chatInfo = {id: action.roomId, type: ChatType.GROUP_CHAT}
             MessageHelper.readMessage(message, action.roomId, ChatType.GROUP_CHAT)
-            conn.queryRoomMember(action.roomId).then((result)=> {
+            conn.queryRoomMember(action.roomId).then(result=> {
                 groupMembers = result.map(member=> {
                     let jid = member.jid;
                     let from = (jid.indexOf('_') + 1)
@@ -154,21 +157,32 @@ AppDispatcher.register(function (action) {
 
 export default ChatStore
 
-// -------------------------------------------------------------
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 conn.onLoginSuccess((userId)=> {
     curUserId = userId
-    // fetchPatientListFromHuanXin()
-    fetchPatientListFromServer()
-
-    fetchGroupListFromHuanXin()
-    fetchDoctorListFromServer()
+    if (userId == 'zxys') {
+        fetchPatientListFromServer()
+    } else if (userId == 'test0' || userId == 'test' || userId == 'test1') {
+        fetchPatientListFromHuanXin()
+        fetchGroupListFromHuanXin()
+    } else {
+        fetchPatientListFromServer()
+        fetchGroupListFromHuanXin()
+        fetchDoctorListFromServer()
+    }
 })
 
-const onMessage = (msg)=> {
+const onMessage = msg=> {
     let {type, from} = msg
-    // console.log(pictureMessage)
-    MessageHelper.receiveMessage(message, type, from, msg)
+    if (type == ChatType.CHAT) {
+        MessageHelper.receiveMessage(message, type, from, msg)
+    } else {
+        MessageHelper.receiveMessage(message, type, from, msg)
+    }
+    if (chatInfo) {
+        MessageHelper.readMessage(message, chatInfo.id, chatInfo.type)
+    }
 
     ChatStore.emit(CHANGE_EVENT)
 }
@@ -177,6 +191,7 @@ conn.onTextMessage(onMessage)
 conn.onEmotionMessage(onMessage)
 conn.onPictureMessage(onMessage)
 conn.onAudioMessage(onMessage)
+conn.onClose(()=>ChatStore.emit(RE_LOGIN_EVENT))
 
 function fetchPatientListFromHuanXin() {
     conn.getRoster().then((result)=> {
@@ -213,18 +228,11 @@ function fetchGroupListFromHuanXin() {
 
 function fetchPatientListFromServer() {
     chatService.fetchPatientList().then(patients=> {
-        // console.log(patients);
         patientList = patients.map(patient=> {
             let name = patient['user_Name']
             let nickname = patient['patient_Name']
-            initMessage({
-                name: name,
-                type: ChatType.CHAT
-            })
-            return {
-                name: name,
-                nickname: nickname
-            }
+            initMessage({name, type: ChatType.CHAT})
+            return {name, nickname}
         })
         ChatStore.emit(CHANGE_EVENT)
     })
@@ -235,17 +243,9 @@ function fetchDoctorListFromServer() {
         doctorList = doctors.map(doctor=> {
             let name = doctor['user_Name']
             let nickname = doctor['doctor_Name']
-            initMessage({
-                name: name,
-                type: ChatType.CHAT
-            })
-            return {
-                name: name,
-                nickname: nickname
-            }
+            initMessage({name, type: ChatType.CHAT})
+            return {name, nickname}
         })
         ChatStore.emit(CHANGE_EVENT)
     })
 }
-
-// chatService.fetchHistoryMessage('test0', 'test', 0)

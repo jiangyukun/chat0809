@@ -8,7 +8,7 @@ import GroupMembers from './GroupMembers'
 import {ChatType} from '../constants/ChatConstants'
 import MessageHelper from './core/MessageHelper'
 
-class GroupChat extends Component {
+export default class GroupChat extends Component {
     static contextTypes = {
         curUserId: PropTypes.string,
         message: PropTypes.array
@@ -33,22 +33,22 @@ class GroupChat extends Component {
 
     render() {
         return (
-            <div className="col-xs-9 message-box">
-                <div className="row message-box-title">
-                    <span>群组聊天中（{this.props.room.roomName}）</span>
-                </div>
-                <div className="row history-message">
-                    <div className="col-xs-10">
-                        {this.showMessage()}
+            <div className="row h100-pct">
+                <div className="col-xs-12 h100-pct user-chat-box">
+                    <div className="row message-box-title">
+                        <span>群组聊天中（{this.props.room.roomName}）</span>
                     </div>
-                    <div className="col-xs-2 group-member-list">
-                        <GroupMembers />
+                    <div className="history-message">
+                        <div className="col-xs-10">
+                            {this.showMessage()}
+                        </div>
+                        <div className="col-xs-2 group-member-list">
+                            <GroupMembers />
+                        </div>
                     </div>
+                    <SendMessageBox ref="sendMessageBox" to={this.props.room.roomId} type={ChatType.GROUP_CHAT}/>
                 </div>
-                <SendMessageBox ref="sendMessageBox" to={this.props.room.roomId} type={ChatType.GROUP_CHAT}/>
             </div>
         )
     }
 }
-
-export default GroupChat

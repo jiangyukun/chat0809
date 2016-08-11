@@ -35,13 +35,14 @@ class Message extends Component {
 
     showTextContent() {
         let data = this.props.msg.data
+
         if (typeof data == 'string') {
             return <span className="message-content">{data}</span>
         }
         return (
             <span className="message-content">
                 {
-                    data.map((item, index)=> {
+                    data && data.map((item, index)=> {
                         var res
                         if (item.type == MessageType.TEXT) {
                             res = item.data
@@ -81,7 +82,6 @@ class Message extends Component {
 
     showAudioContent() {
         let audioUrl = this.props.msg.data
-        console.log(audioUrl);
         return <Audio audioUrl={audioUrl}/>
     }
 
@@ -92,11 +92,9 @@ class Message extends Component {
             <div className="col-xs-12">
                 <div className="row">
                     <div className={classnames({"pull-left": this.props.dir == 'left',"pull-right": this.props.dir == 'right'})}>
-                        <div className="col-xs-12">
-                            <div className="row">{from}</div>
-                        </div>
-                        <div className="col-xs-12">
-                            <div className="row">
+                        <div className="simple-message-box">
+                            <div className="message-send-user">{from}</div>
+                            <div>
                                 <div className="message-content-container">
                                     {this.showContent()}
                                 </div>
