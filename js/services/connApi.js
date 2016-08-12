@@ -14,6 +14,7 @@ let curUserId
 
 function empty(message) {
     util.tip(NotificationType.ERROR, '暂不支持的类型：' + message.type)
+    // console.log('暂不支持的类型：' + message.type);
 }
 
 let loginSuccessList = [], loginFailureList = []
