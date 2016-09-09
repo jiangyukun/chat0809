@@ -15,19 +15,19 @@ export default class Signin extends Component {
     }
 
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
-            username: 'test',
-            password: '123456',
+            username: '',
+            password: '',
             loading: false
         }
     }
 
     handleChange(event) {
-        var name = event.target.name;
-        var state = this.state;
-        state[name] = event.target.value;
-        this.setState(state);
+        var name = event.target.name
+        var state = this.state
+        state[name] = event.target.value
+        this.setState(state)
     }
 
     login() {

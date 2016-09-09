@@ -1,7 +1,7 @@
 /**
  * jiangyukun on 2016/8/5 09:51
  */
-import React, {Component, addons} from 'react'
+import React, {Component} from 'react'
 import classnames from 'classnames'
 import {NotificationType} from '../../constants/ChatConstants'
 import notificationActions from '../../actions/NotificationActions'

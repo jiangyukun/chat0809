@@ -9,7 +9,7 @@ import util from './core/util'
 import classnames from 'classnames'
 import ImagePreviewActions from '../actions/ImagePreviewActions'
 
-class Message extends Component {
+export default class Message extends Component {
     constructor(props) {
         super(props)
         this.state = {dataUrl: ''}
@@ -71,7 +71,8 @@ class Message extends Component {
         }
         return (
             <div className="message-image-container">
-                {urlOrDataUrl && <img src={urlOrDataUrl} className="img-responsive" onClick={e=>this.showImagePreview()}/>}
+                {urlOrDataUrl &&
+                <img src={urlOrDataUrl} className="img-responsive" onClick={e=>this.showImagePreview()}/>}
             </div>
         )
     }
@@ -91,7 +92,10 @@ class Message extends Component {
         return (
             <div className="col-xs-12">
                 <div className="row">
-                    <div className={classnames({"pull-left": this.props.dir == 'left',"pull-right": this.props.dir == 'right'})}>
+                    <div className={classnames({
+                        "pull-left": this.props.dir == 'left',
+                        "pull-right": this.props.dir == 'right'
+                    })}>
                         <div className="simple-message-box">
                             <div className="message-send-user">{from}</div>
                             <div>
@@ -106,5 +110,3 @@ class Message extends Component {
         )
     }
 }
-
-export default Message
