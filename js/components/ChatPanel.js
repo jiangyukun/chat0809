@@ -5,11 +5,13 @@ import React, {Component, PropTypes} from 'react'
 import {Collapse} from 'react-bootstrap'
 import classnames from 'classnames'
 
+import SimpleAudio from './common/SimpleAudio'
 import {ChatType} from '../constants/ChatConstants'
 import GroupChat from './GroupChat'
 import UserChat from './UserChat'
 import MessageHelper from './core/MessageHelper'
 import chatActions from '../actions/ChatActions'
+import ChatStore from '../stores/ChatStore'
 
 const PATIENT = 'patient'
 const GROUP = 'group'
@@ -94,6 +96,21 @@ export default class ChatPanel extends Component {
         let collapse = this.state.collapse
         collapse[type] = !collapse[type]
         this.setState({collapse})
+    }
+
+    playNewMessageAudio() {
+        setTimeout(()=>this.refs['newMessageAudio'].playAudio(), 100)
+    }
+
+    componentWillMount() {
+        this.newMessageListener = ()=> {
+            this.playNewMessageAudio()
+        }
+        ChatStore.addNewMessageListener(this.newMessageListener)
+    }
+
+    componentWillUnmount() {
+        ChatStore.removeNewMessageListener(this.newMessageListener)
     }
 
     render() {
@@ -222,12 +239,14 @@ export default class ChatPanel extends Component {
 
         return (
             <div className="chat-body">
+                <div className="hidden"><SimpleAudio audioUrl="audio/new-message.wav" ref="newMessageAudio"/></div>
                 <div className="container-fluid h100-pct">
                     <div className="row h100-pct">
                         <div className="col-xs-3 contact-list">
                             <section className="row">
                                 <div className="col-xs-12">
-                                    <input className="form-control" type="text" placeholder="输入账号" value={this.state.searchKey} onChange={e=>this.onChange(e)}/>
+                                    <input className="form-control" type="text" placeholder="输入账号"
+                                           value={this.state.searchKey} onChange={e=>this.onChange(e)}/>
                                 </div>
                             </section>
                             <section className="row mt-15">

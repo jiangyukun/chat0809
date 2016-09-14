@@ -2,6 +2,8 @@
  * jiangyukun on 2016-07-30 11:35
  */
 import React, {Component, PropTypes} from 'react'
+import {findDOMNode}  from 'react-dom'
+
 import Message from './Message'
 import SendMessageBox from './SendMessageBox'
 import {ChatType} from '../constants/ChatConstants'
@@ -38,14 +40,24 @@ export default class UserChat extends Component {
         let nickname = this.props.user.nickname
         let historyMessageList = MessageHelper.getMessageByName(message, to, ChatType.CHAT).historyMessages
 
+        setTimeout(()=> {
+            var container = findDOMNode(this.refs['messageItemList'])
+            var wrap = findDOMNode(this.refs['messageListWrap'])
+
+            var containerHeight = container.clientHeight
+            container.scrollTop = wrap.clientHeight - containerHeight
+        }, 20)
+
         return (
             <div className="row h100-pct">
                 <div className="col-xs-8 user-chat-box h100-pct">
                     <div className="message-box-title">
                         <span>与 {nickname}{nickname != to && '(' + to + ')'} 聊天中</span>
                     </div>
-                    <div className="history-message">
-                        {this.showMessage()}
+                    <div className="history-message" ref="messageItemList">
+                        <div className="message-list-wrap clearfix" ref="messageListWrap">
+                            {this.showMessage()}
+                        </div>
                     </div>
                     <SendMessageBox ref="sendMessageBox" to={to} type={ChatType.CHAT}/>
                 </div>

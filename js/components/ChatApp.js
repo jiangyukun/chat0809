@@ -59,9 +59,9 @@ export default class ChatApp extends Component {
         ChatStore.addChangeListener(this.changeListener)
 
         this.reLoginListener = ()=> {
-            this.context.router.back()
+            this.context.router.goBack()
         }
-        ChatStore.addReLoginListener(this.changeListener)
+        ChatStore.addReLoginListener(this.reLoginListener)
     }
 
     componentWillUnmount() {
@@ -82,4 +82,3 @@ export default class ChatApp extends Component {
         this.setState(getChatState())
     }
 }
-

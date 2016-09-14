@@ -3,13 +3,9 @@
  */
 import React, {Component} from 'react'
 
-import Audio from './common/Audio'
-import {MessageType} from '../constants/ChatConstants'
-import util from './core/util'
-import classnames from 'classnames'
-import ImagePreviewActions from '../actions/ImagePreviewActions'
+import Message from './Message'
 
-export default class Message extends Component {
+export default class HistoryMessage extends Component {
     constructor(props) {
         super(props)
     }
@@ -18,8 +14,18 @@ export default class Message extends Component {
         let historyMessageList = this.props.historyMessage
 
         return (
-            <div className="col-xs-12">
-
+            <div className="history-message-container h100-pct">
+                <div className="panel">
+                    <div className="panel-heading head">聊天记录</div>
+                    <div className="panel-body">
+                        {
+                            historyMessageList.map((historyItem, index)=> {
+                                return <Message key={index} msg={historyItem}
+                                                dir={this.context.curUserId == historyItem.from ? 'right' : 'left'}/>
+                            })
+                        }
+                    </div>
+                </div>
             </div>
         )
     }

@@ -10,24 +10,24 @@ export default class Loading extends Component {
 
     render() {
         return (
-            <div class="spinner">
-                <div class="spinner-container container1">
-                    <div class="circle1"></div>
-                    <div class="circle2"></div>
-                    <div class="circle3"></div>
-                    <div class="circle4"></div>
+            <div className="spinner">
+                <div className="spinner-container container1">
+                    <div className="circle1"></div>
+                    <div className="circle2"></div>
+                    <div className="circle3"></div>
+                    <div className="circle4"></div>
                 </div>
-                <div class="spinner-container container2">
-                    <div class="circle1"></div>
-                    <div class="circle2"></div>
-                    <div class="circle3"></div>
-                    <div class="circle4"></div>
+                <div className="spinner-container container2">
+                    <div className="circle1"></div>
+                    <div className="circle2"></div>
+                    <div className="circle3"></div>
+                    <div className="circle4"></div>
                 </div>
-                <div class="spinner-container container3">
-                    <div class="circle1"></div>
-                    <div class="circle2"></div>
-                    <div class="circle3"></div>
-                    <div class="circle4"></div>
+                <div className="spinner-container container3">
+                    <div className="circle1"></div>
+                    <div className="circle2"></div>
+                    <div className="circle3"></div>
+                    <div className="circle4"></div>
                 </div>
             </div>
         )

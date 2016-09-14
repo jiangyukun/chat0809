@@ -2,6 +2,7 @@
  * Created by jiangyukun on 2016/8/8.
  */
 import {NotificationType} from '../constants/ChatConstants'
+import Env from '../constants/Env'
 import util from '../components/core/util'
 
 let USER_NOT_FOUND = 3
@@ -13,8 +14,11 @@ let conn = new Easemob.im.Connection({
 let curUserId
 
 function empty(message) {
-    util.tip(NotificationType.ERROR, '暂不支持的类型：' + message.type)
-    // console.log('暂不支持的类型：' + message.type);
+    if (Env.isDev()) {
+        util.tip(NotificationType.ERROR, '暂不支持的类型：' + message.type)
+    } else {
+        console.log('暂不支持的类型：' + message.type)
+    }
 }
 
 let loginSuccessList = [], loginFailureList = []
@@ -196,8 +200,9 @@ function init() {
             empty(message)
         },
         onError (message) {
-            if (error.type == USER_NOT_FOUND) {
+            if (message.type == USER_NOT_FOUND) {
                 loginFailureList.map(loginFailure=>loginFailure())
+                return
             }
             error(message)
         }
@@ -273,9 +278,7 @@ function convertTextMessage(msg) {
 }
 
 Strophe.log = function (level, msg) {
-    // console.log(level + ' ' + msg)
     if (level >= 3) {
-        util.tip(NotificationType.ERROR, msg)
+        empty(msg)
     }
 }
-

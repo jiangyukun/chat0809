@@ -7,7 +7,7 @@ import {routerShape} from 'react-router'
 import Loading from './common/Loading'
 import {NotificationType} from '../constants/ChatConstants'
 import chatActions from '../actions/ChatActions'
-import notificationActions from '../actions/NotificationActions'
+import util from '../components/core/util'
 
 export default class Signin extends Component {
     static contextTypes = {
@@ -37,8 +37,13 @@ export default class Signin extends Component {
             this.context.router.push('/chat/index')
         }, () => {
             this.setState({loading: false})
-            notificationActions.addNotification(NotificationType.ERROR, '用户名或密码错误')
+            util.tip(NotificationType.ERROR, '用户名或密码错误!')
+
         })
+    }
+
+    componentWillUnmount() {
+
     }
 
     render() {

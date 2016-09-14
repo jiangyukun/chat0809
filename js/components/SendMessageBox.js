@@ -85,7 +85,7 @@ export default class SendMessageBox extends Component {
 
                     <div className="pull-right">
                         <input type="button" value="发送" className="btn btn-primary"
-                               disabled={this.state.newMessage ? '' : 'disabled'} onClick={e=> this.sendTextMessage()}/>
+                               disabled={this.state.newMessage.trim() ? '' : 'disabled'} onClick={e=> this.sendTextMessage()}/>
                     </div>
                 </div>
                 <div className="input-box">

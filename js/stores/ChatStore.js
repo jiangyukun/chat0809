@@ -17,6 +17,7 @@ let message = []
 let groupMembers = []
 let CHANGE_EVENT = 'change'
 let RE_LOGIN_EVENT = 're_login'
+let NEW_MESSAGE_EVENT = 'new_message'
 let curUserId
 let chatInfo
 
@@ -45,11 +46,17 @@ let ChatStore = Object.assign({}, EventEmitter.prototype, {
     addReLoginListener(callback) {
         this.on(RE_LOGIN_EVENT, callback)
     },
+    addNewMessageListener(callback) {
+        this.on(NEW_MESSAGE_EVENT, callback)
+    },
     removeChangeListener(listener) {
         this.removeListener(CHANGE_EVENT, listener)
     },
     removeReLoginListener(listener) {
         this.removeListener(RE_LOGIN_EVENT, listener)
+    },
+    removeNewMessageListener(listener) {
+        this.removeListener(NEW_MESSAGE_EVENT, listener)
     }
 })
 
@@ -185,6 +192,7 @@ const onMessage = msg=> {
     }
 
     ChatStore.emit(CHANGE_EVENT)
+    ChatStore.emit(NEW_MESSAGE_EVENT)
 }
 
 conn.onTextMessage(onMessage)
