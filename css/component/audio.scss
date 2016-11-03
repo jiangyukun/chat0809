@@ -1,0 +1,18 @@
+
+.audio-wrap {
+    display: inline-block;
+    cursor: pointer;
+    audio {
+        display: none;
+    }
+
+    .volume-container {
+        display: inline-block;
+        width: 20px;
+    }
+
+    .total-time {
+        margin-left: 5px;
+    }
+
+}

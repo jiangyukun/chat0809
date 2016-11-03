@@ -1,0 +1,24 @@
+
+.emotions-container {
+    @include chat-border();
+    padding: 10px 20px;
+    background-color: white;
+    width: 300px;
+    position: absolute;
+    bottom: 30px;
+    left: -50px;
+
+    ul {
+        li {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            padding: 5px;
+
+            img {
+                width: 100%;
+                cursor: pointer;
+            }
+        }
+    }
+}

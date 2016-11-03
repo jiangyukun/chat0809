@@ -1,0 +1,31 @@
+
+.login {
+    header {
+        height: 60px;
+        padding-top: 10px;
+        padding-left: 10px;
+        border-bottom: 1px solid #666;
+
+        img {
+            width: 24px;
+            height: 24px;
+        }
+        .chat-system-text {
+            font-weight: bold;
+            font-size: 20px;
+        }
+    }
+    .input-box {
+        width: 360px;
+        margin: 100px auto 0 auto;
+
+        .title {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 16px;
+        }
+        .input-row {
+            margin-bottom: 15px;
+        }
+    }
+}

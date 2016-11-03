@@ -1,0 +1,30 @@
+.full {
+
+    .image-preview-container {
+        .mask {
+            @include full-container();
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        .close {
+            @include fix-top-right();
+            color: red;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            margin-top: 30px;
+            transform: scale(2, 2);
+        }
+        .image-container {
+            position: absolute;
+            left: 50%;
+            width: 400px;
+            margin-top: 100px;
+            margin-left: -200px;
+            z-index: 9;
+        }
+
+        @include full-container();
+        z-index: 3;
+    }
+
+}
