@@ -5,7 +5,7 @@ import React, {Component, PropTypes} from 'react'
 import {findDOMNode}  from 'react-dom'
 
 import Message from '../components/Message'
-import SendMessageBox from '../components/SendMessageBox'
+import SendMessageBox from './SendMessageBox'
 import {ChatType} from '../constants/ChatConstants'
 import HistoryMessage from '../components/HistoryMessage'
 
@@ -24,7 +24,8 @@ export default class UserChat extends Component {
         return this.props.singleMessage.reads.map((msg, index) => {
             return <Message key={index}
                             msg={msg}
-                            dir={this.context.curUserId == msg.from ? 'right' : 'left'}/>
+                            dir={this.context.curUserId == msg.from ? 'right' : 'left'}
+            />
         })
     }
 
@@ -32,21 +33,9 @@ export default class UserChat extends Component {
         return this.props.singleMessage.unreads.map((msg, index) => {
             return <Message key={index}
                             msg={msg}
-                            dir={this.context.curUserId == msg.from ? 'right' : 'left'}/>
+                            dir={this.context.curUserId == msg.from ? 'right' : 'left'}
+            />
         })
-    }
-
-    componentDidMount() {
-        if (this.props.singleMessage.unreads.length > 0) {
-            this.props.readSingleMessage(this.props.user)
-        }
-    }
-
-    componentDidUpdate() {
-        /*if (this.props.singleMessage.unreads.length > 0) {
-            this.props.readSingleMessage(this.props.user)
-        }*/
-        this.sendMessageBox.getWrappedInstance().clear()
     }
 
     render() {
@@ -76,10 +65,10 @@ export default class UserChat extends Component {
                                 {this.showUnReadMessage()}
                             </div>
                         </div>
-                        <SendMessageBox ref={c=>this.sendMessageBox = c}
-                                        from={this.context.curUserId}
+                        <SendMessageBox from={this.context.curUserId}
                                         to={this.props.user}
-                                        type={ChatType.CHAT}/>
+                                        type={ChatType.CHAT}
+                        />
                     </div>
                 </div>
                 <div className="col-xs-4 h100-pct">

@@ -25,14 +25,13 @@ class ChatPanel extends Component {
     static contextTypes = {
         patients: PropTypes.array,
         rooms: PropTypes.array,
-        doctorList: PropTypes.array,
+        doctors: PropTypes.array,
         message: PropTypes.object
     }
 
-    beforeActiveChat = null
-
     constructor(props) {
         super(props)
+        this.beforeActiveChat = null
         this.playNewMessageAudio = this.playNewMessageAudio.bind(this)
         this.state = {
             searchKey: '',
@@ -77,7 +76,7 @@ class ChatPanel extends Component {
                 nickname: patient.nickname
             }
         })
-        this.props.startSingleChat(patient)
+        this.props.startSingleChat(this.props.curUserId, patient)
     }
 
     groupChat(room) {
@@ -118,7 +117,7 @@ class ChatPanel extends Component {
                             </section>
                             <section className="row mt-15">
                                 <PatientList patients={this.context.patients}
-                                             singles={this.context.message.get('singles')}
+                                             singles={this.context.message.singles}
                                              searchKey={this.state.searchKey}
                                              startChat={patient=>this.startChat('patient', patient)}/>
 
@@ -127,12 +126,12 @@ class ChatPanel extends Component {
                                            searchKey={this.state.searchKey}
                                            startChat={group=>this.startChat('group', group)}/>
 
-                                {/*<DoctorList doctors={this.context.doctorList}
-                                 message={this.context.message}
-                                 searchKey={this.state.searchKey}
-                                 startChat={doctor=>this.startChat('doctor', doctor)}/>
+                                <DoctorList doctors={this.context.doctors}
+                                            singles={this.context.message.singles}
+                                            searchKey={this.state.searchKey}
+                                            startChat={doctor=>this.startChat('doctor', doctor)}/>
 
-                                 <OtherList
+                                {/*<OtherList
                                  message={this.context.message}
                                  searchKey={this.state.searchKey}
                                  startChat={other=>this.startChat('other', other)}/>*/}
@@ -151,6 +150,7 @@ class ChatPanel extends Component {
                                 this.state.chatType == ChatType.GROUP_CHAT && (
                                     <GroupChat room={this.state.room}
                                                groupMessage={this.context.message.groups.filter(group=>group.id == this.state.room.id)[0]}
+                                               members={this.props.members}
                                     />
                                 )
                             }
@@ -163,7 +163,10 @@ class ChatPanel extends Component {
 }
 
 function mapStateToProps(state) {
-    return {}
+    return {
+        curUserId: state.curUserId,
+        members: state.groupMembers
+    }
 }
 
 export default connect(mapStateToProps, {

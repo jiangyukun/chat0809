@@ -32,7 +32,7 @@ class GroupList extends Component {
         })
 
         var unreadMessage = (roomId)=> {
-            let count = groupMessages.filter(msg=>msg.id == roomId)[0].length
+            let count = groupMessages.filter(msg=>msg.id == roomId)[0].unreads.length
             return count > 0 ? <span className="red">({count})</span> : ''
         }
 

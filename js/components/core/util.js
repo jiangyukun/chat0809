@@ -1,7 +1,8 @@
-/*
- *
- */
+import moment from 'moment'
+
 import notificationActions from '../../actions/NotificationActions'
+
+let uid = 1
 
 export default  {
     setSession (key, value) {
@@ -29,5 +30,14 @@ export default  {
 
     tip(...arg) {
         notificationActions.addNotification(...arg)
+    },
+
+    now() {
+        return moment().format('MM-DD HH:mm')
+    },
+
+
+    getUID() {
+        return '__uid__' + uid++
     }
 }

@@ -1,15 +1,13 @@
 /**
  * Created by jiangyukun on 2016/11/2.
  */
-import {merge} from 'lodash'
-import moment from 'moment'
-import Immutable from 'immutable'
+import {Map, List, fromJS} from 'immutable'
 
+import util from '../components/core/util'
 import {MessageType, ChatType} from '../constants/ChatConstants'
 import actionConstants from '../actions/actionConstants'
 
-let defaultState = Immutable.fromJS({singles: [], groups: []})
-export function message(state = defaultState, action) {
+export function message(state = {singles: [], groups: []}, action) {
     switch (action.type) {
         case actionConstants.chat.INIT_PATIENT_SUCCESS:
             return initPatientSuccess()
@@ -17,21 +15,23 @@ export function message(state = defaultState, action) {
         case actionConstants.chat.INIT_GROUP_SUCCESS:
             return initGroupSuccess()
 
+        case actionConstants.chat.INIT_DOCTOR_SUCCESS:
+            return initDoctorSuccess()
+
         case actionConstants.chat.START_SINGLE_CHAT:
             return startSingleChat()
 
-        case actionConstants.chat.READ_SINGLE_MESSAGE:
-            return readSingleMessage()
+        case actionConstants.chat.START_GROUP_CHAT:
+            return startGroupChat()
 
         case actionConstants.SEND_TEXT_MESSAGE:
             return sendTextMessage()
 
-        case actionConstants.message.NEW_SINGLE_MSG:
-            return newSingleMessage()
+        case actionConstants.message.NEW_MSG:
+            return newMessage()
 
-        case actionConstants.message.NEW_GROUP_MSG:
-
-            return state
+        case actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS:
+            return fetchHistoryMessageSuccess()
 
         default:
             return state
@@ -40,13 +40,13 @@ export function message(state = defaultState, action) {
     //-------------------------------------------------------------------
 
     function initPatientSuccess() {
-        let patients = action.patients
-        patients.forEach(patient=> {
-            let r = state.get('singles').filter(single=> {
-                return single.get('id') == patient.id
-            })
-            if (!r.size) {
-                let newSingles = state.get('singles').push(Immutable.Map({
+        let iState = fromJS(state)
+        action.patients.forEach(patient=> {
+            iState = iState.update('singles', singles=> {
+                if (singles.find(single=>single.get('id') == patient.id)) {
+                    return singles
+                }
+                return singles.push(Map({
                     id: patient.id,
                     name: patient.name,
                     reads: [],
@@ -54,90 +54,89 @@ export function message(state = defaultState, action) {
                     historyMessages: [],
                     mark: false
                 }))
-                state = state.set('singles', newSingles)
-            }
+            })
         })
-        return state
+        return iState.toJS()
     }
 
     function initGroupSuccess() {
-        let rooms = action.rooms
+        let iState = fromJS(state)
 
-        let groups = state.groups.map(room=>room)
-        rooms.forEach(room=> {
-            let match = state.groups.filter(group=>group.id == room.roomId)
-            if (match.length == 0) {
-                groups.push({
+        action.rooms.forEach(room=> {
+            iState = iState.update('groups', groups=> {
+                if (groups.find(group=>group.get('id') == room.roomId)) {
+                    return groups
+                }
+                return groups.push(Map({
                     id: room.roomId,
-                    name: room.name,
                     reads: [],
                     unreads: [],
                     historyMessages: []
-                })
-            }
+                }))
+            })
         })
-        return merge({}, state, {groups})
+        return iState.toJS()
+    }
+
+    function initDoctorSuccess() {
+        let iState = fromJS(state)
+
+        action.doctors.forEach(doctor=> {
+            iState = iState.update('singles', singles=> {
+                if (singles.find(single=>single.get('id') == doctor.id)) {
+                    return singles
+                }
+                return singles.push(Map({
+                    id: doctor.id,
+                    name: doctor.name,
+                    reads: [],
+                    unreads: [],
+                    historyMessages: []
+                }))
+            })
+        })
+        return iState.toJS()
     }
 
     function startSingleChat() {
-        let currentSingle = action.currentSingle
-
-        let singles = state.singles.map(single=> {
-            if (single.id == currentSingle.id) {
-                let reads = []
-                let unreads = single.unreads.map(unread=>unread)
-                Array.prototype.push.apply(unreads, reads)
-                return merge({}, single, {reads, unreads})
-            }
-            return single
-        })
-        return merge({}, state, {singles})
+        return fromJS(state).update('singles', singles=> {
+            let single = singles.find(iSingle=>iSingle.get('id') == action.currentSingle.id)
+            return singles.update(singles.indexOf(single), single=> {
+                return single.set('unreads', List([])).set('reads', single.get('reads').merge(single.get('unreads')))
+            })
+        }).toJS()
     }
 
-    function readSingleMessage() {
-        let currentSingle = action.single
-
-        let singles = state.singles.map(single=> {
-            if (single.id == currentSingle.id) {
-                let reads = single.reads.map(read=>read)
-                Array.prototype.push(reads, single.unreads)
-                let r = merge({}, single, {reads})
-                r.unreads = []
-                return merge(r)
-            }
-            return single
-        })
-        console.log(state)
-        // console.log(merge({}, state, {singles}));
-        return state
+    function startGroupChat() {
+        return fromJS(state).update('groups', groups=> {
+            let group = groups.find(group=>group.get('id') == action.currentRoom.id)
+            return groups.update(groups.indexOf(group), group=> {
+                return group.set('unreads', List([])).set('reads', group.get('reads').merge(group.get('unreads')))
+            })
+        }).toJS()
     }
 
     function sendTextMessage() {
         let {chatType, to, textContent, from} = action
         if (chatType == ChatType.CHAT) {
-            let match = state.singles.filter(single=>single.id == to)[0]
-            let reads = match.reads.map(single=>single)
-            reads.push({
-                from, to,
-                type: MessageType.TEXT,
-                data: textContent,
-                chatTime: moment().format('MM-DD HH:mm')
-            })
-            let singles = state.singles.map(single=> {
-                if (single.id == to) {
-                    return merge({}, single, {reads})
-                }
-                return single
-            })
-            return merge({}, state, {singles})
+            return fromJS(state).update('singles', singles=> {
+                let single = singles.find(single=>single.get('id') == to)
+                return singles.update(singles.indexOf(single), single=> single.update('reads', reads=>reads.push(Map({
+                    id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now(), newMessage: false
+                }))))
+            }).toJS()
         }
+        return fromJS(state).update('groups', groups=> {
+            let group = groups.find(groups=>groups.get('id') == to)
+            return groups.update(groups.indexOf(group), group=> group.update('reads', reads=>reads.push(Map({
+                id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now(), newMessage: false
+            }))))
+        }).toJS()
     }
 
-    function newSingleMessage() {
+    function newMessage() {
         let msg = action.msg, data
-        let {type, from, to} = msg
-
-
+        let {id, type, from, to} = msg
         let msgType = MessageType.TEXT
         data = msg.data
         if (msg.hasOwnProperty('thumb')) {
@@ -155,43 +154,33 @@ export function message(state = defaultState, action) {
         }
 
         if (type == ChatType.CHAT) {
-            let match = state.singles.filter(single=>single.name == from)
-            if (match.length == 0) {
-                let singles = state.singles.map(single=>single)
-                singles.push({
-                    id: from,
-                    name: from,
-                    reads: [],
-                    unreads: [{
-                        from, to,
-                        type: msgType,
-                        data: data,
-                        chatTime: moment().format('MM-DD HH:mm')
-                    }],
-                    historyMessages: [],
-                    mark: false
-                })
-                return merge({}, state, {singles})
-            } else {
-                let singles = state.singles.map(single=> {
-                    if (single.name == from) {
-                        let unreads = single.unreads.map(unread=>unread)
-                        unreads.push({
-                            from, to,
-                            type: msgType,
-                            data: data,
-                            chatTime: moment().format('MM-DD HH:mm')
-                        })
-                        return merge({}, single, {unreads})
-                    }
-                    return single
-                })
-                return merge({}, state, {singles})
-            }
-        } else {
-            let room = state.groups.filter(group=>group.id == from)[0]
-
+            return fromJS(state).update('singles', singles=> {
+                let single = singles.find(single=>single.get('name') == from)
+                if (single) {
+                    return singles.update(singles.indexOf(single), single=> single.update('unreads', unreads=> unreads.push(Map({
+                        id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
+                    }))))
+                }
+                return singles.push(Map({
+                    id: from, reads: [], historyMessages: [], mark: false,
+                    unreads: [{id, from, to, type: msgType, data: data, chatTime: util.now(), newMessage: true}]
+                }))
+            }).toJS()
         }
+        return fromJS(state).update('groups', groups=> {
+            let group = groups.find(group=>group.get('id') == to)
+            return groups.update(groups.indexOf(group), group=>group.update('unreads', unreads=>unreads.push(Map({
+                id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
+            }))))
+        }).toJS()
+    }
 
+    function fetchHistoryMessageSuccess() {
+        let {currentSingle, historyMessages} = action
+        let iState = fromJS(state).update('singles', singles=> {
+            let single = singles.find(single=>single.get('name') == currentSingle.name)
+            return singles.update(singles.indexOf(single), single=>single.update('historyMessages', ()=>List(historyMessages)))
+        })
+        return iState.toJS()
     }
 }

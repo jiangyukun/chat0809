@@ -25,7 +25,7 @@ export function checkAutoLogin() {
 
         function onReceiveMessage(msg) {
             dispatch({
-                type: actionConstants.message.NEW_SINGLE_MSG,
+                type: actionConstants.message.NEW_MSG,
                 msg
             })
         }
@@ -40,7 +40,7 @@ export function loginToHuanxin(username, password) {
 
         function onReceiveMessage(msg) {
             dispatch({
-                type: actionConstants.message.NEW_SINGLE_MSG,
+                type: actionConstants.message.NEW_MSG,
                 msg
             })
         }

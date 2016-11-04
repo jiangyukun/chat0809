@@ -26,17 +26,15 @@ class PatientList extends Component {
 
         let singles = this.props.singles
 
-        console.log(singles.toJS());
-
         let unread = 0
         patientList.map((patient) => {
-            let match = singles.filter(single=>single.get('id') == patient.id).get(0)
+            let match = singles.filter(single=>single.id == patient.id)[0]
 
-            unread += match.get('unreads').size
+            unread += match.unreads.length
         })
 
         var unreadMessage = (id)=> {
-            let count = singles.filter(single=>single.get('id') == id).get(0).get('unreads').size
+            let count = singles.filter(single=>single.id == id)[0].unreads.length
             return count > 0 ? <span className="red">({count})</span> : ''
         }
 
@@ -51,9 +49,9 @@ class PatientList extends Component {
                     <ul>
                         {
                             patientList.map((patient, index) => {
-                                let match = singles.filter(single=>single.get('id') == patient.id).get(0)
-                                if (match.size) {
-                                    match.set('mark', true)
+                                let match = singles.find(single=>single.id == patient.id)
+                                if (match) {
+                                    match.mark = true
                                 }
                                 let key = this.props.searchKey
                                 let idInfo = ' '

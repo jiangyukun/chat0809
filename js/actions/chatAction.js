@@ -1,9 +1,12 @@
 /**
  * Created by jiangyukun on 2016/11/2.
  */
-import * as conn from '../services/huanxinApi'
 import actionConstants from './actionConstants'
+import {ChatType} from '../constants/ChatConstants'
 import util from '../components/core/util'
+
+import chatService from '../services/chatService'
+import * as conn from '../services/huanxinApi'
 
 export function fetchPatientListFromHuanXin() {
 
@@ -29,30 +32,91 @@ export function fetchPatientListFromHuanXin() {
 export function fetchGroupListFromHuanXin() {
 
     return dispatch=> {
-        dispatch({
-            type: actionConstants.chat.INIT_GROUP_START
-        })
+
         conn.listRooms().then(rooms=> {
             dispatch({
                 type: actionConstants.chat.INIT_GROUP_SUCCESS,
                 rooms
             })
         })
+
+        dispatch({
+            type: actionConstants.chat.INIT_GROUP_START
+        })
     }
 }
 
-export function startSingleChat(single) {
-    return {
-        type: actionConstants.chat.START_SINGLE_CHAT,
-        currentSingle: single
+export function fetchDoctorListFromServer() {
+    return dispatch=> {
+        chatService.fetchDoctorList().then((result) => {
+            let doctors = result.map(doctor=> {
+                let name = doctor['user_Name']
+                let nickname = doctor['doctor_Name']
+                return {id: name, name: name, nickname}
+            })
+            dispatch({
+                type: actionConstants.chat.INIT_DOCTOR_SUCCESS, doctors
+            })
+
+        }, ()=> {
+            dispatch({
+                type: actionConstants.chat.INIT_DOCTOR_FAILURE
+            })
+        })
+
+        dispatch({
+            type: actionConstants.chat.INIT_DOCTOR_START
+        })
+
     }
+}
+
+export function startSingleChat(curUserId, single) {
+    return dispatch=> {
+        chatService.fetchHistoryMessage(curUserId, single.name).then(result=> {
+            // console.log(result)
+            dispatch({
+                type: actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS,
+                currentSingle: single,
+                historyMessages: result
+            })
+        })
+
+        dispatch({
+            type: actionConstants.chat.START_SINGLE_CHAT,
+            currentSingle: single
+        })
+    }
+
 }
 
 export function startRoomChat(room) {
-    return {
-        type: actionConstants.chat.START_GROUP_CHAT,
-        currentRoom: room
+
+    return dispatch=> {
+
+        conn.queryRoomMember(room.id).then(result=> {
+
+            let groupMembers = result.map(member=> {
+                let jid = member.jid;
+                let from = (jid.indexOf('_') + 1)
+                let to = jid.indexOf('@')
+                let name = jid.substring(from, to)
+                return {jid, name}
+            })
+
+            dispatch({
+                type: actionConstants.chat.FETCH_GROUP_MEMBER_SUCCESS,
+                members: groupMembers
+            })
+        })
+
+        dispatch({
+            type: actionConstants.chat.START_GROUP_CHAT,
+            currentRoom: room
+        })
     }
+
+
 }
 
 export function readSingleMessage(single) {
@@ -71,11 +135,22 @@ export function exitChatSystem() {
 }
 
 export function sendTextMessage(from, to, chatType, content) {
-    let textContent = conn.sendTextMessage({type: chatType, to: to.name, msg: content})
+    if (chatType == ChatType.CHAT) {
+        let textContent = conn.sendTextMessage({type: chatType, to: to.name, msg: content})
+        return {
+            type: actionConstants.SEND_TEXT_MESSAGE,
+            from,
+            to: to.id,
+            chatType,
+            textContent
+        }
+    }
+
+    let textContent = conn.sendTextMessage({type: chatType, to: to, msg: content})
     return {
         type: actionConstants.SEND_TEXT_MESSAGE,
         from,
-        to: to.id,
+        to,
         chatType,
         textContent
     }
@@ -93,35 +168,7 @@ export function sendAudioMessage() {
 
 /*
 
- export function exitChatSystem() {
- return {
- type: actionConstants.LOGIN_OUT
- }
- }
 
- export function sendTextMessage(to, chatType, content) {
- return {
- type: actionConstants.SEND_TEXT_MESSAGE, to, content, chatType
- }
- }
-
- export function readMessage(name, chatType) {
- return {
- type: actionConstants.READ_MESSAGE, name, chatType
- }
- }
-
- export function beginGroupChat(roomId) {
- return {
- type: actionConstants.BEGIN_GROUP_CHAT, roomId
- }
- }
-
- export function beginUserChat(name) {
- return {
- type: actionConstants.BEGIN_USER_CHAT, name
- }
- }
 
  export function sendImageMessage(to, chatType, image) {
  return {
@@ -135,9 +182,5 @@ export function sendAudioMessage() {
  }
  }
 
- export function fetchHistoryMessage(user1, user2) {
- return {
- type: actionConstants.FETCH_HISTORY_MESSAGE, user1, user2
- }
- }
+
  */

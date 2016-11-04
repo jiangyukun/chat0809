@@ -17,15 +17,13 @@ import rootReducers from './reducers'
 
 import '../css/app.scss'
 
-import Immutable from 'immutable'
-
 let store = createStore(rootReducers, {
     curUserId: '',
     patients: [],
     rooms: [],
     doctorList: [],
     groupMembers: [],
-    message: Immutable.fromJS({singles: [], groups: []})
+    message: {singles:[], groups: []}
 }, applyMiddleware(thunk))
 let history = syncHistoryWithStore(hashHistory, store)
 

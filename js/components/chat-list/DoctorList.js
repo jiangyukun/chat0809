@@ -4,8 +4,6 @@
 import React, {Component} from 'react'
 import {Collapse} from 'react-bootstrap'
 import classnames from 'classnames'
-import MessageHelper from '../core/MessageHelper'
-import {ChatType} from '../../constants/ChatConstants'
 import {loadMore} from '../../constants/constants'
 
 class DoctorList extends Component {
@@ -22,15 +20,17 @@ class DoctorList extends Component {
     }
 
     render() {
-        let doctorList = this.props.doctors
-        let message = this.props.message
+        let doctors = this.props.doctors
+        let singles = this.props.singles
         let unread = 0
-        doctorList.map((doctor) => {
-            unread += MessageHelper.getUnreadCount(message, doctor.name, ChatType.CHAT)
+
+        doctors.forEach(doctor=> {
+            let single = singles.find(single=>single.id == doctor.id)
+            unread += single.unreads.length
         })
 
-        var unreadMessage = (name, type)=> {
-            let count = MessageHelper.getUnreadCount(message, name, type)
+        var unreadMessage = doctorId=> {
+            let count = singles.find(single=>single.id == doctorId).unreads.length
             return count > 0 ? <span className="red">({count})</span> : ''
         }
 
@@ -44,8 +44,8 @@ class DoctorList extends Component {
                 <Collapse in={this.state.active}>
                     <ul>
                         {
-                            doctorList.map((doctor, index) => {
-                                MessageHelper.markMessage(message, ChatType.CHAT, doctor.name)
+                            doctors.map((doctor, index) => {
+
                                 let key = this.props.searchKey
                                 let idInfo = ' '
                                 if (key) {
@@ -66,7 +66,7 @@ class DoctorList extends Component {
                                     <li key={index} className={classnames("list-item", {'active': doctor.active})}
                                         onClick={e=> this.props.startChat(doctor)}>
                                         {doctor.nickname ? doctor.nickname + idInfo : doctor.name}
-                                        {unreadMessage(doctor.name, ChatType.CHAT)}
+                                        {unreadMessage(doctor.name)}
                                     </li>
                                 )
                             })

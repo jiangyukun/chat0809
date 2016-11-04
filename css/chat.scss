@@ -1,6 +1,23 @@
 
 .chat {
 
+    .emotion-container {
+        display: inline-block;
+        width: 20px;
+        img {
+            width: 100%;
+        }
+    }
+
+    .message-image-container {
+        cursor: pointer;
+        max-width: 150px;
+    }
+
+    .pull-right {
+        text-align: right;
+    }
+
     .em-emotion {
         width: 20px;
     }
@@ -80,23 +97,6 @@
                     margin-top: 10px;
                     margin-bottom: 10px;
                     overflow-y: auto;
-
-                    .emotion-container {
-                        display: inline-block;
-                        width: 20px;
-                        img {
-                            width: 100%;
-                        }
-                    }
-
-                    .message-image-container {
-                        cursor: pointer;
-                        max-width: 150px;
-                    }
-
-                    .pull-right {
-                        text-align: right;
-                    }
                 }
 
                 .send-message-box {

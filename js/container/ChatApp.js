@@ -8,7 +8,7 @@ import {connect} from 'react-redux'
 import Header from './Header'
 import ChatPanel from './ChatPanel'
 
-import {fetchPatientListFromHuanXin, fetchGroupListFromHuanXin} from '../actions/chatAction'
+import {fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer} from '../actions/chatAction'
 
 class ChatApp extends Component {
     static contextTypes = {
@@ -19,7 +19,7 @@ class ChatApp extends Component {
         curUserId: PropTypes.string,
         patients: PropTypes.array,
         rooms: PropTypes.array,
-        doctorList: PropTypes.array,
+        doctors: PropTypes.array,
         message: PropTypes.object,
         groupMembers: PropTypes.array
     }
@@ -32,7 +32,7 @@ class ChatApp extends Component {
         return {
             curUserId: this.props.curUserId,
             patients: this.props.patients,
-            doctorList: this.props.doctorList,
+            doctors: this.props.doctors,
             rooms: this.props.rooms,
             message: this.props.message,
             groupMembers: this.props.groupMembers
@@ -46,6 +46,7 @@ class ChatApp extends Component {
         }
         this.props.fetchPatientListFromHuanXin()
         this.props.fetchGroupListFromHuanXin()
+        this.props.fetchDoctorListFromServer()
     }
 
     render() {
@@ -65,7 +66,7 @@ function mapStateToProps(state) {
         curUserId: state.curUserId,
         patients: state.patients,
         rooms: state.rooms,
-        doctorList: state.doctorList,
+        doctors: state.doctorList,
         groupMembers: state.groupMembers,
         message: state.message
     }
@@ -73,5 +74,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     fetchPatientListFromHuanXin,
-    fetchGroupListFromHuanXin
+    fetchGroupListFromHuanXin,
+    fetchDoctorListFromServer
 })(ChatApp)

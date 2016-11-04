@@ -132,35 +132,7 @@ function initMessage(msgInfo) {
 
 AppDispatcher.register(function (action) {
     switch (action.actionType) {
-        case ChatConstants.LOGIN:
-            conn.login(action.username, action.password)
-            conn.onLoginSuccess(action.success)
-            conn.onLoginFailure(action.error)
-            break
 
-        case ChatConstants.CHECK_LOGIN_INFO:
-            if (conn.isOpened()) {
-                return
-            }
-            let accessToken = util.getSession('accessToken')
-            if (accessToken && !conn.isOpening()) {
-                conn.reOpen()
-                return
-            }
-            action.failCallback()
-            break
-
-        case ChatConstants.SEND_TEXT_MESSAGE:
-            let {to, content, type} = action
-            let convertMsg = conn.sendTextMessage({type, to, msg: content})
-            MessageHelper.sendTextMessage(message, type, curUserId, to, convertMsg)
-            ChatStore.emit(CHANGE_EVENT)
-            break
-
-        case ChatConstants.READ_MESSAGE:
-            MessageHelper.readMessage(message, action.name, action.type)
-            ChatStore.emit(CHANGE_EVENT)
-            break
 
         case ChatConstants.SEND_IMAGE_MESSAGE:
             conn.sendPicture({
@@ -183,41 +155,7 @@ AppDispatcher.register(function (action) {
             chatService.fetchHistoryMessage(user1, user2)
             break
 
-        case ChatConstants.LOGIN_OUT:
-            util.removeSession('accessToken')
-            conn.closeConn()
-            break
 
-        case ChatConstants.BEGIN_USER_CHAT:
-            chatInfo = {id: action.name, type: ChatType.CHAT}
-            MessageHelper.readMessage(message, action.name, ChatType.CHAT)
-            chatService.fetchHistoryMessage(curUserId, action.name, 0).then(historyMessageList=> {
-                let msg = MessageHelper.getMessageByName(message, action.name, ChatType.CHAT)
-                msg.historyMessages = historyMessageList
-                ChatStore.emit(CHANGE_EVENT)
-            })
-            ChatStore.emit(CHANGE_EVENT)
-            break
-
-        case ChatConstants.BEGIN_GROUP_CHAT:
-            chatInfo = {id: action.roomId, type: ChatType.GROUP_CHAT}
-            MessageHelper.readMessage(message, action.roomId, ChatType.GROUP_CHAT)
-            conn.queryRoomMember(action.roomId).then(result=> {
-                groupMembers = result.map(member=> {
-                    let jid = member.jid;
-                    let from = (jid.indexOf('_') + 1)
-                    let to = jid.indexOf('@')
-                    let name = jid.substring(from, to)
-                    return {jid, name}
-                })
-                groupMembers.unshift({
-                    jid: curUserId,
-                    name: curUserId
-                })
-                ChatStore.emit(CHANGE_EVENT)
-            })
-            ChatStore.emit(CHANGE_EVENT)
-            break
 
         default:
             break

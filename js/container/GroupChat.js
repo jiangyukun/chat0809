@@ -3,10 +3,9 @@
  */
 import React, {Component, PropTypes} from 'react'
 import Message from '../components/Message'
-import SendMessageBox from '../components/SendMessageBox'
+import SendMessageBox from './SendMessageBox'
 import GroupMembers from '../components/GroupMembers'
 import {ChatType} from '../constants/ChatConstants'
-import MessageHelper from '../components/core/MessageHelper'
 
 export default class GroupChat extends Component {
     static contextTypes = {
@@ -20,13 +19,16 @@ export default class GroupChat extends Component {
 
     showMessage() {
         let groupMessage = this.props.groupMessage
-        return groupMessage.reads.map((msg, index) => {
-            return <Message key={index} msg={msg} dir={this.context.curUserId == msg.from ? 'right' : 'left'}/>
+        return groupMessage.reads.map(read => {
+            return <Message key={read.id}
+                            msg={read}
+                            dir={this.context.curUserId == read.from ? 'right' : 'left'}
+            />
         })
     }
 
     componentDidUpdate() {
-        this.refs['sendMessageBox'].clear()
+        this.sendMessageBox.getWrappedInstance().clear()
     }
 
     render() {
@@ -41,10 +43,13 @@ export default class GroupChat extends Component {
                             {this.showMessage()}
                         </div>
                         <div className="col-xs-2 group-member-list">
-                            <GroupMembers />
+                            <GroupMembers members={this.props.members}/>
                         </div>
                     </div>
-                    <SendMessageBox ref="sendMessageBox" to={this.props.room.id} type={ChatType.GROUP_CHAT}/>
+                    <SendMessageBox ref={c=>this.sendMessageBox = c}
+                                    from={this.context.curUserId}
+                                    to={this.props.room.id}
+                                    type={ChatType.GROUP_CHAT}/>
                 </div>
             </div>
         )
