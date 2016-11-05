@@ -5,7 +5,7 @@ import React, {Component, PropTypes} from 'react'
 import {routerShape} from 'react-router'
 import {connect} from 'react-redux'
 
-import {exitChatSystem} from '../actions/chatAction'
+import {exitChatSystem} from '../actions/chat'
 
 class Header extends Component {
     static contextTypes = {

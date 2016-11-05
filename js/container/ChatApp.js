@@ -5,10 +5,11 @@ import React, {Component, PropTypes} from 'react'
 import {routerShape} from 'react-router'
 import {connect} from 'react-redux'
 
+import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
 import ChatPanel from './ChatPanel'
 
-import {fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer} from '../actions/chatAction'
+import {fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer, newMessageHinted} from '../actions/chat'
 
 class ChatApp extends Component {
     static contextTypes = {
@@ -49,9 +50,20 @@ class ChatApp extends Component {
         this.props.fetchDoctorListFromServer()
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.newMessage && !this.props.newMessage) {
+            this.newMessageAudio.playAudio().then(()=> {
+                this.props.newMessageHinted()
+            })
+        }
+    }
+
     render() {
         return (
             <div className="chat">
+                <div className="hidden">
+                    <SimpleAudio audioUrl="audio/new-message.wav" ref={c=>this.newMessageAudio = c}/>
+                </div>
                 <Header />
                 <ChatPanel />
             </div>
@@ -68,12 +80,14 @@ function mapStateToProps(state) {
         rooms: state.rooms,
         doctors: state.doctorList,
         groupMembers: state.groupMembers,
-        message: state.message
+        message: state.message,
+        newMessage: state.chat.newMessage
     }
 }
 
 export default connect(mapStateToProps, {
     fetchPatientListFromHuanXin,
     fetchGroupListFromHuanXin,
-    fetchDoctorListFromServer
+    fetchDoctorListFromServer,
+    newMessageHinted
 })(ChatApp)

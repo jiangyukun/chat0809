@@ -66,7 +66,7 @@ export default class UserChat extends Component {
                             </div>
                         </div>
                         <SendMessageBox from={this.context.curUserId}
-                                        to={this.props.user}
+                                        to={this.props.user.name}
                                         type={ChatType.CHAT}
                         />
                     </div>

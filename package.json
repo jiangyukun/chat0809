@@ -1,14 +1,16 @@
 {
-  "name": "flux",
+  "name": "chat-system",
   "version": "1.0.0",
-  "description": "management platform",
+  "description": "chat-system",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "react",
-    "flux"
+    "flux",
+    "redux",
+    "immutable"
   ],
   "author": "jiangyukun",
   "license": "ISC",
@@ -43,7 +45,6 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-traverse": "^6.9.0",
-    "browserify": "^13.1.0",
     "bundle-loader": "^0.5.4",
     "css-loader": "^0.23.1",
     "eslint": "^3.2.2",
@@ -63,10 +64,8 @@
   "dependencies": {
     "babel-polyfill": "^6.16.0",
     "classnames": "^2.2.5",
-    "easemobim_websdk": "^1.1.1",
-    "history": "^2.1.2",
+    "dom-helper": "^1.0.0",
     "immutable": "^3.8.1",
-    "keymirror": "^0.1.1",
     "lodash": "^4.16.5",
     "moment": "^2.15.2",
     "react-bootstrap": "^0.30.0",

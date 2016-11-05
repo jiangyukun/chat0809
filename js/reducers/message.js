@@ -7,35 +7,57 @@ import util from '../components/core/util'
 import {MessageType, ChatType} from '../constants/ChatConstants'
 import actionConstants from '../actions/actionConstants'
 
-export function message(state = {singles: [], groups: []}, action) {
+let defaultState = {singles: [], groups: []}
+
+export function message(state = defaultState, action) {
+    let newState = state
     switch (action.type) {
         case actionConstants.chat.INIT_PATIENT_SUCCESS:
-            return initPatientSuccess()
+            newState = initPatientSuccess()
+            break
 
         case actionConstants.chat.INIT_GROUP_SUCCESS:
-            return initGroupSuccess()
+            newState = initGroupSuccess()
+            break
 
         case actionConstants.chat.INIT_DOCTOR_SUCCESS:
-            return initDoctorSuccess()
+            newState = initDoctorSuccess()
+            break
 
         case actionConstants.chat.START_SINGLE_CHAT:
-            return startSingleChat()
+            newState = startSingleChat()
+            break
 
         case actionConstants.chat.START_GROUP_CHAT:
-            return startGroupChat()
+            newState = startGroupChat()
+            break
 
         case actionConstants.SEND_TEXT_MESSAGE:
-            return sendTextMessage()
+            newState = sendTextMessage()
+            break
+
+        case actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS:
+            newState = sendImageMessageSuccess()
+            break
 
         case actionConstants.message.NEW_MSG:
-            return newMessage()
+            newState = newMessage()
+            break
 
         case actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS:
-            return fetchHistoryMessageSuccess()
+            newState = fetchHistoryMessageSuccess()
+            break
+
+        case actionConstants.EXIT_CHAT_SYSTEM:
+            newState = exitChatSystem()
+            break
 
         default:
-            return state
+            newState = state
+            break
     }
+
+    return newState
 
     //-------------------------------------------------------------------
 
@@ -102,7 +124,11 @@ export function message(state = {singles: [], groups: []}, action) {
         return fromJS(state).update('singles', singles=> {
             let single = singles.find(iSingle=>iSingle.get('id') == action.currentSingle.id)
             return singles.update(singles.indexOf(single), single=> {
-                return single.set('unreads', List([])).set('reads', single.get('reads').merge(single.get('unreads')))
+                let reads = single.get('reads')
+                single.get('unreads').forEach(unread=> {
+                    reads = reads.push(unread)
+                })
+                return single.set('unreads', List([])).set('reads', reads)
             })
         }).toJS()
     }
@@ -120,7 +146,7 @@ export function message(state = {singles: [], groups: []}, action) {
         let {chatType, to, textContent, from} = action
         if (chatType == ChatType.CHAT) {
             return fromJS(state).update('singles', singles=> {
-                let single = singles.find(single=>single.get('id') == to)
+                let single = singles.find(single=>single.get('name') == to)
                 return singles.update(singles.indexOf(single), single=> single.update('reads', reads=>reads.push(Map({
                     id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now(), newMessage: false
                 }))))
@@ -132,6 +158,18 @@ export function message(state = {singles: [], groups: []}, action) {
                 id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now(), newMessage: false
             }))))
         }).toJS()
+    }
+
+    function sendImageMessageSuccess() {
+        let {from, to, chatType, url} = action
+        if (chatType == ChatType.CHAT) {
+            return fromJS(state).update('singles', singles=> {
+                let single = singles.find(single=>single.get('name') == to)
+                return singles.update(singles.indexOf(single), single=>single.update('reads', reads=>reads.push(Map({
+                    id: util.getUID(), from, to, type: MessageType.IMAGE, data: url, chatTime: util.now(), newMessage: false
+                }))))
+            }).toJS()
+        }
     }
 
     function newMessage() {
@@ -182,5 +220,9 @@ export function message(state = {singles: [], groups: []}, action) {
             return singles.update(singles.indexOf(single), single=>single.update('historyMessages', ()=>List(historyMessages)))
         })
         return iState.toJS()
+    }
+
+    function exitChatSystem() {
+        return defaultState
     }
 }

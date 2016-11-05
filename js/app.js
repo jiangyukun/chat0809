@@ -14,17 +14,20 @@ import thunk from 'redux-thunk'
 import NotificationContainer from './components/common/NotificationContainer'
 import routers from './router'
 import rootReducers from './reducers'
+import sessionStorageState from './middlewares/session-storage-state'
 
 import '../css/app.scss'
 
-let store = createStore(rootReducers, {
+let initState = {
     curUserId: '',
     patients: [],
     rooms: [],
     doctorList: [],
     groupMembers: [],
-    message: {singles:[], groups: []}
-}, applyMiddleware(thunk))
+    message: {singles: [], groups: []}
+}
+
+let store = createStore(rootReducers, initState, applyMiddleware(thunk, sessionStorageState))
 let history = syncHistoryWithStore(hashHistory, store)
 
 render(

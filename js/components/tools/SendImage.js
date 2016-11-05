@@ -6,10 +6,6 @@ import {Modal, Button} from 'react-bootstrap'
 import SelectImage from './SelectImage'
 
 class SendImage extends Component {
-    static contextTypes = {
-        curUserId: PropTypes.string
-    }
-
     constructor(props) {
         super(props)
         this.state = {
@@ -27,7 +23,7 @@ class SendImage extends Component {
     }
 
     sendImageMessage() {
-        this.props.sendImageMessage(this.refs.selectImage.getImageFile())
+        this.props.sendImageMessage(this.selectImage.getImageFile())
         this.toggle()
     }
 
@@ -38,7 +34,7 @@ class SendImage extends Component {
                     <Modal.Title>选择图片</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <SelectImage imageSelected={()=>{this.imageSelected()}} ref="selectImage"/>
+                    <SelectImage imageSelected={()=>{this.imageSelected()}} ref={c=>this.selectImage = c}/>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button onClick={()=>{this.toggle()}}>取消</Button>

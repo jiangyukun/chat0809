@@ -35,7 +35,7 @@ export default class SelectImage extends Component {
     }
 
     getImageFile() {
-        return this.state.file
+        return this.fileInput
     }
 
     render() {
@@ -44,7 +44,9 @@ export default class SelectImage extends Component {
                 {this.showImagePreview()}
                 <div className="select-image-container">
                     <button className="btn select-image-btn">选择图片</button>
-                    <input type="file" className="select-image-input" onChange={(e)=>{this.onChange(e)}}/>
+                    <input ref={c=>this.fileInput = c} type="file" className="select-image-input" onChange={(e)=> {
+                        this.onChange(e)
+                    }}/>
                 </div>
             </div>
         )

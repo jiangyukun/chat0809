@@ -39,8 +39,22 @@ export function login(state = {failure: false, success: false, message: ''}, act
 }
 
 export function curUserId(state = '', action) {
-    if (action.type == actionConstants.LOGIN_SUCCESS) {
-        return action.userId
+    switch (action.type) {
+
+
+        case actionConstants.LOGIN_SUCCESS:
+            return action.userId
+
+        case actionConstants.EXIT_CHAT_SYSTEM:
+            return exitChatSystem()
+
+        default:
+            break
     }
+
     return state
+
+    function exitChatSystem() {
+        return ''
+    }
 }

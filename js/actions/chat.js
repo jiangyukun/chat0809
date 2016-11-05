@@ -91,9 +91,7 @@ export function startSingleChat(curUserId, single) {
 }
 
 export function startRoomChat(room) {
-
     return dispatch=> {
-
         conn.queryRoomMember(room.id).then(result=> {
 
             let groupMembers = result.map(member=> {
@@ -115,8 +113,6 @@ export function startRoomChat(room) {
             currentRoom: room
         })
     }
-
-
 }
 
 export function readSingleMessage(single) {
@@ -136,11 +132,11 @@ export function exitChatSystem() {
 
 export function sendTextMessage(from, to, chatType, content) {
     if (chatType == ChatType.CHAT) {
-        let textContent = conn.sendTextMessage({type: chatType, to: to.name, msg: content})
+        let textContent = conn.sendTextMessage({type: chatType, to: to, txt: content})
         return {
             type: actionConstants.SEND_TEXT_MESSAGE,
             from,
-            to: to.id,
+            to,
             chatType,
             textContent
         }
@@ -156,12 +152,42 @@ export function sendTextMessage(from, to, chatType, content) {
     }
 }
 
-export function sendImageMessage() {
-
+export function sendImageMessage(from, to, chatType, fileDom) {
+    return dispatch=> {
+        conn.sendPicture(to, fileDom).then(url=> {
+            dispatch({
+                type: actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS,
+                from,
+                to,
+                chatType,
+                url
+            })
+        }, error=> {
+            console.log(error)
+            dispatch({
+                type: actionConstants.message.SEND_IMAGE_MESSAGE_FAILURE,
+                chatType,
+                error
+            })
+        })
+        dispatch({
+            type: actionConstants.message.SEND_IMAGE_MESSAGE,
+            from,
+            to: to,
+            chatType,
+            fileDom
+        })
+    }
 }
 
 export function sendAudioMessage() {
 
+}
+
+export function newMessageHinted() {
+    return {
+        type: actionConstants.chat.NEW_MESSAGE_HINT_COMPLETE
+    }
 }
 
 // ------------------------------------------

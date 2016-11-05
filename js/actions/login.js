@@ -9,11 +9,11 @@ export function checkAutoLogin() {
     return dispatch=> {
         let accessToken = util.getSession('accessToken')
         if (accessToken && !conn.isOpening()) {
-            conn.reOpen(onReceiveMessage).then(function (userId) {
+            conn.reOpen(onReceiveMessage).then(userId=> {
                 dispatch({
                     type: actionConstants.LOGIN_SUCCESS, userId
                 })
-            }, function () {
+            }, ()=> {
                 dispatch({
                     type: actionConstants.LOGIN_FAILURE
                 })
@@ -45,9 +45,9 @@ export function loginToHuanxin(username, password) {
             })
         }
 
-        conn.login(username, password, onReceiveMessage).then(function (userId) {
+        conn.login(username, password, onReceiveMessage).then(userId=> {
             dispatch({type: actionConstants.LOGIN_SUCCESS, userId})
-        }, function () {
+        }, () => {
             dispatch({type: actionConstants.LOGIN_FAILURE})
         })
     }

@@ -15,24 +15,23 @@ export default class SimpleAudio extends Component {
     }
 
     getAudio() {
-        return findDOMNode(this.refs['audio'])
-    }
-
-    componentDidMount() {
-    }
-
-    componentWillUnmount() {
+        return findDOMNode(this.audio)
     }
 
     playAudio() {
         let audioNode = this.getAudio()
-        audioNode.play()
+        return new Promise(function (resolve) {
+            audioNode.onended = function () {
+                resolve()
+            }
+            audioNode.play()
+        })
     }
 
     render() {
         return (
             <div className="audio-wrap" onClick={e=>this.playAudio()}>
-                <audio ref="audio" src={this.props.audioUrl}/>
+                <audio ref={c=>this.audio = c} src={this.props.audioUrl}/>
             </div>
         )
     }

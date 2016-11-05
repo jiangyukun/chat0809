@@ -6,13 +6,17 @@ import Env from '../constants/Env'
 import util from '../components/core/util'
 
 let Strophe = window.Strophe
-let Easemob = window.Easemob
-let USER_NOT_FOUND = 3
+let WebIM = window.WebIM
+let USER_NOT_FOUND = 1, CONNECT_CLOSE = 7
 
-let conn = new Easemob.im.Connection({
-    multiResources: Easemob.im.config.multiResources,
-    https: Easemob.im.config.https,
-    url: Easemob.im.config.xmppURL
+let conn = new WebIM.connection({
+    isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
+    url: WebIM.config.xmppURL,
+    isAutoLogin: false,
+    heartBeatWait: WebIM.config.heartBeatWait,
+    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+    autoReconnectInterval: WebIM.config.autoReconnectInterval
 })
 let curUserId
 let receiveMessageCallback
@@ -21,6 +25,9 @@ function noop() {
 }
 
 function empty(message) {
+    if (!message.type || message.type == CONNECT_CLOSE) {
+        return
+    }
     if (Env.isDev()) {
         util.tip(NotificationType.ERROR, '暂不支持的类型：' + message.type)
     } else {
@@ -43,8 +50,10 @@ export function login(username, password, onReceiveMessage) {
     conn.open({
         user: username,
         pwd: password,
-        appKey: Easemob.im.config.appkey
+        appKey: WebIM.config.appkey,
+        apiUrl: WebIM.config.apiURL
     })
+
     return new Promise(function (resolve, reject) {
         loginSuccessList.push(function (userId) {
             resolve(userId)
@@ -63,7 +72,7 @@ export function reOpen(onReceiveMessage) {
     let accessToken = util.getSession('accessToken')
     let username = util.getSession('username')
     receiveMessageCallback = onReceiveMessage
-    conn.open({user: username, accessToken, appKey: Easemob.im.config.appkey})
+    conn.open({user: username, accessToken, appKey: WebIM.config.appkey})
     return new Promise(function (resolve, reject) {
         loginSuccessList.push(function (userId) {
             resolve(userId)
@@ -114,24 +123,33 @@ export function queryRoomMember(roomId) {
     })
 }
 
-export function sendTextMessage(textMessage) {
-    conn.sendTextMessage(textMessage)
-    return convertTextMessage(textMessage.msg)
+export function sendTextMessage({type, to, txt}) {
+    let msg = new WebIM.message('txt', conn.getUniqueId())
+    msg.set({
+        msg: txt,
+        to,
+        roomType: type
+    })
+    conn.send(msg.body)
+    return convertTextMessage(txt)
 }
 
-export function sendPicture(msg) {
-    let opt = {
-        onFileUploadError(error) {
-            console.log(error)
-        },
-        onFileUploadComplete(data) {
-            console.log(data)
-            console.log(data.uri + '/' + data.entities[0].uuid + '?token=')
-        },
-        apiUrl: Easemob.im.config.apiURL,
-        ...msg
-    }
-    conn.sendPicture(opt)
+export function sendPicture(to, fileDom) {
+    return new Promise(function (resolve, reject) {
+        let msg = new WebIM.message('img', conn.getUniqueId())
+        msg.set({
+            file: WebIM.utils.getFileUrl(fileDom),
+            to,
+            apiUrl: WebIM.config.apiURL,
+            onFileUploadError(error) {
+                reject(error)
+            },
+            onFileUploadComplete(data) {
+                resolve(data.uri + '/' + data.entities[0].uuid)
+            }
+        })
+        conn.send(msg.body)
+    })
 }
 
 export function sendAudio(msg) {
@@ -143,7 +161,11 @@ export function isOpened() {
 }
 
 export function closeConn() {
-    conn.close()
+    try {
+        conn.close()
+    } catch (e) {
+        console.log('连接关闭');
+    }
 }
 
 export function onLoginSuccess(callback) {
@@ -210,8 +232,12 @@ function init() {
             empty(message)
         },
         onError (message) {
+            if (!message) {
+                return
+            }
             if (message.type == USER_NOT_FOUND) {
                 loginFailureList.map(loginFailure=>loginFailure())
+                // util.tip(NotificationType.ERROR, '登录失败!')
                 return
             }
             error(message)
@@ -219,8 +245,8 @@ function init() {
     })
 }
 
-function initEmotion() {
-    Easemob.im.EMOTIONS = {
+function initEmoji() {
+    WebIM.Emoji = {
         path: 'res/images/faces/'
         , map: {
             '[):]': 'ee_1.png',
@@ -275,7 +301,7 @@ function encode(str) {
 }
 
 export function convertTextMessage(msg) {
-    return Easemob.im.Utils.parseLink(Easemob.im.Utils.parseEmotions(encode(msg)))
+    return WebIM.utils.parseLink(WebIM.utils.parseEmoji(encode(msg)))
 }
 
 Strophe.log = function (level, msg) {
@@ -285,4 +311,6 @@ Strophe.log = function (level, msg) {
 }
 
 init()
-initEmotion()
+initEmoji()
+
+

@@ -3,18 +3,15 @@
  */
 import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
-import {Collapse} from 'react-bootstrap'
 
-import SimpleAudio from '../components/common/SimpleAudio'
 import {ChatType} from '../constants/ChatConstants'
-
 import PatientList from '../components/chat-list/PatientList'
 import GroupList from '../components/chat-list/GroupList'
 import DoctorList from '../components/chat-list/DoctorList'
 import OtherList from '../components/chat-list/OtherList'
 import GroupChat from './GroupChat'
 import UserChat from './UserChat'
-import {startSingleChat, startRoomChat, readSingleMessage} from '../actions/chatAction'
+import {startSingleChat, startRoomChat, readSingleMessage} from '../actions/chat'
 
 const PATIENT = 'patient'
 const GROUP = 'group'
@@ -32,7 +29,6 @@ class ChatPanel extends Component {
     constructor(props) {
         super(props)
         this.beforeActiveChat = null
-        this.playNewMessageAudio = this.playNewMessageAudio.bind(this)
         this.state = {
             searchKey: '',
             chatType: '',
@@ -90,22 +86,9 @@ class ChatPanel extends Component {
         this.props.startRoomChat(room)
     }
 
-    playNewMessageAudio() {
-        setTimeout(()=>this.refs['newMessageAudio'].playAudio(), 100)
-    }
-
-    componentWillMount() {
-        // ChatStore.addNewMessageListener(this.playNewMessageAudio)
-    }
-
-    componentWillUnmount() {
-        // ChatStore.removeNewMessageListener(this.playNewMessageAudio)
-    }
-
     render() {
         return (
             <div className="chat-body">
-                <div className="hidden"><SimpleAudio audioUrl="audio/new-message.wav" ref="newMessageAudio"/></div>
                 <div className="container-fluid h100-pct">
                     <div className="row h100-pct">
                         <div className="col-xs-3 contact-list">
