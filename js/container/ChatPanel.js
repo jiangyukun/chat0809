@@ -22,8 +22,7 @@ class ChatPanel extends Component {
     static contextTypes = {
         patients: PropTypes.array,
         rooms: PropTypes.array,
-        doctors: PropTypes.array,
-        message: PropTypes.object
+        doctors: PropTypes.array
     }
 
     constructor(props) {
@@ -72,7 +71,7 @@ class ChatPanel extends Component {
                 nickname: patient.nickname
             }
         })
-        this.props.startSingleChat(this.props.curUserId, patient)
+        this.props.actions.startSingleChat(this.props.curUserId, patient)
     }
 
     groupChat(room) {
@@ -83,7 +82,7 @@ class ChatPanel extends Component {
                 name: room.name
             }
         })
-        this.props.startRoomChat(room)
+        this.props.actions.startRoomChat(room)
     }
 
     render() {
@@ -95,22 +94,23 @@ class ChatPanel extends Component {
                             <section className="row">
                                 <div className="col-xs-12">
                                     <input className="form-control" type="text" placeholder="输入账号"
-                                           value={this.state.searchKey} onChange={e=>this.onChange(e)}/>
+                                           value={this.state.searchKey} onChange={e=>this.onChange(e)}
+                                    />
                                 </div>
                             </section>
                             <section className="row mt-15">
-                                <PatientList patients={this.context.patients}
-                                             singles={this.context.message.singles}
+                                <PatientList patients={this.props.patients}
+                                             singleMessage={this.props.singleMessage}
                                              searchKey={this.state.searchKey}
                                              startChat={patient=>this.startChat('patient', patient)}/>
 
-                                <GroupList rooms={this.context.rooms}
-                                           groups={this.context.message.groups}
+                                <GroupList rooms={this.props.rooms}
+                                           roomMessage={this.props.roomMessage}
                                            searchKey={this.state.searchKey}
                                            startChat={group=>this.startChat('group', group)}/>
 
-                                <DoctorList doctors={this.context.doctors}
-                                            singles={this.context.message.singles}
+                                <DoctorList doctors={this.props.doctors}
+                                            singleMessage={this.props.singleMessage}
                                             searchKey={this.state.searchKey}
                                             startChat={doctor=>this.startChat('doctor', doctor)}/>
 
@@ -124,15 +124,14 @@ class ChatPanel extends Component {
                             {
                                 this.state.chatType == ChatType.CHAT && (
                                     <UserChat user={this.state.user}
-                                              singleMessage={this.context.message.singles.filter(single=>single.id == this.state.user.id)[0]}
-                                              readSingleMessage={this.props.readSingleMessage}
+                                              singleMessage={this.props.singleMessage.find(msg=>msg.name == this.state.user.name)}
                                     />
                                 )
                             }
                             {
                                 this.state.chatType == ChatType.GROUP_CHAT && (
                                     <GroupChat room={this.state.room}
-                                               groupMessage={this.context.message.groups.filter(group=>group.id == this.state.room.id)[0]}
+                                               roomMessage={this.props.roomMessage.find(msg=>msg.id == this.state.room.id)}
                                                members={this.props.members}
                                     />
                                 )
@@ -145,15 +144,4 @@ class ChatPanel extends Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        curUserId: state.curUserId,
-        members: state.groupMembers
-    }
-}
-
-export default connect(mapStateToProps, {
-    startSingleChat,
-    startRoomChat,
-    readSingleMessage
-}, null, {pure: false})(ChatPanel)
+export default ChatPanel

@@ -115,7 +115,7 @@ export default class Message extends Component {
 
         return (
             <div className="clearfix">
-                <div className="message-time">{this.props.msg.chatTime || '---'}</div>
+                <div className="message-time">{this.props.msg.chatTime || util.now()}</div>
                 <div className={classnames({"pull-left": this.props.dir == 'left', "pull-right": this.props.dir == 'right'})}>
                     <div className="simple-message-box">
                         <div className="message-send-user">{from}</div>

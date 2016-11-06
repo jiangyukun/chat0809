@@ -3,26 +3,24 @@
  */
 import React, {Component, PropTypes} from 'react'
 
-
-
-
+let WebIM = window.WebIM
 export default class SelectEmotions extends Component {
 
 
     getEmotionIcon() {
-        let emotions = Easemob.im.EMOTIONS,
+        let emotions = WebIM.Emoji,
             emtMap = emotions.map,
             emtPath = emotions.path;
 
         let icon = []
         for (let key in emtMap) {
             icon.push(<li key={key}>
-                <img src={emtPath + emtMap[key]} onClick={()=>this.props.select(key)} />
+                <img src={emtPath + emtMap[key]} onClick={()=>this.props.select(key)}/>
             </li>)
         }
         return icon
     }
-    
+
     render() {
         return (
             <div className="emotions-container">

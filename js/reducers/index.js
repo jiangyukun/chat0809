@@ -9,7 +9,8 @@ import * as chat from './chat'
 import * as patients from './list/patients'
 import * as rooms from './list/rooms'
 import * as doctor from './list/doctors'
-import * as messageReducers from './message'
+import * as singleMessage from './singleMessage'
+import * as roomMessage from './roomMessage'
 
 export default combineReducers({
     ...login,
@@ -17,6 +18,7 @@ export default combineReducers({
     ...rooms,
     ...doctor,
     ...chat,
-    ...messageReducers,
+    ...singleMessage,
+    ...roomMessage,
     routing
 })

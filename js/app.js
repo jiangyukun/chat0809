@@ -5,12 +5,13 @@ import 'babel-polyfill'
 
 import React from 'react'
 import {render} from 'react-dom'
-import {createStore, applyMiddleware} from 'redux'
+import {createStore, applyMiddleware, compose} from 'redux'
 import {Provider} from 'react-redux'
 import {Router, hashHistory} from 'react-router'
 import {syncHistoryWithStore} from 'react-router-redux'
 import thunk from 'redux-thunk'
 
+import DevTools from './DevTools'
 import NotificationContainer from './components/common/NotificationContainer'
 import routers from './router'
 import rootReducers from './reducers'
@@ -24,15 +25,31 @@ let initState = {
     rooms: [],
     doctorList: [],
     groupMembers: [],
-    message: {singles: [], groups: []}
+    singleMessage: [],
+    roomMessage: []
 }
 
-let store = createStore(rootReducers, initState, applyMiddleware(thunk, sessionStorageState))
+let store = createStore(rootReducers, initState, compose(
+    applyMiddleware(thunk, sessionStorageState),
+    DevTools.instrument()
+))
+
+if (module.hot) {
+    // Enable Webpack hot module replacement for reducers
+    module.hot.accept('./reducers/', () => {
+        const nextRootReducer = require('./reducers/').default
+        store.replaceReducer(nextRootReducer)
+    })
+}
+
 let history = syncHistoryWithStore(hashHistory, store)
 
 render(
     <Provider store={store}>
-        <Router routes={routers} history={history}></Router>
+        <div>
+            <Router routes={routers} history={history}></Router>
+            <DevTools/>
+        </div>
     </Provider>,
     document.getElementById('container')
 )

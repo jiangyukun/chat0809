@@ -23,18 +23,17 @@ class PatientList extends Component {
 
     render() {
         let patientList = this.props.patients
-
-        let singles = this.props.singles
+        let singleMessage = this.props.singleMessage
 
         let unread = 0
-        patientList.map((patient) => {
-            let match = singles.filter(single=>single.id == patient.id)[0]
-
-            unread += match.unreads.length
+        patientList.forEach((patient) => {
+            let msg = singleMessage.find(msg=>msg.name == patient.name)
+            unread += msg ? msg.unreads.length : 0
         })
 
-        var unreadMessage = (id)=> {
-            let count = singles.filter(single=>single.id == id)[0].unreads.length
+        var unreadMessage = name=> {
+            let msg = singleMessage.find(single=>single.name == name)
+            let count = msg ? msg.unreads.length : 0
             return count > 0 ? <span className="red">({count})</span> : ''
         }
 
@@ -49,10 +48,6 @@ class PatientList extends Component {
                     <ul>
                         {
                             patientList.map((patient, index) => {
-                                let match = singles.find(single=>single.id == patient.id)
-                                if (match) {
-                                    match.mark = true
-                                }
                                 let key = this.props.searchKey
                                 let idInfo = ' '
                                 if (key) {
@@ -76,7 +71,7 @@ class PatientList extends Component {
                                             patient.name ? patient.name + idInfo : patient.id
                                         }
                                         {
-                                            unreadMessage(patient.id)
+                                            unreadMessage(patient.name)
                                         }
                                     </li>
                                 )

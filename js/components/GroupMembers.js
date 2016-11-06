@@ -9,7 +9,7 @@ export default class GroupMembers extends Component {
             <ul>
                 <li className="header">群成员</li>
                 {
-                    this.props.members.map(member => {
+                    this.props.members && this.props.members.map(member => {
                         return (<li key={member.jid}>{member.name}</li>)
                     })
                 }

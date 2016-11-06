@@ -18,8 +18,11 @@ export default class GroupChat extends Component {
     }
 
     showMessage() {
-        let groupMessage = this.props.groupMessage
-        return groupMessage.reads.map(read => {
+        let roomMessage = this.props.roomMessage
+        if (!roomMessage) {
+            return null
+        }
+        return roomMessage.reads.map(read => {
             return <Message key={read.id}
                             msg={read}
                             dir={this.context.curUserId == read.from ? 'right' : 'left'}

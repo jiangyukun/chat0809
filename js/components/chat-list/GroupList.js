@@ -23,16 +23,17 @@ class GroupList extends Component {
 
     render() {
         let rooms = this.props.rooms
-        let groupMessages = this.props.groups
+        let roomMessage = this.props.roomMessage
 
         let unread = 0
         rooms.map((room) => {
-            let match = groupMessages.filter(msg=>msg.id == room.id)[0]
-            unread += match.unreads.length
+            let msg = roomMessage.find(msg=>msg.id == room.id)
+            unread += msg ? msg.unreads.length : 0
         })
 
         var unreadMessage = (roomId)=> {
-            let count = groupMessages.filter(msg=>msg.id == roomId)[0].unreads.length
+            let msg = roomMessage.find(msg=>msg.id == roomId)
+            let count = msg ? msg.unreads.length : 0
             return count > 0 ? <span className="red">({count})</span> : ''
         }
 
@@ -47,7 +48,6 @@ class GroupList extends Component {
                     <ul>
                         {
                             rooms.map((room, index) => {
-                                groupMessages.filter(msg=>msg.id == room.id)[0].mark = true
 
                                 let key = this.props.searchKey
                                 if (key) {

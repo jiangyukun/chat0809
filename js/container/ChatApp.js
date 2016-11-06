@@ -9,7 +9,10 @@ import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
 import ChatPanel from './ChatPanel'
 
-import {fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer, newMessageHinted} from '../actions/chat'
+import {
+    fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer, newMessageHinted,
+    startSingleChat, startRoomChat
+} from '../actions/chat'
 
 class ChatApp extends Component {
     static contextTypes = {
@@ -21,7 +24,6 @@ class ChatApp extends Component {
         patients: PropTypes.array,
         rooms: PropTypes.array,
         doctors: PropTypes.array,
-        message: PropTypes.object,
         groupMembers: PropTypes.array
     }
 
@@ -35,7 +37,6 @@ class ChatApp extends Component {
             patients: this.props.patients,
             doctors: this.props.doctors,
             rooms: this.props.rooms,
-            message: this.props.message,
             groupMembers: this.props.groupMembers
         }
     }
@@ -65,11 +66,24 @@ class ChatApp extends Component {
                     <SimpleAudio audioUrl="audio/new-message.wav" ref={c=>this.newMessageAudio = c}/>
                 </div>
                 <Header />
-                <ChatPanel />
+                <ChatPanel
+                    patients={this.props.patients}
+                    rooms={this.props.rooms}
+                    doctors={this.props.doctors}
+
+                    singleMessage={this.props.singleMessage}
+                    roomMessage={this.props.roomMessage}
+
+                    members={this.props.groupMembers}
+
+                    actions={{
+                        startSingleChat: this.props.startSingleChat,
+                        startRoomChat: this.props.startRoomChat
+                    }}
+                />
             </div>
         )
     }
-
 }
 
 function mapStateToProps(state) {
@@ -80,8 +94,10 @@ function mapStateToProps(state) {
         rooms: state.rooms,
         doctors: state.doctorList,
         groupMembers: state.groupMembers,
-        message: state.message,
-        newMessage: state.chat.newMessage
+        newMessage: state.chat.newMessage,
+
+        singleMessage: state.singleMessage,
+        roomMessage: state.roomMessage
     }
 }
 
@@ -89,5 +105,8 @@ export default connect(mapStateToProps, {
     fetchPatientListFromHuanXin,
     fetchGroupListFromHuanXin,
     fetchDoctorListFromServer,
-    newMessageHinted
+    newMessageHinted,
+
+    startSingleChat,
+    startRoomChat
 })(ChatApp)

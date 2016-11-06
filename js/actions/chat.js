@@ -33,7 +33,13 @@ export function fetchGroupListFromHuanXin() {
 
     return dispatch=> {
 
-        conn.listRooms().then(rooms=> {
+        conn.listRooms().then(result=> {
+            let rooms = result.map(room=> {
+                return {
+                    id: room.roomId,
+                    name: room.name
+                }
+            })
             dispatch({
                 type: actionConstants.chat.INIT_GROUP_SUCCESS,
                 rooms
@@ -142,7 +148,7 @@ export function sendTextMessage(from, to, chatType, content) {
         }
     }
 
-    let textContent = conn.sendTextMessage({type: chatType, to: to, msg: content})
+    let textContent = conn.sendTextMessage({type: chatType, to: to, txt: content})
     return {
         type: actionConstants.SEND_TEXT_MESSAGE,
         from,
@@ -180,14 +186,15 @@ export function sendImageMessage(from, to, chatType, fileDom) {
     }
 }
 
-export function sendAudioMessage() {
-
-}
-
 export function newMessageHinted() {
     return {
         type: actionConstants.chat.NEW_MESSAGE_HINT_COMPLETE
     }
+}
+
+
+export function sendAudioMessage() {
+
 }
 
 // ------------------------------------------

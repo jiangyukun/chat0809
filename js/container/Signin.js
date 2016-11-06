@@ -17,7 +17,6 @@ class Signin extends Component {
 
     constructor(props) {
         super(props)
-        this.props.checkAutoLogin()
         this.state = {
             username: '',
             password: ''
@@ -33,6 +32,10 @@ class Signin extends Component {
 
     login() {
         this.props.loginToHuanxin(this.state.username, this.state.password)
+    }
+
+    componentDidMount() {
+        this.props.checkAutoLogin()
     }
 
     componentDidUpdate() {

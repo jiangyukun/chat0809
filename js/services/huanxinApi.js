@@ -1,7 +1,7 @@
 /**
  * Created by jiangyukun on 2016/8/8.
  */
-import {NotificationType} from '../constants/ChatConstants'
+import {NotificationType, ChatType} from '../constants/ChatConstants'
 import Env from '../constants/Env'
 import util from '../components/core/util'
 
@@ -124,13 +124,19 @@ export function queryRoomMember(roomId) {
 }
 
 export function sendTextMessage({type, to, txt}) {
+    let chatType = type == ChatType.CHAT ? 'singleChat' : 'groupChat'
     let msg = new WebIM.message('txt', conn.getUniqueId())
     msg.set({
         msg: txt,
         to,
-        roomType: type
+        roomType: false
     })
-    conn.send(msg.body)
+    if (type == ChatType.GROUP_CHAT) {
+        msg.setGroup('groupchat')
+    }
+    let body = msg.body
+    body.chatType = chatType
+    conn.send(body)
     return convertTextMessage(txt)
 }
 

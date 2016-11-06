@@ -21,6 +21,9 @@ export default class UserChat extends Component {
     }
 
     showReadMessage() {
+        if (!this.props.singleMessage) {
+            return
+        }
         return this.props.singleMessage.reads.map((msg, index) => {
             return <Message key={index}
                             msg={msg}
@@ -30,6 +33,9 @@ export default class UserChat extends Component {
     }
 
     showUnReadMessage() {
+        if (!this.props.singleMessage) {
+            return
+        }
         return this.props.singleMessage.unreads.map((msg, index) => {
             return <Message key={index}
                             msg={msg}
@@ -42,7 +48,7 @@ export default class UserChat extends Component {
         let singleMessage = this.props.singleMessage
         let to = this.props.user.name
         let nickname = this.props.user.nickname
-        let historyMessageList = singleMessage.historyMessages
+        let historyMessageList = singleMessage ? singleMessage.historyMessages : []
 
         setTimeout(()=> {
             var container = findDOMNode(this.refs['messageItemList'])

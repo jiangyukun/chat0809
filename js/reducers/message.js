@@ -10,119 +10,81 @@ import actionConstants from '../actions/actionConstants'
 let defaultState = {singles: [], groups: []}
 
 export function message(state = defaultState, action) {
-    let newState = state
+    let iState = fromJS(state)
+    let newIState = iState
     switch (action.type) {
         case actionConstants.chat.INIT_PATIENT_SUCCESS:
-            newState = initPatientSuccess()
+            newIState = initPatientSuccess()
             break
 
         case actionConstants.chat.INIT_GROUP_SUCCESS:
-            newState = initGroupSuccess()
+            newIState = initGroupSuccess()
             break
 
         case actionConstants.chat.INIT_DOCTOR_SUCCESS:
-            newState = initDoctorSuccess()
+            newIState = initDoctorSuccess()
             break
 
         case actionConstants.chat.START_SINGLE_CHAT:
-            newState = startSingleChat()
+            newIState = startSingleChat()
             break
 
         case actionConstants.chat.START_GROUP_CHAT:
-            newState = startGroupChat()
+            newIState = startGroupChat()
             break
 
         case actionConstants.SEND_TEXT_MESSAGE:
-            newState = sendTextMessage()
+            newIState = sendTextMessage()
             break
 
         case actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS:
-            newState = sendImageMessageSuccess()
+            newIState = sendImageMessageSuccess()
             break
 
         case actionConstants.message.NEW_MSG:
-            newState = newMessage()
+            newIState = newMessage()
             break
 
         case actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS:
-            newState = fetchHistoryMessageSuccess()
+            newIState = fetchHistoryMessageSuccess()
             break
 
         case actionConstants.EXIT_CHAT_SYSTEM:
-            newState = exitChatSystem()
+            newIState = exitChatSystem()
             break
 
         default:
-            newState = state
             break
     }
+    if (newIState == iState) {
+        return state
+    }
 
-    return newState
+    return newIState.toJS()
 
     //-------------------------------------------------------------------
 
     function initPatientSuccess() {
-        let iState = fromJS(state)
-        action.patients.forEach(patient=> {
-            iState = iState.update('singles', singles=> {
-                if (singles.find(single=>single.get('id') == patient.id)) {
-                    return singles
-                }
-                return singles.push(Map({
-                    id: patient.id,
-                    name: patient.name,
-                    reads: [],
-                    unreads: [],
-                    historyMessages: [],
-                    mark: false
-                }))
-            })
-        })
-        return iState.toJS()
+        return iState.update('singles', singles=>singles.map(single=> single.set('notStranger',
+            action.patients.filter(patient=>patient.name == single.get('name')).length > 0)
+        ))
     }
 
     function initGroupSuccess() {
-        let iState = fromJS(state)
-
-        action.rooms.forEach(room=> {
-            iState = iState.update('groups', groups=> {
-                if (groups.find(group=>group.get('id') == room.roomId)) {
-                    return groups
-                }
-                return groups.push(Map({
-                    id: room.roomId,
-                    reads: [],
-                    unreads: [],
-                    historyMessages: []
-                }))
-            })
-        })
-        return iState.toJS()
+        return iState.update('groups', groups=>groups.map(group=> group.set('notStranger',
+            action.rooms.filter(room=>room.id == group.get('id')).length > 0)
+        ))
     }
 
     function initDoctorSuccess() {
-        let iState = fromJS(state)
-
-        action.doctors.forEach(doctor=> {
-            iState = iState.update('singles', singles=> {
-                if (singles.find(single=>single.get('id') == doctor.id)) {
-                    return singles
-                }
-                return singles.push(Map({
-                    id: doctor.id,
-                    name: doctor.name,
-                    reads: [],
-                    unreads: [],
-                    historyMessages: []
-                }))
-            })
-        })
-        return iState.toJS()
+        return iState.update('singles', singles=>singles.map(single=> single.set('notStranger',
+            action.doctors.filter(doctor=>doctor.name == single.get('name')).length > 0)
+        ))
     }
 
     function startSingleChat() {
-        return fromJS(state).update('singles', singles=> {
-            let single = singles.find(iSingle=>iSingle.get('id') == action.currentSingle.id)
+        return iState.update('singles', singles=> {
+            let single = singles.find(iSingle=>iSingle.get('name') == action.currentSingle.name)
             return singles.update(singles.indexOf(single), single=> {
                 let reads = single.get('reads')
                 single.get('unreads').forEach(unread=> {
@@ -130,45 +92,45 @@ export function message(state = defaultState, action) {
                 })
                 return single.set('unreads', List([])).set('reads', reads)
             })
-        }).toJS()
+        })
     }
 
     function startGroupChat() {
-        return fromJS(state).update('groups', groups=> {
+        return iState.update('groups', groups=> {
             let group = groups.find(group=>group.get('id') == action.currentRoom.id)
             return groups.update(groups.indexOf(group), group=> {
                 return group.set('unreads', List([])).set('reads', group.get('reads').merge(group.get('unreads')))
             })
-        }).toJS()
+        })
     }
 
     function sendTextMessage() {
         let {chatType, to, textContent, from} = action
         if (chatType == ChatType.CHAT) {
-            return fromJS(state).update('singles', singles=> {
+            return iState.update('singles', singles=> {
                 let single = singles.find(single=>single.get('name') == to)
                 return singles.update(singles.indexOf(single), single=> single.update('reads', reads=>reads.push(Map({
-                    id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now(), newMessage: false
+                    id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now()
                 }))))
-            }).toJS()
+            })
         }
-        return fromJS(state).update('groups', groups=> {
+        return iState.update('groups', groups=> {
             let group = groups.find(groups=>groups.get('id') == to)
             return groups.update(groups.indexOf(group), group=> group.update('reads', reads=>reads.push(Map({
-                id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now(), newMessage: false
+                id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now()
             }))))
-        }).toJS()
+        })
     }
 
     function sendImageMessageSuccess() {
         let {from, to, chatType, url} = action
         if (chatType == ChatType.CHAT) {
-            return fromJS(state).update('singles', singles=> {
+            return iState.update('singles', singles=> {
                 let single = singles.find(single=>single.get('name') == to)
                 return singles.update(singles.indexOf(single), single=>single.update('reads', reads=>reads.push(Map({
-                    id: util.getUID(), from, to, type: MessageType.IMAGE, data: url, chatTime: util.now(), newMessage: false
+                    id: util.getUID(), from, to, type: MessageType.IMAGE, data: url, chatTime: util.now()
                 }))))
-            }).toJS()
+            })
         }
     }
 
@@ -192,7 +154,7 @@ export function message(state = defaultState, action) {
         }
 
         if (type == ChatType.CHAT) {
-            return fromJS(state).update('singles', singles=> {
+            return iState.update('singles', singles=> {
                 let single = singles.find(single=>single.get('name') == from)
                 if (single) {
                     return singles.update(singles.indexOf(single), single=> single.update('unreads', unreads=> unreads.push(Map({
@@ -203,26 +165,25 @@ export function message(state = defaultState, action) {
                     id: from, reads: [], historyMessages: [], mark: false,
                     unreads: [{id, from, to, type: msgType, data: data, chatTime: util.now(), newMessage: true}]
                 }))
-            }).toJS()
+            })
         }
-        return fromJS(state).update('groups', groups=> {
+        return iState.update('groups', groups=> {
             let group = groups.find(group=>group.get('id') == to)
             return groups.update(groups.indexOf(group), group=>group.update('unreads', unreads=>unreads.push(Map({
                 id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
             }))))
-        }).toJS()
+        })
     }
 
     function fetchHistoryMessageSuccess() {
         let {currentSingle, historyMessages} = action
-        let iState = fromJS(state).update('singles', singles=> {
+        return iState.update('singles', singles=> {
             let single = singles.find(single=>single.get('name') == currentSingle.name)
             return singles.update(singles.indexOf(single), single=>single.update('historyMessages', ()=>List(historyMessages)))
         })
-        return iState.toJS()
     }
 
     function exitChatSystem() {
-        return defaultState
+        return fromJS(defaultState)
     }
 }

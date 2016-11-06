@@ -21,16 +21,17 @@ class DoctorList extends Component {
 
     render() {
         let doctors = this.props.doctors
-        let singles = this.props.singles
+        let singleMessage = this.props.singleMessage
         let unread = 0
 
         doctors.forEach(doctor=> {
-            let single = singles.find(single=>single.id == doctor.id)
-            unread += single.unreads.length
+            let msg = singleMessage.find(single=>single.name == doctor.name)
+            unread += msg ? msg.unreads.length : 0
         })
 
-        var unreadMessage = doctorId=> {
-            let count = singles.find(single=>single.id == doctorId).unreads.length
+        var unreadMessage = doctorName=> {
+            let msg = singleMessage.find(msg=>msg.name == doctorName)
+            let count = msg ? msg.unreads.length : 0
             return count > 0 ? <span className="red">({count})</span> : ''
         }
 
