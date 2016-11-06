@@ -112,6 +112,10 @@ export function roomMessage(state = defaultState, action) {
         }
 
         let matchMsg = iState.find(msg=>msg.get('id') == to)
+
+        if (!matchMsg) {
+            return _createMsg(to)
+        }
         return iState.update(iState.indexOf(matchMsg), msg=>msg.update('unreads', unreads=>unreads.push(Map({
             id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
         }))))

@@ -11,7 +11,7 @@ export function rooms(state = [], action) {
             let rooms = action.rooms
             return rooms.map(room=> {
                 return {
-                    id: room.roomId,
+                    id: room.id,
                     name: room.name
                 }
             })

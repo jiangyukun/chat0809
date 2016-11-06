@@ -99,7 +99,6 @@ export function startSingleChat(curUserId, single) {
 export function startRoomChat(room) {
     return dispatch=> {
         conn.queryRoomMember(room.id).then(result=> {
-
             let groupMembers = result.map(member=> {
                 let jid = member.jid;
                 let from = (jid.indexOf('_') + 1)
@@ -112,6 +111,8 @@ export function startRoomChat(room) {
                 type: actionConstants.chat.FETCH_GROUP_MEMBER_SUCCESS,
                 members: groupMembers
             })
+        }, error=>{
+            console.log(error)
         })
 
         dispatch({

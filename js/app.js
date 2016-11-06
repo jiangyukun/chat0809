@@ -48,7 +48,7 @@ render(
     <Provider store={store}>
         <div>
             <Router routes={routers} history={history}></Router>
-            <DevTools/>
+            {/*<DevTools/>*/}
         </div>
     </Provider>,
     document.getElementById('container')

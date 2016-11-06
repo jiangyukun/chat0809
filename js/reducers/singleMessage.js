@@ -124,7 +124,7 @@ export function singleMessage(state = defaultState, action) {
     function newMessage() {
         let msg = action.msg
         let {id, type, from, to} = msg
-        if (type != 'chatroom') {
+        if (type != ChatType.CHAT) {
             return iState
         }
         let msgType = MessageType.TEXT
@@ -144,32 +144,35 @@ export function singleMessage(state = defaultState, action) {
         }
 
         let matchMsg = iState.find(msg=>msg.get('name') == from)
-        if (matchMsg) {
-            return iState.update(iState.indexOf(matchMsg), msg=> msg.update('unreads', unreads=> unreads.push(Map({
-                id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
-            }))))
+        if (!matchMsg) {
+            iState = _createMsg(from)
+            matchMsg = iState.find(msg=>msg.get('name') == from)
         }
-        return iState.push(Map({
-            name: from, reads: [], historyMessages: [],
-            unreads: [{id, from, to, type: msgType, data: data, chatTime: util.now(), newMessage: true}]
-        }))
+
+        return iState.update(iState.indexOf(matchMsg), msg=> msg.update('unreads', unreads=> unreads.push(Map({
+            id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
+        }))))
     }
 
     function fetchHistoryMessageSuccess() {
         let {currentSingle, historyMessages} = action
         let matchMsg = iState.find(msg=>msg.get('name') == currentSingle.name)
         if (!matchMsg) {
-            return iState.push(Map({
-                name: currentSingle.name,
-                reads: [],
-                unreads: [],
-                historyMessages: historyMessages
-            }))
+            return _createMsg(currentSingle.name)
         }
         return iState.update(iState.indexOf(matchMsg), msg=>msg.update('historyMessages', ()=>List(historyMessages)))
     }
 
     function exitChatSystem() {
         return fromJS(defaultState)
+    }
+
+    function _createMsg(name) {
+        return iState.push(Map({
+            name: name,
+            reads: [],
+            unreads: [],
+            historyMessages: []
+        }))
     }
 }

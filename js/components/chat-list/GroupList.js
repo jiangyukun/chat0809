@@ -47,7 +47,7 @@ class GroupList extends Component {
                 <Collapse in={this.state.active}>
                     <ul>
                         {
-                            rooms.map((room, index) => {
+                            rooms.map((room) => {
 
                                 let key = this.props.searchKey
                                 if (key) {
@@ -62,7 +62,7 @@ class GroupList extends Component {
                                 }
                                 currentCount++
                                 return (
-                                    <li key={index}
+                                    <li key={room.id}
                                         className={classnames("list-item", {'active': room.active})}
                                         onClick={e=> this.props.startChat(room)}
                                     >

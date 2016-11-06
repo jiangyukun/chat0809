@@ -116,8 +116,8 @@ export function queryRoomMember(roomId) {
             success(result) {
                 resolve(result)
             },
-            error() {
-                reject()
+            error(error) {
+                reject(error)
             }
         })
     })
