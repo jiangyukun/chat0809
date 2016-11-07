@@ -130,6 +130,7 @@ class ChatPanel extends Component {
                                         app={this.props.app}
                                         user={this.user}
                                         singleMessage={this.props.singleMessage.find(msg=>msg.name == this.user.name)}
+                                        historyMessage={this.props.historyMessage}
                                     />
                                 )
                             }

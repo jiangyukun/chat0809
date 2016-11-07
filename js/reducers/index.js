@@ -12,6 +12,7 @@ import * as doctor from './list/doctors'
 import * as members from './list/members'
 import * as singleMessage from './singleMessage'
 import * as roomMessage from './roomMessage'
+import * as historyMessage from './historyMessage'
 
 export default combineReducers({
     ...login,
@@ -22,5 +23,6 @@ export default combineReducers({
     ...app,
     ...singleMessage,
     ...roomMessage,
+    ...historyMessage,
     routing
 })

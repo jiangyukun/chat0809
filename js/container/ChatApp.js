@@ -8,7 +8,6 @@ import {connect} from 'react-redux'
 import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
 import ChatPanel from './ChatPanel'
-import {sortPatientList, sortRoomList, sortDoctorList} from '../actions/app'
 import {
     fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer,
     classifyNewMessage, newMessageHinted,
@@ -64,16 +63,6 @@ class ChatApp extends Component {
         if (this.props.newMessage) {
             this.props.classifyNewMessage(this.props.app.from, this.props.patients, this.props.doctors)
         }
-        let app = this.props.app
-        if (app.patientInit) {
-            this.props.sortPatientList(this.props.singleMessage)
-        }
-        if (app.roomInit) {
-            this.props.sortRoomList(this.props.roomMessage)
-        }
-        if (app.doctorInit) {
-            this.props.sortDoctorList(this.props.singleMessage)
-        }
     }
 
     render() {
@@ -92,6 +81,7 @@ class ChatApp extends Component {
 
                     singleMessage={this.props.singleMessage}
                     roomMessage={this.props.roomMessage}
+                    historyMessage={this.props.historyMessage}
 
                     actions={{
                         startSingleChat: this.props.startSingleChat,
@@ -116,7 +106,8 @@ function mapStateToProps(state) {
         newMessage: state.app.newMessage,
 
         singleMessage: state.singleMessage,
-        roomMessage: state.roomMessage
+        roomMessage: state.roomMessage,
+        historyMessage: state.historyMessage
     }
 }
 
@@ -126,10 +117,6 @@ export default connect(mapStateToProps, {
     fetchDoctorListFromServer,
     classifyNewMessage,
     newMessageHinted,
-
-    sortPatientList,
-    sortRoomList,
-    sortDoctorList,
 
     startSingleChat,
     startRoomChat,

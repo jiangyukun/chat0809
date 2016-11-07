@@ -11,11 +11,12 @@ import {Router, hashHistory} from 'react-router'
 import {syncHistoryWithStore} from 'react-router-redux'
 import thunk from 'redux-thunk'
 
+import extraData from './middlewares/extra_data'
+import sessionStorageState from './middlewares/session-storage-state'
 import DevTools from './DevTools'
 import NotificationContainer from './components/common/NotificationContainer'
 import routers from './router'
 import rootReducers from './reducers'
-import sessionStorageState from './middlewares/session-storage-state'
 
 import '../css/app.scss'
 
@@ -26,11 +27,12 @@ let initState = {
     doctors: [],
     members: [],
     singleMessage: [],
-    roomMessage: []
+    roomMessage: [],
+    historyMessage: []
 }
 
 let store = createStore(rootReducers, initState, compose(
-    applyMiddleware(thunk, sessionStorageState),
+    applyMiddleware(thunk, extraData, sessionStorageState),
     DevTools.instrument()
 ))
 

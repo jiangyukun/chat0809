@@ -6,43 +6,72 @@ import {fromJS} from 'immutable'
 import actionConstants from '../../actions/actionConstants'
 
 export function doctors(state = [], action) {
-    switch (action.type) {
-        case actionConstants.chat.INIT_DOCTOR_SUCCESS:
-            let doctor = action.doctors
-            return doctor.map(doctor=> {
-                return {
-                    id: doctor.id,
-                    name: doctor.name,
-                    nickname: doctor.nickname
-                }
-            })
+    const iState = fromJS(state)
+    return nextState()
 
-        case actionConstants.message.NEW_MSG:
-            return sortDoctorList()
+    function nextState() {
+        let nextIState = iState
+        switch (action.type) {
+            case actionConstants.chat.INIT_DOCTOR_SUCCESS:
+                nextIState = initDoctorSuccess()
+                break
 
-        case actionConstants.EXIT_CHAT_SYSTEM:
-            return exitChatSystem()
+            case actionConstants.message.NEW_MSG:
+                nextIState = sortDoctorList()
+                break
 
-        default:
+            case actionConstants.EXIT_CHAT_SYSTEM:
+                nextIState = exitChatSystem()
+                break
+
+            default:
+                break
+        }
+        if (nextIState == iState) {
             return state
+        }
+        return nextIState.toJS()
+
+    }
+
+    //-----------------------------
+
+    function initDoctorSuccess() {
+        let {doctors, singleMessage} = action
+        let curIState = fromJS(doctors.map(doctor=> {
+            return {
+                id: doctor.id,
+                name: doctor.name,
+                nickname: doctor.nickname
+            }
+        }))
+        singleMessage.forEach(msg=> {
+            curIState = _sort(curIState, msg.name)
+        })
+        return curIState
     }
 
     function sortDoctorList() {
         let {from} = action.msg
-        let iState = fromJS(state)
-        let doctor = iState.find(doctor=>doctor.get('name') == from)
-        if (!doctor) {
-            return state
-        }
-        let index = iState.indexOf(doctor)
-        if (index == 0) {
-            return state
-        }
-        return iState.splice(index, 1).unshift(doctor).toJS()
+        return _sort(iState, from)
 
     }
 
     function exitChatSystem() {
         return []
+    }
+
+    //-------------------------------------------------------
+
+    function _sort(curState, name) {
+        let doctor = curState.find(doctor=>doctor.get('name') == name)
+        if (!doctor) {
+            return curState
+        }
+        let index = curState.indexOf(doctor)
+        if (index == 0) {
+            return curState
+        }
+        return curState.splice(index, 1).unshift(doctor)
     }
 }

@@ -67,10 +67,9 @@ export default class UserChat extends Component {
     }
 
     render() {
-        let singleMessage = this.props.singleMessage
+        let historyMessage = this.props.historyMessage
         let to = this.props.user.name
         let nickname = this.props.user.nickname
-        let historyMessageList = singleMessage ? singleMessage.historyMessages : []
 
         return (
             <div className="row h100-pct">
@@ -93,7 +92,7 @@ export default class UserChat extends Component {
                 </div>
                 <div className="col-xs-4 h100-pct">
                     <div className="row h100-pct">
-                        <HistoryMessage historyMessage={historyMessageList}/>
+                        <HistoryMessage historyMessage={historyMessage}/>
                     </div>
                 </div>
             </div>

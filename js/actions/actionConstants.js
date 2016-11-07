@@ -26,9 +26,6 @@ export default {
     FETCH_HISTORY_MESSAGE: 'FETCH_HISTORY_MESSAGE',
 
     app: {
-        SORT_PATIENT_LIST: 'SORT_PATIENT_LIST',
-        SORT_ROOM_LIST: 'SORT_ROOM_LIST',
-        SORT_DOCTOR_LIST: 'SORT_DOCTOR_LIST'
     },
 
     message: {

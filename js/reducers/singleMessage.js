@@ -44,10 +44,6 @@ export function singleMessage(state = defaultState, action) {
                 newIState = classifyNewMessage()
                 break
 
-            case actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS:
-                newIState = fetchHistoryMessageSuccess()
-                break
-
             case actionConstants.chat.HANDLE_CURRENT_CHAT:
                 newIState = handleCurrentChat()
                 break
@@ -149,12 +145,6 @@ export function singleMessage(state = defaultState, action) {
         )
     }
 
-    function fetchHistoryMessageSuccess() {
-        let curState = iState
-        let {currentSingle, historyMessages} = action
-        return _update(curState, currentSingle.name, msg=>msg.update('historyMessages', ()=>List(historyMessages)))
-    }
-
     function handleCurrentChat() {
         let {chatType, selectedId} = action
         if (chatType != ChatType.CHAT) {
@@ -177,7 +167,6 @@ export function singleMessage(state = defaultState, action) {
             name: name,
             reads: List([]),
             unreads: List([]),
-            historyMessages: List([]),
             isStranger: false
         }))
     }

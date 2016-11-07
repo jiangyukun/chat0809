@@ -135,8 +135,7 @@ export function roomMessage(state = defaultState, action) {
         return iState.push(Map({
             id: id,
             reads: List([]),
-            unreads: List([]),
-            historyMessages: List([])
+            unreads: List([])
         }))
     }
 

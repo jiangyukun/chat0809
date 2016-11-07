@@ -5,7 +5,7 @@ const webpack = require('webpack')
 
 module.exports = {
     entry: [
-        './js/app-dev.js'
+        './js/app-prod.js'
     ],
 
     output: {

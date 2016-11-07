@@ -16,10 +16,6 @@ export function patients(state = [], action) {
                 newIState = initPatientSuccess()
                 break
 
-            case actionConstants.app.SORT_PATIENT_LIST:
-                newIState = sortPatientList()
-                break
-
             case actionConstants.message.NEW_MSG:
                 newIState = newMessage()
                 break
@@ -37,32 +33,27 @@ export function patients(state = [], action) {
         return newIState.toJS()
     }
 
-
     //------------------------------------------------------
 
     function initPatientSuccess() {
-        let patients = action.patients
-        return List(patients.map(patient=> {
+        let {patients, singleMessage} = action
+        let curState = fromJS(patients.map(patient=> {
             return {
                 id: patient.id,
                 name: patient.name,
                 nickname: patient.name
             }
         }))
+
+        singleMessage.forEach(msg=> {
+            curState = _sort(curState, msg.name)
+        })
+        return curState
     }
 
     function newMessage() {
         let {from} = action.msg
         return _sort(iState, from)
-    }
-
-    function sortPatientList() {
-        let curState = iState
-        let {singleMessage} = action
-        singleMessage.forEach(msg=> {
-            curState = _sort(curState, msg.name)
-        })
-        return curState
     }
 
     function exitChatSystem() {
