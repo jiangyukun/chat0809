@@ -5,10 +5,11 @@ import {combineReducers} from 'redux'
 import {routerReducer as routing} from 'react-router-redux'
 
 import * as login from './login'
-import * as chat from './chat'
+import * as app from './app'
 import * as patients from './list/patients'
 import * as rooms from './list/rooms'
 import * as doctor from './list/doctors'
+import * as members from './list/members'
 import * as singleMessage from './singleMessage'
 import * as roomMessage from './roomMessage'
 
@@ -17,7 +18,8 @@ export default combineReducers({
     ...patients,
     ...rooms,
     ...doctor,
-    ...chat,
+    ...members,
+    ...app,
     ...singleMessage,
     ...roomMessage,
     routing

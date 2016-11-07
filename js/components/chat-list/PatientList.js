@@ -65,7 +65,7 @@ class PatientList extends Component {
                                 }
                                 currentCount++
                                 return (
-                                    <li key={index} className={classnames("list-item", {'active': patient.active})}
+                                    <li key={index} className={classnames("list-item", {'active': patient.name == this.props.selectedId})}
                                         onClick={e=> this.props.startChat(patient)}>
                                         {
                                             patient.name ? patient.name + idInfo : patient.id

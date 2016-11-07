@@ -13,11 +13,6 @@ import GroupChat from './GroupChat'
 import UserChat from './UserChat'
 import {startSingleChat, startRoomChat, readSingleMessage} from '../actions/chat'
 
-const PATIENT = 'patient'
-const GROUP = 'group'
-const DOCTOR = 'doctor'
-const OTHER = 'other'
-
 class ChatPanel extends Component {
     static contextTypes = {
         patients: PropTypes.array,
@@ -27,11 +22,11 @@ class ChatPanel extends Component {
 
     constructor(props) {
         super(props)
-        this.beforeActiveChat = null
+        this.active = null
+        this.chatType = null
         this.state = {
             searchKey: '',
-            chatType: '',
-            lastChatRoomId: ''
+            selectedId: null
         }
     }
 
@@ -39,53 +34,54 @@ class ChatPanel extends Component {
         this.setState({searchKey: e.target.value})
     }
 
-    startChat(type, userOrGroup) {
-        if (this.beforeActiveChat == userOrGroup) {
+    userChat(user) {
+        if (this.preChat(user.name)) {
             return
         }
-        if (this.beforeActiveChat) {
-            this.beforeActiveChat.active = false
+        this.props.actions.handleCurrentChat(this.chatType, this.state.selectedId)
+        this.chatType = ChatType.CHAT
+        this.user = {
+            id: user.id,
+            name: user.name,
+            nickname: user.nickname
         }
-        this.beforeActiveChat = userOrGroup
-        userOrGroup.active = true
-        switch (type) {
-            case PATIENT:
-            case DOCTOR:
-            case OTHER:
-                this.userChat(userOrGroup)
-                break
-            case GROUP:
-                this.groupChat(userOrGroup)
-                break
-            default:
-                break
-        }
-    }
 
-    userChat(patient) {
-        this.setState({
-            chatType: ChatType.CHAT,
-            user: {
-                id: patient.id,
-                name: patient.name,
-                nickname: patient.nickname
-            }
-        })
-        this.props.actions.startSingleChat(this.props.curUserId, patient)
+        this.postChat(user.name)
+        this.props.actions.startSingleChat(this.props.curUserId, user)
     }
 
     groupChat(room) {
-        this.setState({
-            chatType: ChatType.GROUP_CHAT,
-            room: {
-                id: room.id,
-                name: room.name
-            }
-        })
+        if (this.preChat(room.id)) {
+            return
+        }
+        this.props.actions.handleCurrentChat(this.chatType, this.state.selectedId)
+        this.chatType = ChatType.GROUP_CHAT
+        this.room = {
+            id: room.id,
+            name: room.name
+        }
+        this.postChat(room.id)
         this.props.actions.startRoomChat(room)
     }
 
+    preChat(nextSelectId) {
+        if (this.state.selectedId == nextSelectId) {
+            return false
+        }
+    }
+
+    postChat(nextSelectId) {
+        this.setState({selectedId: nextSelectId})
+    }
+
     render() {
+        let others = this.props.singleMessage.filter(msg=>msg.isStranger).map(msg=> {
+            return {
+                id: msg.name,
+                name: msg.name,
+                nickname: msg.name
+            }
+        })
         return (
             <div className="chat-body">
                 <div className="container-fluid h100-pct">
@@ -94,45 +90,55 @@ class ChatPanel extends Component {
                             <section className="row">
                                 <div className="col-xs-12">
                                     <input className="form-control" type="text" placeholder="输入账号"
-                                           value={this.state.searchKey} onChange={e=>this.onChange(e)}
-                                    />
+                                           value={this.state.searchKey} onChange={e=>this.onChange(e)}/>
                                 </div>
                             </section>
                             <section className="row mt-15">
-                                <PatientList patients={this.props.patients}
-                                             singleMessage={this.props.singleMessage}
-                                             searchKey={this.state.searchKey}
-                                             startChat={patient=>this.startChat('patient', patient)}/>
+                                <PatientList
+                                    selectedId={this.state.selectedId}
+                                    patients={this.props.patients}
+                                    singleMessage={this.props.singleMessage}
+                                    searchKey={this.state.searchKey}
+                                    startChat={patient=>this.userChat(patient)}/>
 
-                                <GroupList rooms={this.props.rooms}
-                                           roomMessage={this.props.roomMessage}
-                                           searchKey={this.state.searchKey}
-                                           startChat={group=>this.startChat('group', group)}/>
+                                <GroupList
+                                    selectedId={this.state.selectedId}
+                                    rooms={this.props.rooms}
+                                    roomMessage={this.props.roomMessage}
+                                    searchKey={this.state.searchKey}
+                                    startChat={group=>this.groupChat(group)}/>
 
-                                <DoctorList doctors={this.props.doctors}
-                                            singleMessage={this.props.singleMessage}
-                                            searchKey={this.state.searchKey}
-                                            startChat={doctor=>this.startChat('doctor', doctor)}/>
+                                <DoctorList
+                                    selectedId={this.state.selectedId}
+                                    doctors={this.props.doctors}
+                                    singleMessage={this.props.singleMessage}
+                                    searchKey={this.state.searchKey}
+                                    startChat={doctor=>this.userChat(doctor)}/>
 
-                                {/*<OtherList
-                                 message={this.context.message}
-                                 searchKey={this.state.searchKey}
-                                 startChat={other=>this.startChat('other', other)}/>*/}
+                                <OtherList
+                                    selectedId={this.state.selectedId}
+                                    others={others}
+                                    singleMessage={this.props.singleMessage}
+                                    searchKey={this.state.searchKey}
+                                    startChat={other=>this.userChat(other)}/>
                             </section>
                         </div>
                         <div className="col-xs-9 message-box">
                             {
-                                this.state.chatType == ChatType.CHAT && (
-                                    <UserChat user={this.state.user}
-                                              singleMessage={this.props.singleMessage.find(msg=>msg.name == this.state.user.name)}
+                                this.chatType == ChatType.CHAT && (
+                                    <UserChat
+                                        app={this.props.app}
+                                        user={this.user}
+                                        singleMessage={this.props.singleMessage.find(msg=>msg.name == this.user.name)}
                                     />
                                 )
                             }
                             {
-                                this.state.chatType == ChatType.GROUP_CHAT && (
-                                    <GroupChat room={this.state.room}
-                                               roomMessage={this.props.roomMessage.find(msg=>msg.id == this.state.room.id)}
-                                               members={this.props.members}
+                                this.chatType == ChatType.GROUP_CHAT && (
+                                    <GroupChat
+                                        room={this.room}
+                                        roomMessage={this.props.roomMessage.find(msg=>msg.id == this.room.id)}
+                                        members={this.props.members}
                                     />
                                 )
                             }

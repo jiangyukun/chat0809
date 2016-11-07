@@ -111,7 +111,7 @@ export function startRoomChat(room) {
                 type: actionConstants.chat.FETCH_GROUP_MEMBER_SUCCESS,
                 members: groupMembers
             })
-        }, error=>{
+        }, error=> {
             console.log(error)
         })
 
@@ -159,9 +159,9 @@ export function sendTextMessage(from, to, chatType, content) {
     }
 }
 
-export function sendImageMessage(from, to, chatType, fileDom) {
+export function sendImageMessage(from, to, chatType, fileInput) {
     return dispatch=> {
-        conn.sendPicture(to, fileDom).then(url=> {
+        conn.sendPicture(to, chatType, fileInput).then(url=> {
             dispatch({
                 type: actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS,
                 from,
@@ -177,19 +177,34 @@ export function sendImageMessage(from, to, chatType, fileDom) {
                 error
             })
         })
+
         dispatch({
             type: actionConstants.message.SEND_IMAGE_MESSAGE,
             from,
-            to: to,
+            to,
             chatType,
-            fileDom
+            fileInput
         })
+    }
+}
+
+export function classifyNewMessage(from, patients, doctors) {
+    return {
+        type: actionConstants.chat.CLASSIFY_NEW_MESSAGE,
+        from, patients, doctors
     }
 }
 
 export function newMessageHinted() {
     return {
         type: actionConstants.chat.NEW_MESSAGE_HINT_COMPLETE
+    }
+}
+
+export function handleCurrentChat(chatType, selectedId) {
+    return {
+        type: actionConstants.chat.HANDLE_CURRENT_CHAT,
+        chatType, selectedId
     }
 }
 

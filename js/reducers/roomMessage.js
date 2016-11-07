@@ -10,86 +10,83 @@ import actionConstants from '../actions/actionConstants'
 let defaultState = []
 
 export function roomMessage(state = defaultState, action) {
+    const iState = fromJS(state)
+    return handle()
 
-    let iState = fromJS(state)
-    let newIState = iState
-    switch (action.type) {
+    function handle() {
+        let newIState = iState
+        switch (action.type) {
 
-        case actionConstants.chat.INIT_GROUP_SUCCESS:
-            newIState = initGroupSuccess()
-            break
+            case actionConstants.chat.START_GROUP_CHAT:
+                newIState = startGroupChat()
+                break
 
-        case actionConstants.chat.START_GROUP_CHAT:
-            newIState = startGroupChat()
-            break
+            case actionConstants.SEND_TEXT_MESSAGE:
+                newIState = sendTextMessage()
+                break
 
-        case actionConstants.SEND_TEXT_MESSAGE:
-            newIState = sendTextMessage()
-            break
+            case actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS:
+                newIState = sendImageMessageSuccess()
+                break
 
-        case actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS:
-            newIState = sendImageMessageSuccess()
-            break
+            case actionConstants.message.NEW_MSG:
+                newIState = newMessage()
+                break
 
-        case actionConstants.message.NEW_MSG:
-            newIState = newMessage()
-            break
+            case actionConstants.chat.HANDLE_CURRENT_CHAT:
+                newIState = handleCurrentChat()
+                break
 
-        case actionConstants.EXIT_CHAT_SYSTEM:
-            newIState = exitChatSystem()
-            break
+            case actionConstants.EXIT_CHAT_SYSTEM:
+                newIState = exitChatSystem()
+                break
 
-        default:
-            break
+            default:
+                break
+        }
+        if (newIState == iState) {
+            return state
+        }
+
+        return newIState.toJS()
     }
-    if (newIState == iState) {
-        return state
-    }
-
-    return newIState.toJS()
 
     //-------------------------------------------------------------------
-
-    function initGroupSuccess() {
-        return iState.map((msg=> msg.set('notStranger', action.rooms.filter(room=>room.id == msg.get('id')).length > 0)))
-    }
 
     function startGroupChat() {
         let matchMsg = iState.find(msg=>msg.get('id') == action.currentRoom.id)
         if (!matchMsg) {
             return iState
         }
-        return iState.update(iState.indexOf(matchMsg), msg=> {
-            let reads = msg.get('reads')
-            msg.get('unreads').forEach(unread=> {
-                reads = reads.push(unread)
-            })
-            return msg.set('unreads', List([])).set('reads', reads)
-        })
+        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
 
     function sendTextMessage() {
-        let {chatType, to, textContent, from} = action
+        let curState = iState
+        const {chatType, to, textContent, from} = action
         if (chatType != ChatType.GROUP_CHAT) {
-            return iState
+            return curState
         }
-        let matchMsg = iState.find(msg=>msg.get('id') == to)
-        if (!matchMsg) {
-            return _createMsg(to)
-        }
-        return iState.update(iState.indexOf(matchMsg), msg=> msg.update('reads', reads=>reads.push(Map({
+        curState = _update(curState, to, msg=>_readMsg(msg))
+        return _update(curState, to, msg=> msg.update('reads', reads=>reads.push(Map({
             id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now()
         }))))
     }
 
     function sendImageMessageSuccess() {
+        let curState = iState
         let {from, to, chatType, url} = action
         if (chatType != ChatType.GROUP_CHAT) {
-            return iState
+            return curState
         }
+        curState = _update(curState, to, msg=>_readMsg(msg))
+        return _update(curState, to, msg=>msg.update('reads', reads=>reads.push(Map({
+            id: util.getUID(), from, to, type: MessageType.IMAGE, data: url, chatTime: util.now()
+        }))))
     }
 
     function newMessage() {
+        let curState = iState
         let msg = action.msg
         let {id, type, from, to} = msg
         if (type != ChatType.GROUP_CHAT) {
@@ -111,26 +108,53 @@ export function roomMessage(state = defaultState, action) {
             }
         }
 
-        let matchMsg = iState.find(msg=>msg.get('id') == to)
-
-        if (!matchMsg) {
-            return _createMsg(to)
-        }
-        return iState.update(iState.indexOf(matchMsg), msg=>msg.update('unreads', unreads=>unreads.push(Map({
-            id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
+        return _update(curState, to, msg=>msg.update('unreads', unreads=>unreads.push(Map({
+            id, from, to, type: msgType, data: data, chatTime: util.now()
         }))))
+    }
+
+    function handleCurrentChat() {
+        let {chatType, selectedId} = action
+        if (chatType != ChatType.GROUP_CHAT) {
+            return iState
+        }
+        let matchMsg = iState.find(msg=>msg.get('id') == selectedId)
+        if (!matchMsg) return iState
+        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
 
     function exitChatSystem() {
         return fromJS(defaultState)
     }
 
+
+    //-----------------------------------------------
+    //inner function
+
     function _createMsg(id) {
         return iState.push(Map({
             id: id,
-            reads: [],
-            unreads: [],
-            historyMessages: []
+            reads: List([]),
+            unreads: List([]),
+            historyMessages: List([])
         }))
     }
+
+    function _update(iState, id, callback) {
+        let matchMsg = iState.find(msg=>msg.get('id') == id)
+        if (!matchMsg) {
+            iState = _createMsg(id)
+            matchMsg = iState.find(msg=>msg.get('id') == id)
+        }
+        return iState.update(iState.indexOf(matchMsg), callback)
+    }
+
+    function _readMsg(msg) {
+        let reads = msg.get('reads')
+        msg.get('unreads').forEach(unread=> {
+            reads = reads.push(unread)
+        })
+        return msg.set('unreads', List([])).set('reads', reads)
+    }
+
 }

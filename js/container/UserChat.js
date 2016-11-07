@@ -33,15 +33,37 @@ export default class UserChat extends Component {
     }
 
     showUnReadMessage() {
-        if (!this.props.singleMessage) {
+        let singleMessage = this.props.singleMessage
+        if (!singleMessage || !singleMessage.unreads.length) {
             return
         }
-        return this.props.singleMessage.unreads.map((msg, index) => {
-            return <Message key={index}
-                            msg={msg}
-                            dir={this.context.curUserId == msg.from ? 'right' : 'left'}
-            />
-        })
+        return (
+            <div>
+                <div className="text-center"><span className="new-message">new message</span></div>
+                {
+                    singleMessage.unreads.map((msg, index) => {
+                        return <Message key={index}
+                                        msg={msg}
+                                        dir={this.context.curUserId == msg.from ? 'right' : 'left'}
+                        />
+                    })
+                }
+            </div>
+        )
+    }
+
+    componentDidUpdate() {
+        const app = this.props.app
+        if (app.newMessage && app.from == this.props.user.name) {
+            console.log(1)
+            setTimeout(()=> {
+                var container = findDOMNode(this.refs['messageItemList'])
+                var wrap = findDOMNode(this.refs['messageListWrap'])
+
+                var containerHeight = container.clientHeight
+                container.scrollTop = wrap.clientHeight - containerHeight
+            }, 20)
+        }
     }
 
     render() {
@@ -49,14 +71,6 @@ export default class UserChat extends Component {
         let to = this.props.user.name
         let nickname = this.props.user.nickname
         let historyMessageList = singleMessage ? singleMessage.historyMessages : []
-
-        setTimeout(()=> {
-            var container = findDOMNode(this.refs['messageItemList'])
-            var wrap = findDOMNode(this.refs['messageListWrap'])
-
-            var containerHeight = container.clientHeight
-            container.scrollTop = wrap.clientHeight - containerHeight
-        }, 20)
 
         return (
             <div className="row h100-pct">

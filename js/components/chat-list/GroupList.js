@@ -63,7 +63,7 @@ class GroupList extends Component {
                                 currentCount++
                                 return (
                                     <li key={room.id}
-                                        className={classnames("list-item", {'active': room.active})}
+                                        className={classnames("list-item", {'active': room.id == this.props.selectedId})}
                                         onClick={e=> this.props.startChat(room)}
                                     >
                                         {room.name || room.id}

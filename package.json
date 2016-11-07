@@ -4,7 +4,10 @@
   "description": "chat-system",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test",
+    "start": "node server.js",
+    "dev": "cross-env NODE_ENV=develop node build/dev-server.js",
+    "prod": "webpack --config build/webpack.prod.js"
   },
   "keywords": [
     "react",

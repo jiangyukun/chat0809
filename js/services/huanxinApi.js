@@ -140,7 +140,7 @@ export function sendTextMessage({type, to, txt}) {
     return convertTextMessage(txt)
 }
 
-export function sendPicture(to, fileDom) {
+export function sendPicture(to, chatType, fileDom) {
     return new Promise(function (resolve, reject) {
         let msg = new WebIM.message('img', conn.getUniqueId())
         msg.set({
@@ -154,6 +154,9 @@ export function sendPicture(to, fileDom) {
                 resolve(data.uri + '/' + data.entities[0].uuid)
             }
         })
+        if (chatType == ChatType.GROUP_CHAT) {
+            msg.setGroup(ChatType.GROUP_CHAT)
+        }
         conn.send(msg.body)
     })
 }
@@ -210,7 +213,7 @@ function init() {
         onTextMessage (message) {
             receiveMessageCallback(message)
         },
-        onEmotionMessage (message) {
+        onEmojiMessage (message) {
             receiveMessageCallback(message)
         },
         onPictureMessage (message) {
@@ -243,7 +246,6 @@ function init() {
             }
             if (message.type == USER_NOT_FOUND) {
                 loginFailureList.map(loginFailure=>loginFailure())
-                // util.tip(NotificationType.ERROR, '登录失败!')
                 return
             }
             error(message)
@@ -318,5 +320,3 @@ Strophe.log = function (level, msg) {
 
 init()
 initEmoji()
-
-

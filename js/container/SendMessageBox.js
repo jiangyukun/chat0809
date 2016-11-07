@@ -12,7 +12,7 @@ import {sendTextMessage, sendImageMessage, sendAudioMessage} from '../actions/ch
 class SendMessageBox extends Component {
     constructor(props) {
         super(props)
-        this.state = {newMessage: '', showEmotions: false}
+        this.state = {txt: '', showEmotions: false}
     }
 
     openImageDialog() {
@@ -24,12 +24,12 @@ class SendMessageBox extends Component {
     }
 
     clear() {
-        this.setState({newMessage: ''})
+        this.setState({txt: ''})
     }
 
     onChange(event) {
         this.setState({
-            newMessage: event.target.value
+            txt: event.target.value
         })
     }
 
@@ -39,18 +39,18 @@ class SendMessageBox extends Component {
 
     emotionSelected(key) {
         this.setState({
-            newMessage: this.state.newMessage + key,
+            txt: this.state.txt + key,
             showEmotions: false
         })
     }
 
     sendTextMessage() {
-        this.props.sendTextMessage(this.props.from, this.props.to, this.props.type, this.state.newMessage)
+        this.props.sendTextMessage(this.props.from, this.props.to, this.props.type, this.state.txt)
         this.clear()
     }
 
-    sendImageMessage(file) {
-        this.props.sendImageMessage(this.props.from, this.props.to, this.props.type, file)
+    sendImageMessage(fileInput) {
+        this.props.sendImageMessage(this.props.from, this.props.to, this.props.type, fileInput)
         this.clear()
     }
 
@@ -86,15 +86,13 @@ class SendMessageBox extends Component {
 
                     <div className="pull-right">
                         <input type="button" value="发送" className="btn btn-primary"
-                               disabled={this.state.newMessage.trim() ? '' : 'disabled'}
+                               disabled={this.state.txt.trim() ? '' : 'disabled'}
                                onClick={e=> this.sendTextMessage()}/>
                     </div>
                 </div>
                 <div className="input-box">
                     <div className="input-wrap">
-                        <textarea onChange={e=> {
-                            this.onChange(e)
-                        }} value={this.state.newMessage}></textarea>
+                        <textarea onChange={e=> this.onChange(e)} value={this.state.txt}></textarea>
                     </div>
                 </div>
             </div>

@@ -47,7 +47,7 @@ export default class Message extends Component {
                         var res
                         if (item.type == MessageType.TEXT) {
                             res = item.data
-                        } else if (item.type == 'emotion') {
+                        } else if (item.type == 'emoji') {
                             res = <span className="emotion-container"><img src={item.data}/></span>
                         } else {
                             res = <span>未知类型({item.type})</span>

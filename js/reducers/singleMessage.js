@@ -10,61 +10,73 @@ import actionConstants from '../actions/actionConstants'
 let defaultState = []
 
 export function singleMessage(state = defaultState, action) {
-    let iState = fromJS(state)
-    let newIState = iState
-    switch (action.type) {
-        case actionConstants.chat.INIT_PATIENT_SUCCESS:
-            newIState = initPatientSuccess()
-            break
+    const iState = fromJS(state)
+    return handle()
 
-        case actionConstants.chat.INIT_DOCTOR_SUCCESS:
-            newIState = initDoctorSuccess()
-            break
+    function handle() {
+        let newIState = iState
+        switch (action.type) {
+            case actionConstants.chat.INIT_PATIENT_SUCCESS:
+                newIState = initPatientSuccess()
+                break
 
-        case actionConstants.chat.START_SINGLE_CHAT:
-            newIState = startSingleChat()
-            break
+            case actionConstants.chat.INIT_DOCTOR_SUCCESS:
+                newIState = initDoctorSuccess()
+                break
 
-        case actionConstants.SEND_TEXT_MESSAGE:
-            newIState = sendTextMessage()
-            break
+            case actionConstants.chat.START_SINGLE_CHAT:
+                newIState = startSingleChat()
+                break
 
-        case actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS:
-            newIState = sendImageMessageSuccess()
-            break
+            case actionConstants.SEND_TEXT_MESSAGE:
+                newIState = sendTextMessage()
+                break
 
-        case actionConstants.message.NEW_MSG:
-            newIState = newMessage()
-            break
+            case actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS:
+                newIState = sendImageMessageSuccess()
+                break
 
-        case actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS:
-            newIState = fetchHistoryMessageSuccess()
-            break
+            case actionConstants.message.NEW_MSG:
+                newIState = newMessage()
+                break
 
-        case actionConstants.EXIT_CHAT_SYSTEM:
-            newIState = exitChatSystem()
-            break
+            case actionConstants.chat.CLASSIFY_NEW_MESSAGE:
+                newIState = classifyNewMessage()
+                break
 
-        default:
-            break
+            case actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS:
+                newIState = fetchHistoryMessageSuccess()
+                break
+
+            case actionConstants.chat.HANDLE_CURRENT_CHAT:
+                newIState = handleCurrentChat()
+                break
+
+            case actionConstants.EXIT_CHAT_SYSTEM:
+                newIState = exitChatSystem()
+                break
+
+            default:
+                break
+        }
+        if (newIState == iState) {
+            return state
+        }
+
+        return newIState.toJS()
     }
-    if (newIState == iState) {
-        return state
-    }
-
-    return newIState.toJS()
 
     //-------------------------------------------------------------------
 
     function initPatientSuccess() {
-        return iState.map(msg=> msg.set('notStranger',
-            action.patients.filter(patient=>patient.name == msg.get('name')).length > 0)
+        return iState.map(msg=> msg.set('isStranger',
+            action.patients.filter(patient=>patient.name == msg.get('name')).length == 0)
         )
     }
 
     function initDoctorSuccess() {
-        return iState.map(msg=> msg.set('notStranger',
-            action.doctors.filter(doctor=>doctor.name == msg.get('name')).length > 0)
+        return iState.map(msg=> msg.set('isStranger',
+            action.doctors.filter(doctor=>doctor.name == msg.get('name')).length == 0)
         )
     }
 
@@ -73,55 +85,35 @@ export function singleMessage(state = defaultState, action) {
         if (!matchMsg) {
             return iState
         }
-
-        return iState.update(iState.indexOf(matchMsg), msg=> {
-            let reads = msg.get('reads')
-            msg.get('unreads').forEach(unread=> {
-                reads = reads.push(unread)
-            })
-            return msg.set('unreads', List([])).set('reads', reads)
-        })
+        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
 
     function sendTextMessage() {
+        let curState = iState
         let {chatType, to, textContent, from} = action
         if (chatType != ChatType.CHAT) {
-            return iState
+            return curState
         }
-        let matchMsg = iState.find(msg=>msg.get('name') == to)
-        if (!matchMsg) {
-            return iState.push(Map({
-                name: to,
-                reads: [],
-                unreads: [],
-                historyMessages: []
-            }))
-        }
-        return iState.update(iState.indexOf(matchMsg), msg=> msg.update('reads', reads=>reads.push(Map({
+        curState = _update(curState, to, msg=>_readMsg(msg))
+        return _update(curState, to, msg=> msg.update('reads', reads=>reads.push(Map({
             id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now()
         }))))
     }
 
     function sendImageMessageSuccess() {
+        let curState = iState
         let {from, to, chatType, url} = action
         if (chatType != ChatType.CHAT) {
-            return iState
+            return curState
         }
-        let matchMsg = iState.find(msg=>msg.get('name') == to)
-        if (!matchMsg) {
-            return iState.push(Map({
-                name: to,
-                reads: [],
-                unreads: [],
-                historyMessages: []
-            }))
-        }
-        return iState.update(iState.indexOf(matchMsg), msg=>msg.update('reads', reads=>reads.push(Map({
+        curState = _update(curState, to, msg=>_readMsg(msg))
+        return _update(curState, to, msg=>msg.update('reads', reads=>reads.push(Map({
             id: util.getUID(), from, to, type: MessageType.IMAGE, data: url, chatTime: util.now()
         }))))
     }
 
     function newMessage() {
+        let curState = iState
         let msg = action.msg
         let {id, type, from, to} = msg
         if (type != ChatType.CHAT) {
@@ -143,36 +135,67 @@ export function singleMessage(state = defaultState, action) {
             }
         }
 
-        let matchMsg = iState.find(msg=>msg.get('name') == from)
-        if (!matchMsg) {
-            iState = _createMsg(from)
-            matchMsg = iState.find(msg=>msg.get('name') == from)
-        }
-
-        return iState.update(iState.indexOf(matchMsg), msg=> msg.update('unreads', unreads=> unreads.push(Map({
-            id, from, to, type: msgType, data: data, newMessage: true, chatTime: util.now()
+        return _update(curState, from, msg=> msg.update('unreads', unreads=> unreads.push(Map({
+            id, from, to, type: msgType, data: data, chatTime: util.now()
         }))))
     }
 
+    function classifyNewMessage() {
+        const {from, patients, doctors} = action
+        return _update(iState, from, msg=> msg.set('isStranger',
+                patients.filter(patient=>patient.name == msg.get('name')).length == 0 &&
+                doctors.filter(doctor=>doctor.name == msg.get('name')).length == 0
+            )
+        )
+    }
+
     function fetchHistoryMessageSuccess() {
+        let curState = iState
         let {currentSingle, historyMessages} = action
-        let matchMsg = iState.find(msg=>msg.get('name') == currentSingle.name)
-        if (!matchMsg) {
-            return _createMsg(currentSingle.name)
+        return _update(curState, currentSingle.name, msg=>msg.update('historyMessages', ()=>List(historyMessages)))
+    }
+
+    function handleCurrentChat() {
+        let {chatType, selectedId} = action
+        if (chatType != ChatType.CHAT) {
+            return iState
         }
-        return iState.update(iState.indexOf(matchMsg), msg=>msg.update('historyMessages', ()=>List(historyMessages)))
+        let matchMsg = iState.find(msg=>msg.get('name') == selectedId)
+        if (!matchMsg) return
+        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
 
     function exitChatSystem() {
         return fromJS(defaultState)
     }
 
+    //-----------------------------------------------
+    //inner function
+
     function _createMsg(name) {
         return iState.push(Map({
             name: name,
-            reads: [],
-            unreads: [],
-            historyMessages: []
+            reads: List([]),
+            unreads: List([]),
+            historyMessages: List([]),
+            isStranger: false
         }))
+    }
+
+    function _update(iState, name, callback) {
+        let matchMsg = iState.find(msg=>msg.get('name') == name)
+        if (!matchMsg) {
+            iState = _createMsg(name)
+            matchMsg = iState.find(msg=>msg.get('name') == name)
+        }
+        return iState.update(iState.indexOf(matchMsg), callback)
+    }
+
+    function _readMsg(msg) {
+        let reads = msg.get('reads')
+        msg.get('unreads').forEach(unread=> {
+            reads = reads.push(unread)
+        })
+        return msg.set('unreads', List([])).set('reads', reads)
     }
 }

@@ -17,7 +17,7 @@ export default class GroupChat extends Component {
         this.state = {newGroupMessage: ''}
     }
 
-    showMessage() {
+    showReadMessage() {
         let roomMessage = this.props.roomMessage
         if (!roomMessage) {
             return null
@@ -28,6 +28,27 @@ export default class GroupChat extends Component {
                             dir={this.context.curUserId == read.from ? 'right' : 'left'}
             />
         })
+    }
+
+    showUnReadMessage() {
+        let roomMessage = this.props.roomMessage
+        if (!roomMessage || !roomMessage.unreads.length) {
+            return null
+        }
+        return (
+            <div>
+                <div className="text-center"><span className="new-message">new message</span></div>
+                {
+                    roomMessage.unreads.map(read => {
+                        return <Message key={read.id}
+                                        msg={read}
+                                        dir={this.context.curUserId == read.from ? 'right' : 'left'}
+                        />
+                    })
+                }
+            </div>
+
+        )
     }
 
     componentDidUpdate() {
@@ -43,7 +64,8 @@ export default class GroupChat extends Component {
                     </div>
                     <div className="history-message">
                         <div className="col-xs-10">
-                            {this.showMessage()}
+                            {this.showReadMessage()}
+                            {this.showUnReadMessage()}
                         </div>
                         <div className="col-xs-2 group-member-list">
                             <GroupMembers members={this.props.members}/>

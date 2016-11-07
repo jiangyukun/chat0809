@@ -11,7 +11,6 @@ import {Router, hashHistory} from 'react-router'
 import {syncHistoryWithStore} from 'react-router-redux'
 import thunk from 'redux-thunk'
 
-import DevTools from './DevTools'
 import NotificationContainer from './components/common/NotificationContainer'
 import routers from './router'
 import rootReducers from './reducers'
@@ -30,25 +29,14 @@ let initState = {
 }
 
 let store = createStore(rootReducers, initState, compose(
-    applyMiddleware(thunk, sessionStorageState),
-    DevTools.instrument()
+    applyMiddleware(thunk, sessionStorageState)
 ))
-
-if (module.hot) {
-    module.hot.accept('./reducers/', () => {
-        const nextRootReducer = require('./reducers/').default
-        store.replaceReducer(nextRootReducer)
-    })
-}
 
 let history = syncHistoryWithStore(hashHistory, store)
 
 render(
     <Provider store={store}>
-        <div>
-            <Router routes={routers} history={history}></Router>
-            <DevTools/>
-        </div>
+        <Router routes={routers} history={history}></Router>
     </Provider>,
     document.getElementById('container')
 )

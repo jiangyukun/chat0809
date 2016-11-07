@@ -5,7 +5,7 @@ import {fromJS} from 'immutable'
 
 import actionConstants from '../../actions/actionConstants'
 
-export function doctorList(state = [], action) {
+export function doctors(state = [], action) {
     switch (action.type) {
         case actionConstants.chat.INIT_DOCTOR_SUCCESS:
             let doctor = action.doctors

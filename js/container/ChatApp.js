@@ -8,10 +8,11 @@ import {connect} from 'react-redux'
 import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
 import ChatPanel from './ChatPanel'
-
+import {sortPatientList, sortRoomList, sortDoctorList} from '../actions/app'
 import {
-    fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer, newMessageHinted,
-    startSingleChat, startRoomChat
+    fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer,
+    classifyNewMessage, newMessageHinted,
+    startSingleChat, startRoomChat, handleCurrentChat
 } from '../actions/chat'
 
 class ChatApp extends Component {
@@ -24,7 +25,7 @@ class ChatApp extends Component {
         patients: PropTypes.array,
         rooms: PropTypes.array,
         doctors: PropTypes.array,
-        groupMembers: PropTypes.array
+        members: PropTypes.array
     }
 
     constructor(props) {
@@ -37,7 +38,7 @@ class ChatApp extends Component {
             patients: this.props.patients,
             doctors: this.props.doctors,
             rooms: this.props.rooms,
-            groupMembers: this.props.groupMembers
+            members: this.props.members
         }
     }
 
@@ -59,6 +60,22 @@ class ChatApp extends Component {
         }
     }
 
+    componentDidUpdate() {
+        if (this.props.newMessage) {
+            this.props.classifyNewMessage(this.props.app.from, this.props.patients, this.props.doctors)
+        }
+        let app = this.props.app
+        if (app.patientInit) {
+            this.props.sortPatientList(this.props.singleMessage)
+        }
+        if (app.roomInit) {
+            this.props.sortRoomList(this.props.roomMessage)
+        }
+        if (app.doctorInit) {
+            this.props.sortDoctorList(this.props.singleMessage)
+        }
+    }
+
     render() {
         return (
             <div className="chat">
@@ -67,18 +84,19 @@ class ChatApp extends Component {
                 </div>
                 <Header />
                 <ChatPanel
+                    app={this.props.app}
                     patients={this.props.patients}
                     rooms={this.props.rooms}
                     doctors={this.props.doctors}
+                    members={this.props.members}
 
                     singleMessage={this.props.singleMessage}
                     roomMessage={this.props.roomMessage}
 
-                    members={this.props.groupMembers}
-
                     actions={{
                         startSingleChat: this.props.startSingleChat,
-                        startRoomChat: this.props.startRoomChat
+                        startRoomChat: this.props.startRoomChat,
+                        handleCurrentChat: this.props.handleCurrentChat
                     }}
                 />
             </div>
@@ -92,9 +110,10 @@ function mapStateToProps(state) {
         curUserId: state.curUserId,
         patients: state.patients,
         rooms: state.rooms,
-        doctors: state.doctorList,
-        groupMembers: state.groupMembers,
-        newMessage: state.chat.newMessage,
+        doctors: state.doctors,
+        members: state.members,
+        app: state.app,
+        newMessage: state.app.newMessage,
 
         singleMessage: state.singleMessage,
         roomMessage: state.roomMessage
@@ -105,8 +124,14 @@ export default connect(mapStateToProps, {
     fetchPatientListFromHuanXin,
     fetchGroupListFromHuanXin,
     fetchDoctorListFromServer,
+    classifyNewMessage,
     newMessageHinted,
 
+    sortPatientList,
+    sortRoomList,
+    sortDoctorList,
+
     startSingleChat,
-    startRoomChat
+    startRoomChat,
+    handleCurrentChat
 })(ChatApp)

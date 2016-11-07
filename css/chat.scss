@@ -1,6 +1,13 @@
 
 .chat {
 
+    .new-message {
+        background: #d58512;
+        border-radius: 8px;
+        color: #fff;
+        padding: 3px 4px;
+    }
+
     .emotion-container {
         display: inline-block;
         width: 20px;

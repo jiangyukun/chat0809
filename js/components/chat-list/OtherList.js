@@ -22,11 +22,18 @@ class OtherList extends Component {
     }
 
     render() {
-        let message = this.props.message
-        let otherList = MessageHelper.getUnMarkMessage(message)
+        let others = this.props.others
+        let singleMessage = this.props.singleMessage
 
-        var unreadMessage = (name, type)=> {
-            let count = MessageHelper.getUnreadCount(message, name, type)
+        let unread = 0
+        others.forEach((other) => {
+            let msg = singleMessage.find(msg=>msg.name == other.name)
+            unread += msg ? msg.unreads.length : 0
+        })
+
+        var unreadMessage = name=> {
+            let msg = singleMessage.find(single=>single.name == name)
+            let count = msg ? msg.unreads.length : 0
             return count > 0 ? <span className="red">({count})</span> : ''
         }
 
@@ -35,12 +42,12 @@ class OtherList extends Component {
         return (
             <div>
                 <header className="list-head" onClick={e=> this.setState({active: !this.state.active})}>
-                    <span>其他</span>
+                    <span>未分组{unread > 0 && <span className="red">({unread})</span>}</span>
                 </header>
                 <Collapse in={this.state.active}>
                     <ul>
                         {
-                            otherList.map((other, index) => {
+                            others.map((other, index) => {
                                 let key = this.props.searchKey
                                 let idInfo = ' '
                                 if (key) {
@@ -58,10 +65,14 @@ class OtherList extends Component {
                                 }
                                 currentCount++
                                 return (
-                                    <li key={index} className={classnames("list-item", {'active': other.active})}
+                                    <li key={index} className={classnames("list-item", {'active': other.name == this.props.selectedId})}
                                         onClick={e=> this.props.startChat(other)}>
-                                        {other.nickname ? other.nickname + idInfo : other.name}
-                                        {unreadMessage(other.name, ChatType.CHAT)}
+                                        {
+                                            other.name ? other.name + idInfo : other.id
+                                        }
+                                        {
+                                            unreadMessage(other.name)
+                                        }
                                     </li>
                                 )
                             })
