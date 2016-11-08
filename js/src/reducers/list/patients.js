@@ -5,6 +5,7 @@ import {fromJS, List, Map} from 'immutable'
 
 import actionConstants from '../../actions/actionConstants'
 
+const defaultIState = fromJS([])
 export function patients(state = [], action) {
     const iState = fromJS(state)
     return handle()
@@ -57,7 +58,7 @@ export function patients(state = [], action) {
     }
 
     function exitChatSystem() {
-        return List([])
+        return defaultIState
     }
 
     //-----------------------------------------

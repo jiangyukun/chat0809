@@ -11,9 +11,9 @@ let defaultState = []
 
 export function roomMessage(state = defaultState, action) {
     const iState = fromJS(state)
-    return handle()
+    return nextState()
 
-    function handle() {
+    function nextState() {
         let newIState = iState
         switch (action.type) {
 
@@ -119,7 +119,9 @@ export function roomMessage(state = defaultState, action) {
             return iState
         }
         let matchMsg = iState.find(msg=>msg.get('id') == selectedId)
-        if (!matchMsg) return iState
+        if (!matchMsg) {
+            return iState
+        }
         return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
 

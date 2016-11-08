@@ -17,7 +17,7 @@ import NotificationContainer from './components/common/NotificationContainer'
 import routers from './router'
 import rootReducers from './reducers'
 
-import '../css/app.scss'
+import '../../css/app.scss'
 
 let initState = {
     curUserId: '',

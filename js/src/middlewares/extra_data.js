@@ -8,7 +8,7 @@ import util from '../components/core/util'
 export default ({dispatch, getState}) => next => action=> {
 
 
-    let state = getState()
+    const state = getState()
     switch (action.type) {
         case actionConstants.chat.INIT_PATIENT_SUCCESS:
         case actionConstants.chat.INIT_DOCTOR_SUCCESS:

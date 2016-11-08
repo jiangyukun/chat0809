@@ -9,7 +9,7 @@ import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
 import ChatPanel from './ChatPanel'
 import {
-    fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchDoctorListFromServer,
+    fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchPatientListFromServer, fetchDoctorListFromServer,
     classifyNewMessage, newMessageHinted,
     startSingleChat, startRoomChat, handleCurrentChat
 } from '../actions/chat'
@@ -46,7 +46,13 @@ class ChatApp extends Component {
             this.context.router.push('/')
             return
         }
-        this.props.fetchPatientListFromHuanXin()
+        let curUserId = this.props.curUserId
+        if (curUserId == 'test0' || curUserId == 'test' || curUserId == 'test1' || curUserId == 'test2') {
+            this.props.fetchPatientListFromHuanXin()
+            this.props.fetchGroupListFromHuanXin()
+            return
+        }
+        this.props.fetchPatientListFromServer()
         this.props.fetchGroupListFromHuanXin()
         this.props.fetchDoctorListFromServer()
     }
@@ -114,6 +120,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
     fetchPatientListFromHuanXin,
     fetchGroupListFromHuanXin,
+    fetchPatientListFromServer,
     fetchDoctorListFromServer,
     classifyNewMessage,
     newMessageHinted,

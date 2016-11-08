@@ -4,10 +4,10 @@
   "description": "chat-system",
   "main": "app.js",
   "scripts": {
-    "test": "gulp test",
+    "test": "webpack --config webpack.test.js",
     "start": "node server.js",
     "dev": "cross-env NODE_ENV=develop node build/dev-server.js",
-    "prod": "webpack --config build/webpack.prod.js"
+    "prod": "webpack --config webpack.prod.js"
   },
   "keywords": [
     "react",
@@ -49,9 +49,11 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-traverse": "^6.9.0",
     "bundle-loader": "^0.5.4",
+    "chai": "^3.5.0",
     "css-loader": "^0.23.1",
     "eslint": "^3.2.2",
     "flux": "^2.1.1",
+    "mocha": "^3.1.2",
     "node-sass": "^3.8.0",
     "object-assign": "^4.1.0",
     "react": "^15.2.1",

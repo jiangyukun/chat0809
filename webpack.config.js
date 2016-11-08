@@ -1,17 +1,10 @@
-/**
- *
- */
-
-// process.env.NODE_ENV = 'development'
-// process.env.NODE_ENV = 'production'
-
 const webpack = require('webpack')
 
 module.exports = {
     // devtool: 'cheap-module-eval-source-map',
     entry: [
         'webpack-hot-middleware/client',
-        './js/app.js'
+        './js/src/app.js'
     ],
 
     output: {

@@ -11,9 +11,6 @@ import * as conn from '../services/huanxinApi'
 export function fetchPatientListFromHuanXin() {
 
     return dispatch=> {
-        dispatch({
-            type: actionConstants.chat.INIT_PATIENT_START
-        })
         conn.getRoster().then((patients)=> {
             patients = patients.map(patient=> {
                 return {
@@ -22,9 +19,37 @@ export function fetchPatientListFromHuanXin() {
                 }
             })
             dispatch({
-                type: actionConstants.chat.INIT_PATIENT_SUCCESS,
-                patients
+                type: actionConstants.chat.INIT_PATIENT_SUCCESS, patients
             })
+        })
+
+        dispatch({
+            type: actionConstants.chat.INIT_PATIENT_START
+        })
+    }
+}
+
+export function fetchPatientListFromServer() {
+    return dispatch=> {
+        chatService.fetchPatientList().then((result) => {
+            let patients = result.map(patient=> {
+                let name = patient['user_Name']
+                let nickname = patient['patient_Name']
+                return {
+                    id: name, name, nickname
+                }
+            })
+            dispatch({
+                type: actionConstants.chat.INIT_PATIENT_SUCCESS, patients
+            })
+        }, ()=> {
+            dispatch({
+                type: actionConstants.chat.INIT_PATIENT_FAILURE
+            })
+        })
+
+        dispatch({
+            type: actionConstants.chat.INIT_PATIENT_START
         })
     }
 }
@@ -51,6 +76,7 @@ export function fetchGroupListFromHuanXin() {
         })
     }
 }
+
 
 export function fetchDoctorListFromServer() {
     return dispatch=> {

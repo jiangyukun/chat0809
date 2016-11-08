@@ -24,10 +24,10 @@ export default class UserChat extends Component {
         if (!this.props.singleMessage) {
             return
         }
-        return this.props.singleMessage.reads.map((msg, index) => {
-            return <Message key={index}
-                            msg={msg}
-                            dir={this.context.curUserId == msg.from ? 'right' : 'left'}
+        return this.props.singleMessage.reads.map((read) => {
+            return <Message key={read.id}
+                            msg={read}
+                            dir={this.context.curUserId == read.from ? 'right' : 'left'}
             />
         })
     }
@@ -55,7 +55,6 @@ export default class UserChat extends Component {
     componentDidUpdate() {
         const app = this.props.app
         if (app.newMessage && app.from == this.props.user.name) {
-            console.log(1)
             setTimeout(()=> {
                 var container = findDOMNode(this.refs['messageItemList'])
                 var wrap = findDOMNode(this.refs['messageListWrap'])

@@ -11,9 +11,9 @@ let defaultState = []
 
 export function singleMessage(state = defaultState, action) {
     const iState = fromJS(state)
-    return handle()
+    return nextState()
 
-    function handle() {
+    function nextState() {
         let newIState = iState
         switch (action.type) {
             case actionConstants.chat.INIT_PATIENT_SUCCESS:
@@ -151,7 +151,9 @@ export function singleMessage(state = defaultState, action) {
             return iState
         }
         let matchMsg = iState.find(msg=>msg.get('name') == selectedId)
-        if (!matchMsg) return
+        if (!matchMsg) {
+            return iState
+        }
         return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
 

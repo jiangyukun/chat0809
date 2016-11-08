@@ -1,10 +1,11 @@
 /**
  * Created by jiangyukun on 2016/11/4.
  */
-import {fromJS} from 'immutable'
+import {fromJS, List} from 'immutable'
 
 import actionConstants from '../../actions/actionConstants'
 
+const defaultIState = fromJS([])
 export function doctors(state = [], action) {
     const iState = fromJS(state)
     return nextState()
@@ -31,7 +32,6 @@ export function doctors(state = [], action) {
             return state
         }
         return nextIState.toJS()
-
     }
 
     //-----------------------------
@@ -54,11 +54,10 @@ export function doctors(state = [], action) {
     function sortDoctorList() {
         let {from} = action.msg
         return _sort(iState, from)
-
     }
 
     function exitChatSystem() {
-        return []
+        return defaultIState
     }
 
     //-------------------------------------------------------

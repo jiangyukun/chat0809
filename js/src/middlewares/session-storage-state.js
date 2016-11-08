@@ -29,6 +29,7 @@ export default ({dispatch, getState}) => next => action=> {
             case actionConstants.message.NEW_MSG:
             case actionConstants.chat.START_SINGLE_CHAT:
             case actionConstants.chat.START_GROUP_CHAT:
+            case actionConstants.SEND_TEXT_MESSAGE:
             case actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS:
                 if (state.singleMessage.length) {
                     util.setSession(key1, state.singleMessage)

@@ -11,7 +11,7 @@ module.exports = {
 
     output: {
         path: __dirname + '/build/',
-        filename: 'bundle-' + moment().format('MMDD') + '.min.js',
+        filename: 'bundle-' + moment().format('MMDD') + '.js',
         publicPath: '/static/'
     },
 
@@ -26,11 +26,6 @@ module.exports = {
 
     plugins: [
         new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)}),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            }
-        })
+        new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)})
     ]
 }
