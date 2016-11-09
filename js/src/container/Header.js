@@ -33,14 +33,26 @@ class Header extends Component {
         }
 
         return (
-            <div className="chat-header">
-                <div className="container-fluid">
+            <div className="header">
+                <div className="avatar">
+                    <img className="img" src="img/default.jpg"/>
+                </div>
+                <div className="info">
+                    <h3 className="nickname">
+                        <span className="display_name">{getLoginName(this.context.curUserId)}</span>
+                        <a className="opt">
+                            <i className="user_opt"></i>
+                        </a>
+                    </h3>
+
+                </div>
+                {/*<div className="container-fluid">
                     <header className="row">
                         <div className="col-xs-4">
                             <span className="chat-system-text">小贝壳聊天系统</span>
                         </div>
                         <div className="col-xs-4 text-center">
-                            <span className="login-user">{getLoginName(this.context.curUserId)}</span>
+                            <span className="login-user"></span>
                         </div>
                         <div className="col-xs-4">
                             <div className="pull-right exit">
@@ -48,7 +60,7 @@ class Header extends Component {
                             </div>
                         </div>
                     </header>
-                </div>
+                </div>*/}
             </div>
         )
     }

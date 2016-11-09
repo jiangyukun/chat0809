@@ -23,11 +23,13 @@ class Signin extends Component {
         }
     }
 
-    handleChange(event) {
-        var name = event.target.name
+    handleUserNameChange(event) {
+        this.setState({username: event.target.value})
+    }
+
+    handlePasswordChange(event) {
         var state = this.state
-        state[name] = event.target.value
-        this.setState(state)
+        this.setState({password: event.target.value})
     }
 
     login() {
@@ -51,27 +53,33 @@ class Signin extends Component {
     render() {
         return (
             <div className="login">
-                {
-                    this.props.loading && <div className="loading-container"><Loading /></div>
-                }
-                <header>
-                    <img src=""/>
-                    <span className="chat-system-text">小贝壳聊天系统</span>
-                </header>
+                <div className="logo">
+                    <i className="chat_system_login_logo"></i>
+                </div>
+                {this.props.loading && <div className="loading-container"><Loading /></div>}
 
-                <div className="input-box">
-                    <p className="title">
-                        小贝壳聊天系统
-                    </p>
-                    <div className="input-row">
-                        <input name="username" className="form-control" placeholder="输入聊天系统账号"
-                               value={this.state.username} onChange={e=>this.handleChange(e)}/>
-                    </div>
-                    <div className="input-row">
-                        <input name="password" className="form-control" type="password" placeholder="输入聊天系统密码"
-                               value={this.state.password} onChange={e=>this.handleChange(e)}/>
-                    </div>
-                    <button className="btn btn-block btn-info" onClick={e=>this.login()}>登录</button>
+                <div className="login_box">
+                    <form className="login-form" autoComplete="off">
+                        <div className="username-container">
+                            <input type="text" autoComplete="off" className="username"
+                                   placeholder="输入聊天系统账号"
+                                   value={this.state.username}
+                                   onChange={e=>this.handleUserNameChange(e)}/>
+                        </div>
+                        <div className="password-container">
+                            <input
+                                type="password" autoComplete="off" className="password"
+                                placeholder="输入聊天系统密码"
+                                value={this.state.password}
+                                onChange={e=>this.handlePasswordChange(e)}/>
+                        </div>
+                        <button className="login-btn" onClick={e=>this.login()}>登录</button>
+                    </form>
+
+                </div>
+
+                <div className="copyright">
+                    <p className="desc">© 2016 WangJi Inc. All Rights Reserved</p>
                 </div>
             </div>
         )

@@ -8,6 +8,10 @@ import {connect} from 'react-redux'
 import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
 import ChatPanel from './ChatPanel'
+import SystemMenu from '../components/SystemMenu'
+import SearchBar from '../components/SearchBar'
+import Tab from '../components/Tab'
+import ChatTab from '../components/tab-list/ChatTab'
 import {
     fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchPatientListFromServer, fetchDoctorListFromServer,
     classifyNewMessage, newMessageHinted,
@@ -47,14 +51,19 @@ class ChatApp extends Component {
             return
         }
         let curUserId = this.props.curUserId
-        if (curUserId == 'test0' || curUserId == 'test' || curUserId == 'test1' || curUserId == 'test2') {
+        if (curUserId.indexOf('bkkf') != -1 || curUserId.indexOf('bkzs') != -1) {
+            this.props.fetchPatientListFromServer()
+            this.props.fetchGroupListFromHuanXin()
+            this.props.fetchDoctorListFromServer()
+        } else if (curUserId.indexOf('zxys') != -1) {
+            this.props.fetchPatientListFromServer()
+            this.props.fetchGroupListFromHuanXin()
+        } else {
             this.props.fetchPatientListFromHuanXin()
             this.props.fetchGroupListFromHuanXin()
-            return
+            this.props.fetchDoctorListFromServer()
         }
-        this.props.fetchPatientListFromServer()
-        this.props.fetchGroupListFromHuanXin()
-        this.props.fetchDoctorListFromServer()
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -73,28 +82,21 @@ class ChatApp extends Component {
 
     render() {
         return (
-            <div className="chat">
-                <div className="hidden">
+            <div className="main">
+                <div className="hidden" style={{height: 0}}>
                     <SimpleAudio audioUrl="audio/new-message.wav" ref={c=>this.newMessageAudio = c}/>
                 </div>
-                <Header />
-                <ChatPanel
-                    app={this.props.app}
-                    patients={this.props.patients}
-                    rooms={this.props.rooms}
-                    doctors={this.props.doctors}
-                    members={this.props.members}
+                <div className="main_inner">
 
-                    singleMessage={this.props.singleMessage}
-                    roomMessage={this.props.roomMessage}
-                    historyMessage={this.props.historyMessage}
+                    <div className="panel">
+                        <Header />
+                        <SearchBar/>
+                        <Tab/>
+                        <ChatTab/>
 
-                    actions={{
-                        startSingleChat: this.props.startSingleChat,
-                        startRoomChat: this.props.startRoomChat,
-                        handleCurrentChat: this.props.handleCurrentChat
-                    }}
-                />
+                        {/*<SystemMenu/>*/}
+                    </div>
+                </div>
             </div>
         )
     }

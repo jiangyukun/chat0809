@@ -46,10 +46,6 @@
     border: $border-color;
 }
 
-ul {
-    padding: 0;
-    margin: 0;
-}
 
 .red {
     color: red;
@@ -150,15 +146,4 @@ ul {
         transform: translate(250px, 0);
         opacity: 0;
     }
-}
-
-.full-screen-preview {
-    flex: 1;
-    overflow: auto;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.full-screen-preview img {
-    max-width: 100%;
 }

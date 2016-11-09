@@ -2,7 +2,6 @@
  * jiangyukun on 2016/07/27 12:35
  */
 import React, {Component, PropTypes} from 'react'
-import {connect} from 'react-redux'
 
 import {ChatType} from '../constants/ChatConstants'
 import PatientList from '../components/chat-list/PatientList'
@@ -11,7 +10,6 @@ import DoctorList from '../components/chat-list/DoctorList'
 import OtherList from '../components/chat-list/OtherList'
 import GroupChat from './GroupChat'
 import UserChat from './UserChat'
-import {startSingleChat, startRoomChat, readSingleMessage} from '../actions/chat'
 
 class ChatPanel extends Component {
     static contextTypes = {
@@ -83,7 +81,7 @@ class ChatPanel extends Component {
             }
         })
         return (
-            <div className="chat-body">
+            <div className="">
                 <div className="container-fluid h100-pct">
                     <div className="row h100-pct">
                         <div className="col-xs-3 contact-list">

@@ -18,7 +18,7 @@ import NotificationContainer from './components/common/NotificationContainer'
 import routers from './router'
 import rootReducers from './reducers'
 
-import '../../css/app.scss'
+import '../../css/index.scss'
 
 let initState = {
     curUserId: '',
@@ -47,7 +47,7 @@ let history = syncHistoryWithStore(hashHistory, store)
 
 render(
     <Provider store={store}>
-        <div>
+        <div style={{"height": "100%"}}>
             <Router routes={routers} history={history}></Router>
             <DevTools/>
         </div>

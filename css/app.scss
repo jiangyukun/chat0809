@@ -1,9 +1,201 @@
-// 2016
-@import "variable";
-@import "common";
-@import "login";
-@import "chat";
-@import "component/image-preview";
-@import "component/select-emotions";
-@import "component/audio";
-@import "component/loading";
+
+#container {
+    height: 100%;
+}
+
+.mmpop {
+    position: absolute;
+    background-color: #fff;
+    z-index: 99;
+    top: 60px;
+    left: 85px;
+    outline: 0;
+}
+
+.system_menu {
+    background: transparent !important;
+    z-index: 102 !important;
+}
+
+.system_menu {
+    width: 180px;
+}
+
+.dropdown_menu {
+    background-color: #fff;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #d6d6d6;
+    box-shadow: rgba(0, 0, 0, .1) 2px 3px 10px;
+    -moz-box-shadow: rgba(0, 0, 0, .1) 2px 3px 10px;
+    -webkit-box-shadow: rgba(0, 0, 0, .1) 2px 3px 10px;
+    min-width: 125px;
+
+    li {
+        i {
+            margin-right: 8px;
+        }
+        &.last_child a {
+            border-bottom: 0;
+        }
+
+        a {
+            display: block;
+            text-decoration: none;
+            color: #000;
+            font-size: 14px;
+            padding: 8px;
+            border-bottom: 1px solid #f1f1f1;
+            text-align: left;
+        }
+    }
+}
+
+.search_bar {
+    position: relative;
+    width: 244px;
+    margin: 0 auto 6px;
+
+    .web_wechat_search {
+        position: absolute;
+        z-index: 101;
+        top: 1px;
+    }
+    .frm_search {
+        width: 214px;
+        height: 32px;
+        line-height: 32px;
+        border: 0;
+        border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+        background-color: #26292E;
+        color: #fff;
+        padding-left: 30px;
+        font-size: 12px;
+    }
+
+}
+
+.tab {
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 4px;
+
+    .tab_item {
+        float: left;
+        width: 33.33333333%;
+        position: relative;
+
+        a {
+            display: block;
+            text-align: center;
+
+        }
+    }
+}
+
+.nav_view {
+    position: absolute;
+    top: 154px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.scroll-wrapper {
+    & > .scroll-content {
+        border: 0 !important;
+        box-sizing: content-box !important;
+        height: auto;
+        left: 0;
+        margin: 0;
+        max-height: none !important;
+        max-width: none !important;
+        overflow: scroll !important;
+        padding: 0;
+        position: relative !important;
+        top: 0;
+        width: auto !important;
+    }
+}
+
+.chat_list {
+    .ico_loading {
+        text-align: center;
+        margin: 30px auto;
+        font-size: 14px;
+        color: #6b6f7c;
+
+        img {
+            vertical-align: -3px;
+            margin-right: 5px;
+        }
+    }
+}
+
+.chat_item {
+    overflow: hidden;
+    padding: 12px 18px 11px;
+    border-bottom: 1px solid #292C33;
+    cursor: pointer;
+    position: relative;
+
+    &.active {
+        background: #3A3F45;
+        .ext {
+            color: #FFF;
+        }
+    }
+
+    .ext {
+        float: right;
+        color: #6b6f7c;
+        font-size: 13px;
+        text-align: right;
+
+        .attr {
+            height: 19px;
+            line-height: 1.5;
+        }
+    }
+
+    .avatar {
+        float: left;
+        margin-right: 10px;
+        position: relative;
+
+        .img {
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 2px;
+            -moz-border-radius: 2px;
+            -webkit-border-radius: 2px;
+        }
+    }
+
+    .info {
+        overflow: hidden;
+
+        .nickname {
+            font-weight: 400;
+            font-size: 13px;
+            color: #FFF;
+            line-height: 20px;
+        }
+
+        .nickname_text {
+            display: inline-block;
+            vertical-align: top;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            word-wrap: normal;
+        }
+    }
+
+}
