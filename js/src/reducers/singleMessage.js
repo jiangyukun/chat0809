@@ -77,9 +77,10 @@ export function singleMessage(state = defaultState, action) {
     }
 
     function startSingleChat() {
-        let matchMsg = iState.find(msg=>msg.get('name') == action.currentSingle.name)
+        let name = action.currentSingle.name
+        let matchMsg = iState.find(msg=>msg.get('name') == name)
         if (!matchMsg) {
-            return iState
+            return _update(iState, name)
         }
         return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
@@ -177,6 +178,9 @@ export function singleMessage(state = defaultState, action) {
         let matchMsg = iState.find(msg=>msg.get('name') == name)
         if (!matchMsg) {
             iState = _createMsg(name)
+            if (!callback) {
+                return iState
+            }
             matchMsg = iState.find(msg=>msg.get('name') == name)
         }
         return iState.update(iState.indexOf(matchMsg), callback)

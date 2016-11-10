@@ -17,9 +17,19 @@ class ChatWindow extends Component {
         return (
             <div style={{height: '100%'}}>
                 {this.props.currentTab == Tab.CHAT_TAB && <NoChat/>}
-                {this.props.currentTab == Tab.FRIENDS_TAB && !this.props.chatType && <NoContact/>}
-                {this.props.currentTab == Tab.FRIENDS_TAB && this.props.chatType == ChatType.CHAT && <UserDetail match={this.props.match}/>}
-                {this.props.currentTab == Tab.FRIENDS_TAB && this.props.chatType == ChatType.GROUP_CHAT && <RoomDetail match={this.props.match}/>}
+                {
+                    this.props.currentTab == Tab.FRIENDS_TAB && !this.props.chatType &&
+                    <NoContact/>
+                }
+                {
+                    this.props.currentTab == Tab.FRIENDS_TAB && this.props.chatType == ChatType.CHAT &&
+                    <UserDetail match={this.props.match}
+                                startChat={this.props.startChat}/>
+                }
+                {
+                    this.props.currentTab == Tab.FRIENDS_TAB && this.props.chatType == ChatType.GROUP_CHAT &&
+                    <RoomDetail match={this.props.match}/>
+                }
             </div>
         )
     }

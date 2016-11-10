@@ -13,7 +13,6 @@ class FriendsTab extends Component {
         super(props)
         this.lookUserDetail = this.lookUserDetail.bind(this)
         this.lookRoomDetail = this.lookRoomDetail.bind(this)
-        this.startChat = this.startChat.bind(this)
     }
 
     lookUserDetail(name) {
@@ -24,10 +23,6 @@ class FriendsTab extends Component {
         this.props.selectContact(id)
     }
 
-    startChat(name) {
-        this.props.startChat(name)
-    }
-
     render() {
         return (
             <div className="nav_view">
@@ -36,11 +31,11 @@ class FriendsTab extends Component {
                     <div className="scroll-content">
                         <PatientList patients={this.props.patients}
                                      selectedId={this.props.selectedContactId}
-                                     startChat={this.startChat}
+                                     startChat={this.props.startChat}
                                      lookUserDetail={this.lookUserDetail}/>
                         <RoomList rooms={this.props.rooms}
                                   selectedId={this.props.selectedContactId}
-                                  startChat={this.startChat}
+                                  startChat={this.props.startChat}
                                   lookRoomDetail={this.lookRoomDetail}
                         />
                         <DoctorList doctors={this.props.doctors}/>

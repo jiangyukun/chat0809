@@ -4,6 +4,8 @@
 import React, {Component} from 'react'
 import classnames from 'classnames'
 
+import {ChatType} from '../../constants/ChatConstants'
+
 class PatientList extends Component {
 
     render() {
@@ -17,7 +19,7 @@ class PatientList extends Component {
                         return (
                             <div key={patient.name}
                                  className={classnames('', {'active': patient.name == this.props.selectedId})}
-                                 onDoubleClick={e=>this.props.startChat(patient.name)}>
+                                 onDoubleClick={e=>this.props.startChat(patient, ChatType.CHAT)}>
                                 <div className="contact_item"
                                      onClick={e=>this.props.lookUserDetail(patient.name)}>
                                     <div className="avatar">

@@ -14,6 +14,7 @@ import Tab from '../components/Tab'
 import ChatTab from '../components/tab-list/ChatTab'
 import FriendsTab from '../components/tab-list/FriendsTab'
 import ChatWindow from '../components/chat/ChatWindow'
+import {ChatType} from '../constants/ChatConstants'
 
 import {
     fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchPatientListFromServer, fetchDoctorListFromServer,
@@ -41,6 +42,7 @@ class ChatApp extends Component {
         this.closeSystemMenu = this.closeSystemMenu.bind(this)
         this.selectTab = this.selectTab.bind(this)
         this.selectContact = this.selectContact.bind(this)
+        this.startChat = this.startChat.bind(this)
         this.startChatFromContact = this.startChatFromContact.bind(this)
         this.exit = this.exit.bind(this)
         this.handleDocumentClick = this.handleDocumentClick.bind(this)
@@ -68,8 +70,23 @@ class ChatApp extends Component {
         this.setState({selectedContactId: contactId})
     }
 
-    startChatFromContact(contactId) {
+    startChat(contactId, chatType) {
         this.setState({selectedChatId: contactId})
+    }
+
+    startChatFromContact(contact, chatType) {
+        let contactId
+        if (chatType == ChatType.CHAT) {
+            contactId = contact.name
+            this.props.startSingleChat(this.props.curUserId, contact)
+        } else {
+            contactId = contact.id
+            this.props.startRoomChat(this.props.curUserId, contact)
+        }
+        this.setState({
+            selectedChatId: contactId,
+            currentTab: Tab.CHAT_TAB
+        })
     }
 
     exit() {
@@ -148,7 +165,8 @@ class ChatApp extends Component {
                         <SearchBar/>
                         <Tab currentTab={this.state.currentTab} selectTab={this.selectTab}/>
 
-                        {this.state.currentTab == Tab.CHAT_TAB && <ChatTab selectedId={this.state.selectedChatId}/>}
+                        {this.state.currentTab == Tab.CHAT_TAB && <ChatTab selectedChatId={this.state.selectedChatId}
+                                                                           startChat={this.startChat}/>}
 
                         {this.state.currentTab == Tab.FRIENDS_TAB && <FriendsTab selectContact={this.selectContact}
                                                                                  startChat={this.startChatFromContact}
@@ -159,7 +177,8 @@ class ChatApp extends Component {
 
                     <ChatWindow currentTab={this.state.currentTab}
                                 selectedChatId={this.state.selectedChatId}
-                                selectedContactId={this.state.selectedContactId}/>
+                                selectedContactId={this.state.selectedContactId}
+                                startChat={this.startChatFromContact}/>
                 </div>
             </div>
         )

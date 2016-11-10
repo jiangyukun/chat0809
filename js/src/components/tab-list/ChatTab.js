@@ -3,6 +3,8 @@
  */
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
+import classnames from 'classnames'
+import {ChatType} from "../../constants/ChatConstants";
 
 class ChatTab extends Component {
 
@@ -14,23 +16,30 @@ class ChatTab extends Component {
                         <img src="img/loading.gif" alt=""/>正在获取最近的聊天...
                     </p>*/}
                     <div>
-                        <div>
-                            <div className="chat_item slide-left active">
-                                <div className="ext">
-                                    <div className="attr"></div>
-                                </div>
+                        {
+                            this.props.singleMessage.map(msg=> {
+                                return (
+                                    <div key={msg.name}>
+                                        <div className={classnames('chat_item', 'slide-left', {'active': this.props.selectedChatId == msg.name})}
+                                                onClick={e=>this.props.startChat(msg.name, ChatType.CHAT)}>
+                                            <div className="ext">
+                                                <div className="attr"></div>
+                                            </div>
 
-                                <div className="avatar">
-                                    <img className="img" src="img/default.jpg" alt=""/>
-                                </div>
+                                            <div className="avatar">
+                                                <img className="img" src="img/default.jpg" alt=""/>
+                                            </div>
 
-                                <div className="info">
-                                    <h3 className="nickname">
-                                        <span className="nickname_text">江雨</span>
-                                    </h3>
-                                </div>
-                            </div>
-                        </div>
+                                            <div className="info">
+                                                <h3 className="nickname">
+                                                    <span className="nickname_text">{msg.name}</span>
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
                 </div>
             </div>
@@ -39,10 +48,10 @@ class ChatTab extends Component {
 }
 
 function mapStateToProps(state) {
-    let {patients, doctors, rooms} = state
+    let {singleMessage} = state
     return {
-        patients, doctors, rooms
+        singleMessage
     }
 }
 
-export default connect()(ChatTab)
+export default connect(mapStateToProps)(ChatTab)

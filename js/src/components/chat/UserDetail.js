@@ -33,7 +33,7 @@ class UserDetail extends Component {
                                 </div>
                             </div>
                             <div className="action_area">
-                                <a className="button" href="javascript:;">发消息</a>
+                                <a className="button" href="javascript:;" onClick={e=>this.props.startChat(match)}>发消息</a>
                             </div>
                         </div>
                     </div>
