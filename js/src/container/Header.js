@@ -2,24 +2,29 @@
  * jiangyukun on 2016/07/28 10:10
  */
 import React, {Component, PropTypes} from 'react'
-import {routerShape} from 'react-router'
-import {connect} from 'react-redux'
-
-import {exitChatSystem} from '../actions/chat'
+import {findDOMNode} from 'react-dom'
+import {events} from 'dom-helpers'
 
 class Header extends Component {
-    static contextTypes = {
-        curUserId: PropTypes.string,
-        router: routerShape
+    constructor(props) {
+        super(props)
+        this.handleOptClick = this.handleOptClick.bind(this)
     }
 
-    exit() {
-        this.props.exitChatSystem()
-        this.context.router.push('/signin')
+    handleOptClick(event) {
+        this.props.toggle()
+        event.stopPropagation()
+    }
+
+    componentDidMount() {
+        events.on(findDOMNode(this.opt), 'click', this.handleOptClick)
+    }
+
+    componentWillUnmount() {
+        events.off(findDOMNode(this.opt), 'click', this.handleOptClick)
     }
 
     render() {
-
         function getLoginName(id) {
             switch (id) {
                 case 'zxys':
@@ -39,37 +44,15 @@ class Header extends Component {
                 </div>
                 <div className="info">
                     <h3 className="nickname">
-                        <span className="display_name">{getLoginName(this.context.curUserId)}</span>
-                        <a className="opt">
+                        <span className="display_name">{getLoginName(this.props.curUserId)}</span>
+                        <a className="opt" href="javascript:;" ref={c=>this.opt = c}>
                             <i className="user_opt"></i>
                         </a>
                     </h3>
-
                 </div>
-                {/*<div className="container-fluid">
-                    <header className="row">
-                        <div className="col-xs-4">
-                            <span className="chat-system-text">小贝壳聊天系统</span>
-                        </div>
-                        <div className="col-xs-4 text-center">
-                            <span className="login-user"></span>
-                        </div>
-                        <div className="col-xs-4">
-                            <div className="pull-right exit">
-                                <button className="btn" onClick={e=>this.exit()}>退出登录</button>
-                            </div>
-                        </div>
-                    </header>
-                </div>*/}
             </div>
         )
     }
 }
 
-function mapStateToProps(state) {
-    return {}
-}
-
-export default connect(mapStateToProps, {
-    exitChatSystem
-})(Header)
+export default Header

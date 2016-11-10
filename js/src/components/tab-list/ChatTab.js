@@ -2,6 +2,7 @@
  * Created by jiangyukun on 2016/11/9.
  */
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
 
 class ChatTab extends Component {
 
@@ -9,9 +10,9 @@ class ChatTab extends Component {
         return (
             <div className="nav_view">
                 <div className="chat_list scrollbar-dynamic scroll-content scroll-scrolly_visible">
-                    <p className="ico_loading ng-hide">
-                        <img src="https://res.wx.qq.com/zh_CN/htmledition/v2/images/icon/ico_loading31aa32.gif" alt=""/>正在获取最近的聊天...
-                    </p>
+                    {/*<p className="ico_loading ng-hide">
+                        <img src="img/loading.gif" alt=""/>正在获取最近的聊天...
+                    </p>*/}
                     <div>
                         <div>
                             <div className="chat_item slide-left active">
@@ -37,4 +38,11 @@ class ChatTab extends Component {
     }
 }
 
-export default ChatTab
+function mapStateToProps(state) {
+    let {patients, doctors, rooms} = state
+    return {
+        patients, doctors, rooms
+    }
+}
+
+export default connect()(ChatTab)

@@ -4,18 +4,22 @@
 import React, {Component, PropTypes} from 'react'
 import {routerShape} from 'react-router'
 import {connect} from 'react-redux'
+import {events} from 'dom-helpers'
 
 import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
-import ChatPanel from './ChatPanel'
 import SystemMenu from '../components/SystemMenu'
 import SearchBar from '../components/SearchBar'
 import Tab from '../components/Tab'
 import ChatTab from '../components/tab-list/ChatTab'
+import FriendsTab from '../components/tab-list/FriendsTab'
+import ChatWindow from '../components/chat/ChatWindow'
+
 import {
     fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchPatientListFromServer, fetchDoctorListFromServer,
     classifyNewMessage, newMessageHinted,
-    startSingleChat, startRoomChat, handleCurrentChat
+    startSingleChat, startRoomChat, handleCurrentChat,
+    exitChatSystem
 } from '../actions/chat'
 
 class ChatApp extends Component {
@@ -33,6 +37,48 @@ class ChatApp extends Component {
 
     constructor(props) {
         super(props)
+        this.toggleSystemMenu = this.toggleSystemMenu.bind(this)
+        this.closeSystemMenu = this.closeSystemMenu.bind(this)
+        this.selectTab = this.selectTab.bind(this)
+        this.selectContact = this.selectContact.bind(this)
+        this.startChatFromContact = this.startChatFromContact.bind(this)
+        this.exit = this.exit.bind(this)
+        this.handleDocumentClick = this.handleDocumentClick.bind(this)
+        this.state = {
+            showSystemMenu: false,
+            currentTab: Tab.CHAT_TAB,
+            selectedChatId: null,
+            selectedContactId: null
+        }
+    }
+
+    toggleSystemMenu() {
+        this.setState({'showSystemMenu': !this.state.showSystemMenu})
+    }
+
+    closeSystemMenu() {
+        this.setState({'showSystemMenu': false})
+    }
+
+    selectTab(tab) {
+        this.setState({currentTab: tab})
+    }
+
+    selectContact(contactId) {
+        this.setState({selectedContactId: contactId})
+    }
+
+    startChatFromContact(contactId) {
+        this.setState({selectedChatId: contactId})
+    }
+
+    exit() {
+        this.props.exitChatSystem()
+        this.context.router.push('/signin')
+    }
+
+    handleDocumentClick() {
+        this.closeSystemMenu()
     }
 
     getChildContext() {
@@ -66,6 +112,10 @@ class ChatApp extends Component {
 
     }
 
+    componentDidMount() {
+        events.on(document, 'click', this.handleDocumentClick)
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.newMessage && !this.props.newMessage) {
             this.newMessageAudio.playAudio().then(()=> {
@@ -80,6 +130,10 @@ class ChatApp extends Component {
         }
     }
 
+    componentWillUnmount() {
+        events.off(document, 'click', this.handleDocumentClick)
+    }
+
     render() {
         return (
             <div className="main">
@@ -87,15 +141,25 @@ class ChatApp extends Component {
                     <SimpleAudio audioUrl="audio/new-message.wav" ref={c=>this.newMessageAudio = c}/>
                 </div>
                 <div className="main_inner">
-
                     <div className="panel">
-                        <Header />
+                        <Header
+                            curUserId={this.props.curUserId}
+                            toggle={this.toggleSystemMenu}/>
                         <SearchBar/>
-                        <Tab/>
-                        <ChatTab/>
+                        <Tab currentTab={this.state.currentTab} selectTab={this.selectTab}/>
 
-                        {/*<SystemMenu/>*/}
+                        {this.state.currentTab == Tab.CHAT_TAB && <ChatTab selectedId={this.state.selectedChatId}/>}
+
+                        {this.state.currentTab == Tab.FRIENDS_TAB && <FriendsTab selectContact={this.selectContact}
+                                                                                 startChat={this.startChatFromContact}
+                                                                                 selectedContactId={this.state.selectedContactId}/>}
+
+                        {this.state.showSystemMenu && <SystemMenu exit={()=>this.exit()}/>}
                     </div>
+
+                    <ChatWindow currentTab={this.state.currentTab}
+                                selectedChatId={this.state.selectedChatId}
+                                selectedContactId={this.state.selectedContactId}/>
                 </div>
             </div>
         )
@@ -129,5 +193,6 @@ export default connect(mapStateToProps, {
 
     startSingleChat,
     startRoomChat,
-    handleCurrentChat
+    handleCurrentChat,
+    exitChatSystem
 })(ChatApp)

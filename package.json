@@ -71,7 +71,7 @@
   "dependencies": {
     "babel-polyfill": "^6.16.0",
     "classnames": "^2.2.5",
-    "dom-helper": "^1.0.0",
+    "dom-helpers": "^3.0.0",
     "immutable": "^3.8.1",
     "lodash": "^4.16.5",
     "moment": "^2.15.2",
