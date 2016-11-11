@@ -1,11 +1,16 @@
 // 2016
 @import "variable";
-@import "core";
+@import "reset";
 @import "common";
 @import "app";
 @import "login";
 @import "chat";
 @import "icons";
+@import "chat/chat-list";
+@import "chat/contact-list";
+@import "chat/message";
+@import "chat/send-box";
+
 @import "component/image-preview";
 @import "component/select-emotions";
 @import "component/audio";

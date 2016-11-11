@@ -80,7 +80,7 @@ export function singleMessage(state = defaultState, action) {
         let name = action.currentSingle.name
         let matchMsg = iState.find(msg=>msg.get('name') == name)
         if (!matchMsg) {
-            return _update(iState, name)
+            return iState
         }
         return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
     }
@@ -165,7 +165,7 @@ export function singleMessage(state = defaultState, action) {
     //-----------------------------------------------
     //inner function
 
-    function _createMsg(name) {
+    function _createMsg(iState, name) {
         return iState.push(Map({
             name: name,
             reads: List([]),
@@ -177,7 +177,7 @@ export function singleMessage(state = defaultState, action) {
     function _update(iState, name, callback) {
         let matchMsg = iState.find(msg=>msg.get('name') == name)
         if (!matchMsg) {
-            iState = _createMsg(name)
+            iState = _createMsg(iState, name)
             if (!callback) {
                 return iState
             }

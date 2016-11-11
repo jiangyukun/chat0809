@@ -7,6 +7,11 @@ export let ChatType = {
     GROUP_CHAT: 'groupchat'
 }
 
+export let ContactType = {
+    SINGLE: 'single',
+    ROOM: 'room'
+}
+
 export let MessageType = {
     TEXT: 'txt',
     IMAGE: 'image',

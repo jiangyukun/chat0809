@@ -148,13 +148,6 @@ export function startRoomChat(room) {
     }
 }
 
-export function readSingleMessage(single) {
-    return {
-        type: actionConstants.chat.READ_SINGLE_MESSAGE,
-        single
-    }
-}
-
 export function exitChatSystem() {
     util.removeSession('accessToken')
     conn.closeConn()

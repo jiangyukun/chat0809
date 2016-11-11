@@ -10,23 +10,21 @@ class Tab extends Component {
         return (
             <div className="tab">
                 <div className="tab_item">
-                    <a className="chat" onDoubleClick={e=>this.click(e)} title="聊天" href="javascript:;">
-                        <i className={classnames('web_wechat_tab_chat', {'web_wechat_tab_chat_hl': this.props.currentTab == Tab.CHAT_TAB})}
-                           onClick={e=>this.props.selectTab(Tab.CHAT_TAB)}></i>
+                    <a className="chat" onDoubleClick={e=>this.click(e)} onClick={e=>this.props.selectTab(Tab.CHAT_TAB)} title="聊天" href="javascript:;">
+                        <i className={classnames('web_wechat_tab_chat', {'web_wechat_tab_chat_hl': this.props.currentTab == Tab.CHAT_TAB})}></i>
                     </a>
                 </div>
 
                 {/*<div className="tab_item">
-                    <a className="chat" title="阅读" href="javascript:;" onClick={e=>this.props.selectTab(Tab.CHAT_TAB)}>
-                        <i className="web_wechat_tab_public">
-                        </i>
-                    </a>
-                </div>*/}
+                 <a className="chat" title="阅读" href="javascript:;" onClick={e=>this.props.selectTab(Tab.CHAT_TAB)}>
+                 <i className="web_wechat_tab_public">
+                 </i>
+                 </a>
+                 </div>*/}
 
                 <div className="tab_item no_extra">
-                    <a className="chat" title="通讯录" href="javascript:;">
-                        <i className={classnames('web_wechat_tab_friends', {'web_wechat_tab_friends_hl': this.props.currentTab == Tab.FRIENDS_TAB})}
-                           onClick={e=>this.props.selectTab(Tab.FRIENDS_TAB)}></i>
+                    <a className="chat" title="通讯录" href="javascript:;" onClick={e=>this.props.selectTab(Tab.FRIENDS_TAB)}>
+                        <i className={classnames('web_wechat_tab_friends', {'web_wechat_tab_friends_hl': this.props.currentTab == Tab.FRIENDS_TAB})}></i>
                     </a>
                 </div>
             </div>

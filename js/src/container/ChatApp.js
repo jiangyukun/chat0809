@@ -11,9 +11,9 @@ import Header from './Header'
 import SystemMenu from '../components/SystemMenu'
 import SearchBar from '../components/SearchBar'
 import Tab from '../components/Tab'
-import ChatTab from '../components/tab-list/ChatTab'
-import FriendsTab from '../components/tab-list/FriendsTab'
-import ChatWindow from '../components/chat/ChatWindow'
+import ChatTab from '../components/tabs/ChatTab'
+import FriendsTab from '../components/tabs/FriendsTab'
+import ChatManage from '../components/chat/ChatManage'
 import {ChatType} from '../constants/ChatConstants'
 
 import {
@@ -175,7 +175,7 @@ class ChatApp extends Component {
                         {this.state.showSystemMenu && <SystemMenu exit={()=>this.exit()}/>}
                     </div>
 
-                    <ChatWindow currentTab={this.state.currentTab}
+                    <ChatManage currentTab={this.state.currentTab}
                                 selectedChatId={this.state.selectedChatId}
                                 selectedContactId={this.state.selectedContactId}
                                 startChat={this.startChatFromContact}/>
