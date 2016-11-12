@@ -3,6 +3,8 @@
  */
 import React, {Component} from 'react'
 
+import {ChatType} from '../../constants/ChatConstants'
+
 class RoomDetail extends Component {
     render() {
         let {match} = this.props
@@ -27,7 +29,7 @@ class RoomDetail extends Component {
                                 </div>
                             </div>
                             <div className="action_area">
-                                <a className="button" href="javascript:;">发消息</a>
+                                <a className="button" href="javascript:;" onClick={e=>this.props.startChat(match, ChatType.GROUP_CHAT)}>发消息</a>
                             </div>
                         </div>
                     </div>

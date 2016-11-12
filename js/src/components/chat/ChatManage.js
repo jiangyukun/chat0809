@@ -24,11 +24,14 @@ class ChatManage extends Component {
                 }
                 {
                     this.props.currentTab == Tab.CHAT_TAB && this.props.selectedChatId &&
-                    <ChatPanel msg={this.props.msg}
-                               curUserId={this.props.curUserId}
-                               chatType={this.props.chatType}
-                               to={this.props.selectedChatId}
-                               sendText={this.props.sendTextMessage}/>
+                    <ChatPanel
+                        chat={this.props.chat}
+                        msg={this.props.msg}
+                        curUserId={this.props.curUserId}
+                        chatType={this.props.chatType}
+                        to={this.props.selectedChatId}
+                        sendText={this.props.sendTextMessage}
+                        sendPicture={this.props.sendImageMessage}/>
                 }
                 {
                     this.props.currentTab == Tab.FRIENDS_TAB && !this.props.contactType &&
@@ -41,7 +44,8 @@ class ChatManage extends Component {
                 }
                 {
                     this.props.currentTab == Tab.FRIENDS_TAB && this.props.contactType == ContactType.ROOM &&
-                    <RoomDetail match={this.props.match}/>
+                    <RoomDetail match={this.props.match}
+                                startChat={this.props.startChat}/>
                 }
             </div>
         )
@@ -50,8 +54,8 @@ class ChatManage extends Component {
 
 function mapStateToProps(state, props) {
 
-    let {curUserId, patients, doctors, rooms, singleMessage, roomMessage} = state
-    let chatType, contactType, msg
+    let {curUserId, chatList, patients, doctors, rooms, singleMessage, roomMessage} = state
+    let chatType, contactType, msg, chat
 
     let match
     if ((match = patients.filter(patient=>patient.name == props.selectedContactId)) && match.length) {
@@ -59,19 +63,21 @@ function mapStateToProps(state, props) {
     } else if ((match = doctors.filter(doctor=>doctor.name == props.selectedContactId)) && match.length) {
         contactType = ContactType.SINGLE
     } else if ((match = rooms.filter(room=>room.id == props.selectedContactId)) && match.length) {
-        contactType = ChatType.ROOM
+        contactType = ContactType.ROOM
     }
 
-    msg = singleMessage.find(msg=>msg.name == props.selectedChatId)
-    chatType = ChatType.CHAT
-    if (!msg) {
-        msg = roomMessage.find(msg=>msg.id == props.selectedChatId)
-        chatType = ChatType.GROUP_CHAT
+    if (props.selectedChatId) {
+        chat = chatList.find(chat=>chat.id == props.selectedChatId)
+        chatType = chat.chatType
     }
+
+    msg = singleMessage.find(msg=>msg.name == props.selectedChatId) || roomMessage.find(msg=>msg.id == props.selectedChatId)
+
     return {
         curUserId,
         chatType,
         contactType,
+        chat,
         msg,
         match: match && match[0]
     }

@@ -70,7 +70,7 @@ class ChatApp extends Component {
         this.setState({selectedContactId: contactId})
     }
 
-    startChat(contactId, chatType) {
+    startChat(contactId) {
         this.setState({selectedChatId: contactId})
     }
 
@@ -78,10 +78,10 @@ class ChatApp extends Component {
         let contactId
         if (chatType == ChatType.CHAT) {
             contactId = contact.name
-            this.props.startSingleChat(this.props.curUserId, contact)
+            this.props.startSingleChat(contact)
         } else {
             contactId = contact.id
-            this.props.startRoomChat(this.props.curUserId, contact)
+            this.props.startRoomChat(contact)
         }
         this.setState({
             selectedChatId: contactId,

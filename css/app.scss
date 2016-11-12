@@ -133,22 +133,3 @@ body {
     left: 0;
 }
 
-.scroll-wrapper {
-    overflow: hidden !important;
-    padding: 0 !important;
-    position: relative;
-    & > .scroll-content {
-        border: 0 !important;
-        box-sizing: content-box !important;
-        height: auto;
-        left: 0;
-        margin: 0;
-        max-height: none !important;
-        max-width: none !important;
-        overflow: scroll !important;
-        padding: 0;
-        position: relative !important;
-        top: 0;
-        width: auto !important;
-    }
-}

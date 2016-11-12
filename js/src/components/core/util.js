@@ -2,20 +2,27 @@ import moment from 'moment'
 
 import notificationActions from '../../actions/NotificationActions'
 
-let uid = 1
+
+function setSession(key, value) {
+    window.sessionStorage.setItem(key, JSON.stringify(value))
+}
+
+function getSession(key) {
+    return JSON.parse(window.sessionStorage.getItem(key))
+}
+
+function removeSession(key) {
+    window.sessionStorage.removeItem(key)
+}
+
+let uid = getSession('uid') || 1
 
 export default  {
-    setSession (key, value) {
-        window.sessionStorage.setItem(key, JSON.stringify(value))
-    },
+    setSession,
 
-    getSession(key) {
-        return JSON.parse(window.sessionStorage.getItem(key))
-    },
+    getSession,
 
-    removeSession(key) {
-        window.sessionStorage.removeItem(key)
-    },
+    removeSession,
 
     getDataUrl(file) {
         return new Promise(function (resolve, reject) {
@@ -36,8 +43,11 @@ export default  {
         return moment().format('MM-DD HH:mm')
     },
 
-
     getUID() {
-        return '__uid__' + uid++
+        try {
+            return '__uid__' + uid++
+        } finally {
+            setSession('uid', uid)
+        }
     }
 }

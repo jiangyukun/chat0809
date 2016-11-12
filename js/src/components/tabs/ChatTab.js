@@ -13,15 +13,15 @@ class ChatTab extends Component {
             <div className="nav_view">
                 <div className="chat_list scrollbar-dynamic scroll-content scroll-scrolly_visible">
                     {/*<p className="ico_loading ng-hide">
-                        <img src="img/loading.gif" alt=""/>正在获取最近的聊天...
-                    </p>*/}
+                     <img src="img/loading.gif" alt=""/>正在获取最近的聊天...
+                     </p>*/}
                     <div>
                         {
-                            this.props.singleMessage.map(msg=> {
+                            this.props.convertChatList.map(convertChat=> {
                                 return (
-                                    <div key={msg.name}>
-                                        <div className={classnames('chat_item', 'slide-left', {'active': this.props.selectedChatId == msg.name})}
-                                                onClick={e=>this.props.startChat(msg.name, ChatType.CHAT)}>
+                                    <div key={convertChat.id}>
+                                        <div className={classnames('chat_item', 'slide-left', {'active': this.props.selectedChatId == convertChat.id})}
+                                             onClick={e=>this.props.startChat(convertChat.id, ChatType.CHAT)}>
                                             <div className="ext">
                                                 <div className="attr"></div>
                                             </div>
@@ -32,7 +32,7 @@ class ChatTab extends Component {
 
                                             <div className="info">
                                                 <h3 className="nickname">
-                                                    <span className="nickname_text">{msg.name}</span>
+                                                    <span className="nickname_text">{convertChat.nickname}</span>
                                                 </h3>
                                             </div>
                                         </div>
@@ -48,9 +48,33 @@ class ChatTab extends Component {
 }
 
 function mapStateToProps(state) {
-    let {singleMessage} = state
+    let {chatList, patients, rooms, doctors} = state
+    let convertChatList = chatList.map(chat=> {
+        let nickname = ''
+        if (chat.chatType == ChatType.CHAT) {
+            let p = patients.find(patient=>patient.name == chat.id)
+            if (p) {
+                nickname = p.nickname
+            }
+            let d = doctors.find(doctor=>doctor.name == chat.id)
+            if (d) {
+                nickname = d.nickname
+            }
+        } else {
+            let room = rooms.find(room=>room.id == chat.id)
+            if (room) {
+                nickname = room.name
+            }
+        }
+        return {
+            id: chat.id,
+            nickname,
+            txt: chat.txt
+        }
+    })
+
     return {
-        singleMessage
+        convertChatList
     }
 }
 

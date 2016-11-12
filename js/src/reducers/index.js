@@ -6,6 +6,7 @@ import {routerReducer as routing} from 'react-router-redux'
 
 import * as login from './login'
 import * as app from './app'
+import chatList from './chatList'
 import * as patients from './list/patients'
 import * as rooms from './list/rooms'
 import * as doctor from './list/doctors'
@@ -24,5 +25,6 @@ export default combineReducers({
     ...singleMessage,
     ...roomMessage,
     ...historyMessage,
+    chatList,
     routing
 })

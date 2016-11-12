@@ -2,6 +2,9 @@
  * Created by jiangyukun on 2016/11/10.
  */
 import React, {Component} from 'react'
+import classnames from 'classnames'
+
+import {ChatType} from '../../constants/ChatConstants'
 
 class DoctorList extends Component {
 
@@ -14,8 +17,11 @@ class DoctorList extends Component {
                 {
                     this.props.doctors.map(doctor=> {
                         return (
-                            <div key={doctor.name}>
-                                <div className="contact_item">
+                            <div key={doctor.name}
+                                 className={classnames('', {'active': doctor.name == this.props.selectedContactId})}
+                                 onDoubleClick={e=>this.props.startChat(doctor, ChatType.CHAT)}>
+                                <div className="contact_item"
+                                     onClick={e=>this.props.lookUserDetail(doctor.name)}>
                                     <div className="avatar">
                                         <img className="img" src="img/default.jpg"/>
                                     </div>

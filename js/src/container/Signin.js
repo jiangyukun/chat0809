@@ -73,7 +73,7 @@ class Signin extends Component {
                                 value={this.state.password}
                                 onChange={e=>this.handlePasswordChange(e)}/>
                         </div>
-                        <button className="login-btn" onClick={e=>this.login()}>登录</button>
+                        <a className="login-btn" href="javascript:;" onClick={e=>this.login()}>登录</a>
                     </form>
 
                 </div>

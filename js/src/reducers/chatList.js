@@ -4,6 +4,7 @@
 import {fromJS, Map, List} from 'immutable'
 
 import actionConstants from '../actions/actionConstants'
+import {ChatType} from '../constants/ChatConstants'
 
 let defaultState = []
 
@@ -17,6 +18,14 @@ export default function chatList(state = defaultState, action) {
         switch (action.type) {
             case actionConstants.chat.START_SINGLE_CHAT:
                 nextIState = startSingleChat()
+                break
+
+            case actionConstants.chat.START_GROUP_CHAT:
+                nextIState = startGroupChat()
+                break
+
+            case actionConstants.message.NEW_MSG:
+                nextIState = newMessage()
                 break
 
             default:
@@ -33,40 +42,51 @@ export default function chatList(state = defaultState, action) {
 
     function startSingleChat() {
         let {name} = action.currentSingle
-
-        return _sort(iState, name)
+        return _sort(iState, name, ChatType.CHAT)
     }
 
-    // ----------------------------
+    function startGroupChat() {
+        let {id} = action.currentRoom
+        return _sort(iState, id, ChatType.GROUP_CHAT)
+    }
 
-    function _createMsg(iState, id) {
-        return iState.push(Map({
+    function newMessage() {
+        let {from, type} =action.msg
+        return _sort(iState, from, type)
+    }
+
+    // ------------------------------------------
+
+    function _createMsg(curState, id, chatType) {
+        return curState.push(Map({
             id,
+            chatType,
             txt: ''
         }))
     }
 
-    function _sort(curState, id) {
-        let patient = curState.find(patient=>patient.get('id') == id)
-        if (!patient) {
-            curState = _update(curState, id)
+    function _sort(curState, id, chatType) {
+        let chat = curState.find(chat=>chat.get('id') == id)
+        if (!chat) {
+            curState = _update(curState, id, chatType)
+            chat = curState.find(chat=>chat.get('id') == id)
         }
-        let index = curState.indexOf(patient)
+        let index = curState.indexOf(chat)
         if (index == 0) {
             return curState
         }
-        return curState.splice(index, 1).unshift(patient)
+        return curState.splice(index, 1).unshift(chat)
     }
 
-    function _update(iState, id, callback) {
-        let matchMsg = iState.find(msg=>msg.get('id') == id)
-        if (!matchMsg) {
-            iState = _createMsg(iState, id)
+    function _update(curState, id, chatType, callback) {
+        let matchChat = curState.find(chat=>chat.get('id') == id)
+        if (!matchChat) {
+            curState = _createMsg(curState, id, chatType)
             if (!callback) {
-                return iState
+                return curState
             }
-            matchMsg = iState.find(msg=>msg.get('id') == id)
+            matchChat = curState.find(msg=>msg.get('id') == id)
         }
-        return iState.update(iState.indexOf(matchMsg), callback)
+        return curState.update(curState.indexOf(matchChat), callback)
     }
 }

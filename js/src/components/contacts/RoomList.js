@@ -18,7 +18,7 @@ class RoomList extends Component {
                     this.props.rooms.map(room=> {
                         return (
                             <div key={room.id}
-                                 className={classnames('', {'active': room.id == this.props.selectedId})}
+                                 className={classnames('', {'active': room.id == this.props.selectedContactId})}
                                  onDoubleClick={e=>this.props.startChat(room, ChatType.GROUP_CHAT)}>
                                 <div className="contact_item"
                                      onClick={e=>this.props.lookRoomDetail(room.id)}>

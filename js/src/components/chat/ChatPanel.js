@@ -1,21 +1,41 @@
 /**
  * Created by jiangyukun on 2016/11/11.
  */
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 
+import Message from '../message/Message'
 import SendBox from './SendBox'
+import {ChatType, DIR} from '../../constants/ChatConstants'
 
 class ChatPanel extends Component {
 
     render() {
-        let {msg} = this.props
-        let empty = msg.reads.length == 0 && msg.unreads.length == 0
+        let {chat, msg} = this.props
+        let empty = !msg || ( msg.reads.length == 0 && msg.unreads.length == 0)
+
+        let showMessage = message=> {
+
+            let dir = message.from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
+            return (
+                <div key={message.id}>
+                    <div className="clearfix">
+                        <div>
+                            <Message dir={dir}
+                                     chatTime={message.chatTime}
+                                     msgType={message.type}
+                                     data={message.data}/>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
         return (
             <div className="box chat">
                 <div className="box_hd">
                     <div className="title_wrap">
                         <div className="title poi">
-                            <a className="title_name">哈哈哈</a>
+                            <a className="title_name">{chat.id}</a>
                             <i className="web_wechat_down_icon"></i>
                         </div>
                     </div>
@@ -26,29 +46,12 @@ class ChatPanel extends Component {
                         {
                             !empty && (
                                 <div>
-                                    <div>
-                                        <div className="clearfix">
-                                            <div>
-                                                <div className="message me">
-                                                    <p className="message_system">
-                                                        <span className="content">10:30</span>
-                                                    </p>
-                                                    <img className="avatar" src="img/default.jpg"/>
-                                                    <div className="content">
-                                                        <div className="bubble js_message_bubble bubble_primary right">
-                                                            <div className="bubble_cont">
-                                                                <div className="plain">
-                                                                    <pre className="js_message_plain ">aa</pre>
-                                                                    <img src="img/loading.gif" className="ico_loading"/>
-                                                                    <i className="ico_fail web_wechat_message_fail ng-hide" title="重新发送"></i>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {
+                                        msg.reads.map(read=> showMessage(read))
+                                    }
+                                    {
+                                        msg.unreads.map(unread=> showMessage(unread))
+                                    }
                                 </div>
                             )
                         }
@@ -66,6 +69,16 @@ class ChatPanel extends Component {
             </div>
         )
     }
+}
+
+ChatPanel.propTypes = {
+    chat: PropTypes.object,
+    msg: PropTypes.object,
+    curUserId: PropTypes.string,
+    chatType: PropTypes.oneOf([ChatType.CHAT, ChatType.GROUP_CHAT]),
+    to: PropTypes.string,
+    sendText: PropTypes.func,
+    sendPicture: PropTypes.func
 }
 
 export default ChatPanel

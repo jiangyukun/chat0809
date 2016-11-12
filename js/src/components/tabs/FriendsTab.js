@@ -30,15 +30,18 @@ class FriendsTab extends Component {
 
                     <div className="scroll-content">
                         <PatientList patients={this.props.patients}
-                                     selectedId={this.props.selectedContactId}
+                                     selectedContactId={this.props.selectedContactId}
                                      startChat={this.props.startChat}
                                      lookUserDetail={this.lookUserDetail}/>
                         <RoomList rooms={this.props.rooms}
-                                  selectedId={this.props.selectedContactId}
+                                  selectedContactId={this.props.selectedContactId}
                                   startChat={this.props.startChat}
                                   lookRoomDetail={this.lookRoomDetail}
                         />
-                        <DoctorList doctors={this.props.doctors}/>
+                        <DoctorList doctors={this.props.doctors}
+                                    selectedContactId={this.props.selectedContactId}
+                                    startChat={this.props.startChat}
+                                    lookUserDetail={this.lookUserDetail}/>
                     </div>
                 </div>
             </div>

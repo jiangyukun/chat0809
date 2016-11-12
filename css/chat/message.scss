@@ -57,6 +57,10 @@
     -webkit-border-radius: 3px;
     margin: 0 10px;
 
+    &.bubble_default {
+        background-color: #fff;
+    }
+
     &.bubble_primary {
         background-color: #b2e281;
         &.right:after {
@@ -64,17 +68,26 @@
             border-left-width: 4px;
         }
     }
-
-    &.right:before, &.right:after {
-        left: 100%;
-    }
-
     &:before, &:after {
         position: absolute;
         top: 14px;
         border: 6px solid transparent;
         content: " ";
     }
+
+    &.left:before, &.left:after {
+        right: 100%;
+    }
+
+    &.left:after {
+        border-right-color: #FFF;
+        border-right-width: 4px;
+    }
+
+    &.right:before, &.right:after {
+        left: 100%;
+    }
+
     &.right:after {
         border-left-color: #FFF;
     }
@@ -94,18 +107,33 @@
             margin-top: -7px;
             margin-right: 13px;
         }
+        .ico_fail {
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            margin-top: -11px;
+            margin-right: 9px;
+            cursor: pointer;
+        }
+    }
+
+    .picture {
+        border-radius: 4px;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+
+        img {
+            display: block;
+            cursor: pointer;
+            max-width: 350px;
+            max-height: 240px;
+        }
     }
 
     img {
         vertical-align: middle;
     }
 
-    .plain .ico_fail {
-        position: absolute;
-        right: 100%;
-        top: 50%;
-        margin-top: -11px;
-        margin-right: 9px;
-        cursor: pointer;
-    }
 }

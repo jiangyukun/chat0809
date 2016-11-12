@@ -18,7 +18,7 @@ class PatientList extends Component {
                     this.props.patients.map(patient=> {
                         return (
                             <div key={patient.name}
-                                 className={classnames('', {'active': patient.name == this.props.selectedId})}
+                                 className={classnames('', {'active': patient.name == this.props.selectedContactId})}
                                  onDoubleClick={e=>this.props.startChat(patient, ChatType.CHAT)}>
                                 <div className="contact_item"
                                      onClick={e=>this.props.lookUserDetail(patient.name)}>

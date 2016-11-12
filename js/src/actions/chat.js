@@ -103,8 +103,9 @@ export function fetchDoctorListFromServer() {
     }
 }
 
-export function startSingleChat(curUserId, single) {
-    return dispatch=> {
+export function startSingleChat(single) {
+    return (dispatch, getState)=> {
+        let {curUserId} = getState()
         chatService.fetchHistoryMessage(curUserId, single.name).then(result=> {
             // console.log(result)
             dispatch({

@@ -12,6 +12,15 @@ export let ContactType = {
     ROOM: 'room'
 }
 
+export let DIR = {
+    LEFT: 'left',
+    RIGHT: 'right'
+}
+
+export let MSG_TYPE = {
+    PLAIN: 'plain'
+}
+
 export let MessageType = {
     TEXT: 'txt',
     IMAGE: 'image',
