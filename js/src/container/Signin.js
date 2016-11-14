@@ -60,19 +60,15 @@ class Signin extends Component {
 
                 <div className="login_box">
                     <form className="login-form" autoComplete="off">
-                        <div className="username-container">
-                            <input type="text" autoComplete="off" className="username"
-                                   placeholder="输入聊天系统账号"
-                                   value={this.state.username}
-                                   onChange={e=>this.handleUserNameChange(e)}/>
-                        </div>
-                        <div className="password-container">
-                            <input
-                                type="password" autoComplete="off" className="password"
-                                placeholder="输入聊天系统密码"
-                                value={this.state.password}
-                                onChange={e=>this.handlePasswordChange(e)}/>
-                        </div>
+                        <input type="text" autoComplete="off" className="username"
+                               placeholder="输入聊天系统账号"
+                               value={this.state.username}
+                               onChange={e=>this.handleUserNameChange(e)}/>
+                        <input
+                            type="password" autoComplete="off" className="password"
+                            placeholder="输入聊天系统密码"
+                            value={this.state.password}
+                            onChange={e=>this.handlePasswordChange(e)}/>
                         <a className="login-btn" href="javascript:;" onClick={e=>this.login()}>登录</a>
                     </form>
 

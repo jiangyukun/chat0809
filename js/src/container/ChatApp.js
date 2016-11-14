@@ -11,10 +11,11 @@ import Header from './Header'
 import SystemMenu from '../components/SystemMenu'
 import SearchBar from '../components/SearchBar'
 import Tab from '../components/Tab'
-import ChatTab from '../components/tabs/ChatTab'
-import FriendsTab from '../components/tabs/FriendsTab'
-import ChatManage from '../components/chat/ChatManage'
-import {ChatType} from '../constants/ChatConstants'
+import ChatTab from './tabs/ChatTab'
+import ContactTab from './tabs/ContactTab'
+import IndexChat from './IndexChat'
+import ContactChat from './ContactChat'
+import {ChatType, APP_SOUND} from '../constants/ChatConstants'
 
 import {
     fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchPatientListFromServer, fetchDoctorListFromServer,
@@ -24,42 +25,20 @@ import {
 } from '../actions/chat'
 
 class ChatApp extends Component {
-    static contextTypes = {
-        router: routerShape
-    }
-
-    static childContextTypes = {
-        curUserId: PropTypes.string,
-        patients: PropTypes.array,
-        rooms: PropTypes.array,
-        doctors: PropTypes.array,
-        members: PropTypes.array
-    }
-
     constructor(props) {
         super(props)
-        this.toggleSystemMenu = this.toggleSystemMenu.bind(this)
-        this.closeSystemMenu = this.closeSystemMenu.bind(this)
         this.selectTab = this.selectTab.bind(this)
         this.selectContact = this.selectContact.bind(this)
         this.startChat = this.startChat.bind(this)
         this.startChatFromContact = this.startChatFromContact.bind(this)
         this.exit = this.exit.bind(this)
-        this.handleDocumentClick = this.handleDocumentClick.bind(this)
         this.state = {
             showSystemMenu: false,
+            appSoundState: APP_SOUND.ON,
             currentTab: Tab.CHAT_TAB,
             selectedChatId: null,
             selectedContactId: null
         }
-    }
-
-    toggleSystemMenu() {
-        this.setState({'showSystemMenu': !this.state.showSystemMenu})
-    }
-
-    closeSystemMenu() {
-        this.setState({'showSystemMenu': false})
     }
 
     selectTab(tab) {
@@ -94,10 +73,6 @@ class ChatApp extends Component {
         this.context.router.push('/signin')
     }
 
-    handleDocumentClick() {
-        this.closeSystemMenu()
-    }
-
     getChildContext() {
         return {
             curUserId: this.props.curUserId,
@@ -114,30 +89,27 @@ class ChatApp extends Component {
             return
         }
         let curUserId = this.props.curUserId
+        this.props.fetchGroupListFromHuanXin()
         if (curUserId.indexOf('bkkf') != -1 || curUserId.indexOf('bkzs') != -1) {
             this.props.fetchPatientListFromServer()
-            this.props.fetchGroupListFromHuanXin()
             this.props.fetchDoctorListFromServer()
         } else if (curUserId.indexOf('zxys') != -1) {
             this.props.fetchPatientListFromServer()
-            this.props.fetchGroupListFromHuanXin()
         } else {
             this.props.fetchPatientListFromHuanXin()
-            this.props.fetchGroupListFromHuanXin()
             this.props.fetchDoctorListFromServer()
         }
-
-    }
-
-    componentDidMount() {
-        events.on(document, 'click', this.handleDocumentClick)
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.newMessage && !this.props.newMessage) {
-            this.newMessageAudio.playAudio().then(()=> {
+            if (this.state.appSoundState == APP_SOUND.ON) {
+                this.newMessageAudio.playAudio().then(()=> {
+                    this.props.newMessageHinted()
+                })
+            } else {
                 this.props.newMessageHinted()
-            })
+            }
         }
     }
 
@@ -145,10 +117,6 @@ class ChatApp extends Component {
         if (this.props.newMessage) {
             this.props.classifyNewMessage(this.props.app.from, this.props.patients, this.props.doctors)
         }
-    }
-
-    componentWillUnmount() {
-        events.off(document, 'click', this.handleDocumentClick)
     }
 
     render() {
@@ -159,30 +127,51 @@ class ChatApp extends Component {
                 </div>
                 <div className="main_inner">
                     <div className="panel">
-                        <Header
-                            curUserId={this.props.curUserId}
-                            toggle={this.toggleSystemMenu}/>
+                        <Header curUserId={this.props.curUserId}
+                                toggle={()=>this.setState({showSystemMenu: !this.state.showSystemMenu})}
+                                close={()=>this.setState({showSystemMenu: false})}/>
+
                         <SearchBar/>
+
                         <Tab currentTab={this.state.currentTab} selectTab={this.selectTab}/>
 
-                        {this.state.currentTab == Tab.CHAT_TAB && <ChatTab selectedChatId={this.state.selectedChatId}
-                                                                           startChat={this.startChat}/>}
+                        {this.state.currentTab == Tab.CHAT_TAB && <ChatTab selectedChatId={this.state.selectedChatId} startChat={this.startChat}/>}
 
-                        {this.state.currentTab == Tab.FRIENDS_TAB && <FriendsTab selectContact={this.selectContact}
+                        {this.state.currentTab == Tab.FRIENDS_TAB && <ContactTab selectContact={this.selectContact}
                                                                                  startChat={this.startChatFromContact}
                                                                                  selectedContactId={this.state.selectedContactId}/>}
 
-                        {this.state.showSystemMenu && <SystemMenu exit={()=>this.exit()}/>}
+                        {this.state.showSystemMenu && <SystemMenu appSoundState={this.state.appSoundState}
+                                                                  closeSound={()=>this.setState({appSoundState: APP_SOUND.OFF})}
+                                                                  openSound={()=>this.setState({appSoundState: APP_SOUND.ON})}
+                                                                  exit={()=>this.exit()}/>}
                     </div>
 
-                    <ChatManage currentTab={this.state.currentTab}
-                                selectedChatId={this.state.selectedChatId}
-                                selectedContactId={this.state.selectedContactId}
-                                startChat={this.startChatFromContact}/>
+                    {
+                        this.state.currentTab == Tab.CHAT_TAB && <IndexChat selectedChatId={this.state.selectedChatId}/>
+                    }
+
+                    {
+                        this.state.currentTab == Tab.FRIENDS_TAB && <ContactChat selectedContactId={this.state.selectedContactId}
+                                                                                 startChat={this.startChatFromContact}/>
+                    }
+
                 </div>
             </div>
         )
     }
+}
+
+ChatApp.contextTypes = {
+    router: routerShape
+}
+
+ChatApp.childContextTypes = {
+    curUserId: PropTypes.string,
+    patients: PropTypes.array,
+    rooms: PropTypes.array,
+    doctors: PropTypes.array,
+    members: PropTypes.array
 }
 
 function mapStateToProps(state) {

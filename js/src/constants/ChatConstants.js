@@ -17,8 +17,9 @@ export let DIR = {
     RIGHT: 'right'
 }
 
-export let MSG_TYPE = {
-    PLAIN: 'plain'
+export let APP_SOUND = {
+    ON: 'on',
+    OFF: 'off'
 }
 
 export let MessageType = {

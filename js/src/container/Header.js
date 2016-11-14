@@ -9,19 +9,36 @@ class Header extends Component {
     constructor(props) {
         super(props)
         this.handleOptClick = this.handleOptClick.bind(this)
+        this.handleContainerClick = this.handleContainerClick.bind(this)
+        this.handleDocumentClick = this.handleDocumentClick.bind(this)
     }
 
-    handleOptClick(event) {
+    handleOptClick() {
         this.props.toggle()
-        event.stopPropagation()
+    }
+
+    handleContainerClick() {
+        this.keep = true
+    }
+
+    handleDocumentClick() {
+        if (this.keep) {
+            this.keep = false
+            return
+        }
+        this.props.close()
     }
 
     componentDidMount() {
         events.on(findDOMNode(this.opt), 'click', this.handleOptClick)
+        events.on(findDOMNode(this), 'click', this.handleContainerClick)
+        events.on(document, 'click', this.handleDocumentClick)
     }
 
     componentWillUnmount() {
         events.off(findDOMNode(this.opt), 'click', this.handleOptClick)
+        events.off(findDOMNode(this), 'click', this.handleContainerClick)
+        events.off(document, 'click', this.handleDocumentClick)
     }
 
     render() {

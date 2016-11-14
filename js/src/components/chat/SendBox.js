@@ -1,20 +1,17 @@
 /**
  * Created by jiangyukun on 2016/11/11.
  */
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
 import {events} from 'dom-helpers'
 
 import Emoji from './toolbar/Emoji'
+import {ChatType} from '../../constants/ChatConstants'
 
 class SendBox extends Component {
     constructor(props) {
         super(props)
         this.handlePreKeyDown = this.handlePreKeyDown.bind(this)
         this.state = {showEmoji: false}
-    }
-
-    toggleEmoji() {
-        this.setState({showEmoji: !this.state.showEmoji})
     }
 
     sendText() {
@@ -28,13 +25,11 @@ class SendBox extends Component {
     }
 
     handleFile(event) {
-        // console.log(event.target)
         let {curUserId, chatType, to} = this.props
         this.props.sendPicture(curUserId, to, chatType, event.target)
     }
 
     handlePreKeyDown(event) {
-        // console.log(event);
         if (event.keyCode == 13) {
             if (event.ctrlKey) {
                 this.preDom.innerHTML = this.preDom.innerHTML + '<div><br></div>'
@@ -56,7 +51,7 @@ class SendBox extends Component {
         return (
             <div className="box_ft">
                 <div className="toolbar">
-                    <a className="web_wechat_face" href="javascript:;" onClick={e=>this.toggleEmoji()}></a>
+                    <a className="web_wechat_face" href="javascript:;" onClick={e=>this.setState({showEmoji: !this.state.showEmoji})}></a>
                     <a className="web_wechat_pic webuploader-container" href="javascript:;" title="图片" onClick={e=>this.fileInput.click()}>
                         <div className="file_input_wrapper">
                             <input type="file" name="file" className="webuploader-element-invisible" multiple="multiple"
@@ -73,10 +68,18 @@ class SendBox extends Component {
                     <span className="desc">按下Ctrl+Enter换行</span>
                     <a className="btn btn_send" onClick={e=>this.sendText()} href="javascript:;">发送</a>
                 </div>
-                <Emoji show={this.state.showEmoji}/>
+                {
+                    this.state.showEmoji && <Emoji show={this.state.showEmoji} close={()=>this.setState({showEmoji: false})}/>
+                }
             </div>
         )
     }
+}
+
+SendBox.propTypes = {
+    curUserId: PropTypes.string,
+    to: PropTypes.string,
+    chatType: PropTypes.oneOf([ChatType.CHAT, ChatType.GROUP_CHAT])
 }
 
 export default SendBox

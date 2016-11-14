@@ -4,11 +4,11 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
-import PatientList from '../contacts/PatientList'
-import RoomList from '../contacts/RoomList'
-import DoctorList from '../contacts/DoctorList'
+import PatientList from '../../components/contacts/PatientList'
+import RoomList from '../../components/contacts/RoomList'
+import DoctorList from '../../components/contacts/DoctorList'
 
-class FriendsTab extends Component {
+class ContactTab extends Component {
     constructor(props) {
         super(props)
         this.lookUserDetail = this.lookUserDetail.bind(this)
@@ -57,4 +57,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps, {})(FriendsTab)
+export default connect(mapStateToProps, {})(ContactTab)

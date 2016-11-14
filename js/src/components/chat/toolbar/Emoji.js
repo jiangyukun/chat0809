@@ -22,7 +22,7 @@ class Emoji extends Component {
             this.keepEmoji = false
             return
         }
-        this.setState({showEmoji: false})
+        this.props.close()
     }
 
     componentDidMount() {
@@ -60,7 +60,8 @@ class Emoji extends Component {
 }
 
 Emoji.propTypes = {
-    show: PropTypes.bool
+    show: PropTypes.bool,
+    close: PropTypes.func
 }
 
 export default Emoji
