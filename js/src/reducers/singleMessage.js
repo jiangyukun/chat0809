@@ -77,7 +77,7 @@ export function singleMessage(state = defaultState, action) {
     }
 
     function startSingleChat() {
-        let name = action.currentSingle.name
+        let {name} = action
         let matchMsg = iState.find(msg=>msg.get('name') == name)
         if (!matchMsg) {
             return iState

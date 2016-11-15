@@ -10,9 +10,9 @@ import * as conn from '../services/huanxinApi'
 
 export function fetchPatientListFromHuanXin() {
 
-    return dispatch=> {
-        conn.getRoster().then((patients)=> {
-            patients = patients.map(patient=> {
+    return dispatch => {
+        conn.getRoster().then((patients) => {
+            patients = patients.map(patient => {
                 return {
                     id: patient.jid,
                     name: patient.name
@@ -30,9 +30,9 @@ export function fetchPatientListFromHuanXin() {
 }
 
 export function fetchPatientListFromServer() {
-    return dispatch=> {
+    return dispatch => {
         chatService.fetchPatientList().then((result) => {
-            let patients = result.map(patient=> {
+            let patients = result.map(patient => {
                 let name = patient['user_Name']
                 let nickname = patient['patient_Name']
                 return {
@@ -42,7 +42,7 @@ export function fetchPatientListFromServer() {
             dispatch({
                 type: actionConstants.chat.INIT_PATIENT_SUCCESS, patients
             })
-        }, ()=> {
+        }, () => {
             dispatch({
                 type: actionConstants.chat.INIT_PATIENT_FAILURE
             })
@@ -56,10 +56,10 @@ export function fetchPatientListFromServer() {
 
 export function fetchGroupListFromHuanXin() {
 
-    return dispatch=> {
+    return dispatch => {
 
-        conn.listRooms().then(result=> {
-            let rooms = result.map(room=> {
+        conn.listRooms().then(result => {
+            let rooms = result.map(room => {
                 return {
                     id: room.roomId,
                     name: room.name
@@ -77,11 +77,10 @@ export function fetchGroupListFromHuanXin() {
     }
 }
 
-
 export function fetchDoctorListFromServer() {
-    return dispatch=> {
+    return dispatch => {
         chatService.fetchDoctorList().then((result) => {
-            let doctors = result.map(doctor=> {
+            let doctors = result.map(doctor => {
                 let name = doctor['user_Name']
                 let nickname = doctor['doctor_Name']
                 return {id: name, name: name, nickname}
@@ -90,7 +89,7 @@ export function fetchDoctorListFromServer() {
                 type: actionConstants.chat.INIT_DOCTOR_SUCCESS, doctors
             })
 
-        }, ()=> {
+        }, () => {
             dispatch({
                 type: actionConstants.chat.INIT_DOCTOR_FAILURE
             })
@@ -103,30 +102,27 @@ export function fetchDoctorListFromServer() {
     }
 }
 
-export function startSingleChat(single) {
-    return (dispatch, getState)=> {
+export function startSingleChat(name) {
+    return (dispatch, getState) => {
         let {curUserId} = getState()
-        chatService.fetchHistoryMessage(curUserId, single.name).then(result=> {
-            // console.log(result)
+        chatService.fetchHistoryMessage(curUserId, name).then(result => {
             dispatch({
                 type: actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS,
-                currentSingle: single,
                 historyMessages: result
             })
         })
 
         dispatch({
             type: actionConstants.chat.START_SINGLE_CHAT,
-            currentSingle: single
+            name
         })
     }
-
 }
 
-export function startRoomChat(room) {
-    return dispatch=> {
-        conn.queryRoomMember(room.id).then(result=> {
-            let groupMembers = result.map(member=> {
+export function startRoomChat(roomId) {
+    return dispatch => {
+        conn.queryRoomMember(roomId).then(result => {
+            let groupMembers = result.map(member => {
                 let jid = member.jid;
                 let from = (jid.indexOf('_') + 1)
                 let to = jid.indexOf('@')
@@ -138,13 +134,13 @@ export function startRoomChat(room) {
                 type: actionConstants.chat.FETCH_GROUP_MEMBER_SUCCESS,
                 members: groupMembers
             })
-        }, error=> {
+        }, error => {
             console.log(error)
         })
 
         dispatch({
             type: actionConstants.chat.START_GROUP_CHAT,
-            currentRoom: room
+            roomId: roomId
         })
     }
 }
@@ -180,8 +176,8 @@ export function sendTextMessage(from, to, chatType, content) {
 }
 
 export function sendImageMessage(from, to, chatType, fileInput) {
-    return dispatch=> {
-        conn.sendPicture(to, chatType, fileInput).then(url=> {
+    return dispatch => {
+        conn.sendPicture(to, chatType, fileInput).then(url => {
             dispatch({
                 type: actionConstants.message.SEND_IMAGE_MESSAGE_SUCCESS,
                 from,
@@ -189,7 +185,7 @@ export function sendImageMessage(from, to, chatType, fileInput) {
                 chatType,
                 url
             })
-        }, error=> {
+        }, error => {
             console.log(error)
             dispatch({
                 type: actionConstants.message.SEND_IMAGE_MESSAGE_FAILURE,
@@ -228,28 +224,6 @@ export function handleCurrentChat(chatType, selectedId) {
     }
 }
 
-
 export function sendAudioMessage() {
 
 }
-
-// ------------------------------------------
-
-/*
-
-
-
- export function sendImageMessage(to, chatType, image) {
- return {
- type: actionConstants.SEND_IMAGE_MESSAGE, to, chatType, image
- }
- }
-
- export function sendAudioMessage(to, chatType, audio) {
- return {
- type: actionConstants.SEND_AUDIO_MESSAGE, to, chatType, audio
- }
- }
-
-
- */

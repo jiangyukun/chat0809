@@ -4,6 +4,7 @@
 import React, {Component, PropTypes} from 'react'
 import {events} from 'dom-helpers'
 
+import webImUtil from '../core/webImUtil'
 import Emoji from './toolbar/Emoji'
 import {ChatType} from '../../constants/ChatConstants'
 
@@ -11,7 +12,7 @@ class SendBox extends Component {
     constructor(props) {
         super(props)
         this.handlePreKeyDown = this.handlePreKeyDown.bind(this)
-        this.state = {showEmoji: false}
+        this.state = {showEmoji: false, txt: 'aa'}
     }
 
     sendText() {
@@ -20,13 +21,19 @@ class SendBox extends Component {
         if (!txt || !txt.trim()) {
             return
         }
-        this.props.sendText(curUserId, to, chatType, this.preDom.innerHTML)
+        this.props.sendText(curUserId, to, chatType, this.preDom.innerText)
         this.preDom.innerHTML = ''
     }
 
     handleFile(event) {
         let {curUserId, chatType, to} = this.props
         this.props.sendPicture(curUserId, to, chatType, event.target)
+    }
+
+    selectEmoji(key) {
+        this.preDom.innerHTML = this.preDom.innerHTML + '<img class="send-box-emoji" src="' + webImUtil.getEmojiUrl(key) + "\"/>"
+        this.setState({showEmoji: false})
+        this.preDom.focus()
     }
 
     handlePreKeyDown(event) {
@@ -51,25 +58,29 @@ class SendBox extends Component {
         return (
             <div className="box_ft">
                 <div className="toolbar">
-                    <a className="web_wechat_face" href="javascript:;" onClick={e=>this.setState({showEmoji: !this.state.showEmoji})}></a>
-                    <a className="web_wechat_pic webuploader-container" href="javascript:;" title="图片" onClick={e=>this.fileInput.click()}>
+                    <a className="web_wechat_face" href="javascript:;" onClick={e => this.setState({showEmoji: !this.state.showEmoji})}></a>
+                    <a className="web_wechat_pic webuploader-container" href="javascript:;" title="图片" onClick={e => this.fileInput.click()}>
                         <div className="file_input_wrapper">
                             <input type="file" name="file" className="webuploader-element-invisible" multiple="multiple"
-                                   ref={c=>this.fileInput = c}
-                                   onChange={e=>this.handleFile(e)}/>
+                                   ref={c => this.fileInput = c}
+                                   onChange={e => this.handleFile(e)}/>
                             <label className="input_label"></label>
                         </div>
                     </a>
                 </div>
                 <div className="content">
-                    <pre ref={c=>this.preDom = c} contentEditable="true" className="flex edit_area"></pre>
+                    <pre ref={c => this.preDom = c} contentEditable="true" className="flex edit_area">
+                        {this.state.txt}
+                    </pre>
                 </div>
                 <div className="action">
                     <span className="desc">按下Ctrl+Enter换行</span>
-                    <a className="btn btn_send" onClick={e=>this.sendText()} href="javascript:;">发送</a>
+                    <a className="btn btn_send" onClick={e => this.sendText()} href="javascript:;">发送</a>
                 </div>
                 {
-                    this.state.showEmoji && <Emoji show={this.state.showEmoji} close={()=>this.setState({showEmoji: false})}/>
+                    this.state.showEmoji && <Emoji show={this.state.showEmoji}
+                                                   close={() => this.setState({showEmoji: false})}
+                                                   selectEmoji={key => this.selectEmoji(key)}/>
                 }
             </div>
         )

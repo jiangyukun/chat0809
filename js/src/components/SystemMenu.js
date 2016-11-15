@@ -14,7 +14,7 @@ class SystemMenu extends Component {
 
     render() {
         return (
-            <div className={classnames('mmpop', 'system_menu')} tabIndex="-1">
+            <div className={classnames('mmpop', 'system_menu')} tabIndex="-1" style={{top: '60px', left: '85px'}}>
                 <ul className="dropdown_menu">
                     <li>
                         {

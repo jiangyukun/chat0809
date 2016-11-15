@@ -52,6 +52,15 @@
             -moz-border-radius: 2px;
             -webkit-border-radius: 2px;
         }
+        .icon {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            color: #FFF;
+            font-style: normal;
+            font-size: 12px;
+            text-align: center;
+        }
     }
 
     .info {
@@ -72,6 +81,17 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             word-wrap: normal;
+        }
+
+        .msg {
+            color: #989898;
+            font-size: 13px;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            word-wrap: normal;
+            height: 1.5em;
         }
     }
 

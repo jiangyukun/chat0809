@@ -115,6 +115,9 @@
             height: 25px;
             display: inline-block;
             font-size: 14px;
+            &.poi {
+                cursor: pointer;
+            }
         }
     }
 
@@ -228,9 +231,16 @@
         max-height: none !important;
         max-width: none !important;
         //overflow: scroll !important;
+        overflow: auto;
         padding: 0;
         position: relative !important;
         top: 0;
         width: auto !important;
     }
 }
+
+@import "chat/chat-list";
+@import "chat/contact-list";
+@import "chat/message";
+@import "chat/send-box";
+@import "chat/members";

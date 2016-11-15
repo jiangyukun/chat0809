@@ -3,7 +3,10 @@
  */
 import React, {Component, PropTypes} from 'react'
 import {findDOMNode} from 'react-dom'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import {events} from 'dom-helpers'
+
+import webImUtil from '../../core/webImUtil'
 
 class Emoji extends Component {
 
@@ -36,19 +39,35 @@ class Emoji extends Component {
     }
 
     render() {
+        let getEmojiIcon = () => {
+            let emotions = WebIM.Emoji, emtMap = emotions.map, emtPath = emotions.path;
+
+            let icon = []
+            for (let key in emtMap) {
+                if (emtMap.hasOwnProperty(key)) {
+                    icon.push(
+                        <a key={key} title="" type="qq" className="face"
+                           style={webImUtil.getEmojiStyle(key)}
+                           onClick={e => this.props.selectEmoji(key)}></a>
+                    )
+                }
+            }
+            return icon
+        }
+
         return (
             <div className="mmpop slide-top" style={{top: '-272px', left: '15px'}}>
                 <div className="expression">
                     <ul className="exp_hd">
                         <li className="exp_hd_item active">
-                            <a href="javascript:;">默认</a>
+                            <a href="javascript:">默认</a>
                         </li>
                     </ul>
                     <div className="scroll-wrapper exp_bd scrollbar-dynamic">
                         <div className="exp_bd scrollbar-dynamic scroll-content">
                             <div className="exp_cont active">
                                 <div className="qq_face">
-
+                                    {getEmojiIcon()}
                                 </div>
                             </div>
                         </div>
@@ -61,7 +80,8 @@ class Emoji extends Component {
 
 Emoji.propTypes = {
     show: PropTypes.bool,
-    close: PropTypes.func
+    close: PropTypes.func,
+    selectEmoji: PropTypes.func
 }
 
 export default Emoji

@@ -41,17 +41,23 @@ export default function chatList(state = defaultState, action) {
     //--------------------------------------
 
     function startSingleChat() {
-        let {name} = action.currentSingle
+        let {name} = action
+        if (iState.find(chat => chat.get('id') == name)) {
+            return iState
+        }
         return _sort(iState, name, ChatType.CHAT)
     }
 
     function startGroupChat() {
-        let {id} = action.currentRoom
-        return _sort(iState, id, ChatType.GROUP_CHAT)
+        let {roomId} = action
+        if (iState.find(chat => chat.get('id') == roomId)) {
+            return iState
+        }
+        return _sort(iState, roomId, ChatType.GROUP_CHAT)
     }
 
     function newMessage() {
-        let {from, type} =action.msg
+        let {from, type} = action.msg
         return _sort(iState, from, type)
     }
 
@@ -66,10 +72,10 @@ export default function chatList(state = defaultState, action) {
     }
 
     function _sort(curState, id, chatType) {
-        let chat = curState.find(chat=>chat.get('id') == id)
+        let chat = curState.find(chat => chat.get('id') == id)
         if (!chat) {
             curState = _update(curState, id, chatType)
-            chat = curState.find(chat=>chat.get('id') == id)
+            chat = curState.find(chat => chat.get('id') == id)
         }
         let index = curState.indexOf(chat)
         if (index == 0) {
@@ -79,13 +85,13 @@ export default function chatList(state = defaultState, action) {
     }
 
     function _update(curState, id, chatType, callback) {
-        let matchChat = curState.find(chat=>chat.get('id') == id)
+        let matchChat = curState.find(chat => chat.get('id') == id)
         if (!matchChat) {
             curState = _createMsg(curState, id, chatType)
             if (!callback) {
                 return curState
             }
-            matchChat = curState.find(msg=>msg.get('id') == id)
+            matchChat = curState.find(msg => msg.get('id') == id)
         }
         return curState.update(curState.indexOf(matchChat), callback)
     }

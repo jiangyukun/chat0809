@@ -5,16 +5,21 @@ import React, {Component, PropTypes} from 'react'
 
 import Message from '../message/Message'
 import SendBox from './SendBox'
+import RoomMembers from './RoomMembers'
 import {ChatType, DIR} from '../../constants/ChatConstants'
 
 class ChatPanel extends Component {
+    constructor() {
+        super()
+        this.state = {showRoomMember: false}
+    }
 
     render() {
-        let {chat, msg} = this.props
+        let {convertChat, msg} = this.props
+        let {chatType} = convertChat
         let empty = !msg || ( msg.reads.length == 0 && msg.unreads.length == 0)
 
-        let showMessage = message=> {
-
+        let showMessage = message => {
             let dir = message.from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
             return (
                 <div key={message.id}>
@@ -34,11 +39,21 @@ class ChatPanel extends Component {
             <div className="box chat">
                 <div className="box_hd">
                     <div className="title_wrap">
-                        <div className="title poi">
-                            <a className="title_name">{chat.id}</a>
+                        <div className="title poi" onClick={e => this.setState({showRoomMember: !this.state.showRoomMember})}>
+                            <a className="title_name">{convertChat.nickname || convertChat.id}</a>
+                            {
+                                chatType == ChatType.GROUP_CHAT && (
+                                    <span className="title_count ">({this.props.members.length || ''})</span>
+                                )
+                            }
                             <i className="web_wechat_down_icon"></i>
                         </div>
                     </div>
+                    {
+                        chatType == ChatType.GROUP_CHAT && this.state.showRoomMember && (
+                            <RoomMembers members={this.props.members} close={() => this.setState({showRoomMember: false})}/>
+                        )
+                    }
                 </div>
 
                 <div className="scroll-wrapper box_bd chat_bd scrollbar-dynamic">
@@ -47,10 +62,10 @@ class ChatPanel extends Component {
                             !empty && (
                                 <div>
                                     {
-                                        msg.reads.map(read=> showMessage(read))
+                                        msg.reads.map(read => showMessage(read))
                                     }
                                     {
-                                        msg.unreads.map(unread=> showMessage(unread))
+                                        msg.unreads.map(unread => showMessage(unread))
                                     }
                                 </div>
                             )
@@ -65,17 +80,17 @@ class ChatPanel extends Component {
                     </div>
                 </div>
 
-                <SendBox {...this.props}/>
+                <SendBox {...this.props} chatType={convertChat.chatType}/>
             </div>
         )
     }
 }
 
 ChatPanel.propTypes = {
-    chat: PropTypes.object,
+    convertChat: PropTypes.object,
     msg: PropTypes.object,
+    members: PropTypes.array,
     curUserId: PropTypes.string,
-    chatType: PropTypes.oneOf([ChatType.CHAT, ChatType.GROUP_CHAT]),
     to: PropTypes.string,
     sendText: PropTypes.func,
     sendPicture: PropTypes.func

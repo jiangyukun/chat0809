@@ -54,7 +54,7 @@ export function roomMessage(state = defaultState, action) {
     //-------------------------------------------------------------------
 
     function startGroupChat() {
-        let matchMsg = iState.find(msg=>msg.get('id') == action.currentRoom.id)
+        let matchMsg = iState.find(msg=>msg.get('id') == action.roomId)
         if (!matchMsg) {
             return iState
         }

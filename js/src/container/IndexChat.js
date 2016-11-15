@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 
 import ChatPanel from '../components/chat/ChatPanel'
 import NoChat from '../components/chat/NoChat'
-
+import busHelper from '../core/busHelper'
 import {sendTextMessage, sendImageMessage, sendAudioMessage} from '../actions/chat'
 
 class ChatManage extends Component {
@@ -20,8 +20,9 @@ class ChatManage extends Component {
                 {
                     this.props.selectedChatId &&
                     <ChatPanel
-                        chat={this.props.chat}
+                        convertChat={this.props.convertChat}
                         msg={this.props.msg}
+                        members={this.props.members}
                         curUserId={this.props.curUserId}
                         chatType={this.props.chatType}
                         to={this.props.selectedChatId}
@@ -40,22 +41,25 @@ ChatManage.propTypes = {
 }
 
 function mapStateToProps(state, props) {
-
-    let {curUserId, chatList, singleMessage, roomMessage} = state
-    let chatType, msg, chat
-
-    if (props.selectedChatId) {
-        chat = chatList.find(chat=>chat.id == props.selectedChatId)
-        chatType = chat.chatType
+    if (!props.selectedChatId) {
+        return {}
     }
 
-    msg = singleMessage.find(msg=>msg.name == props.selectedChatId) || roomMessage.find(msg=>msg.id == props.selectedChatId)
+    let {curUserId, chatList, singleMessage, roomMessage, patients, doctors, rooms, members} = state
+    let msg, chat, convertChat = {}
+
+    chat = chatList.find(chat => chat.id == props.selectedChatId)
+    convertChat.id = chat.id
+    convertChat.chatType = chat.chatType
+    convertChat.nickname = busHelper.getNickname(chat.id, chat.chatType, patients, doctors, rooms)
+
+    msg = busHelper.getMessage(props.selectedChatId, singleMessage, roomMessage)
 
     return {
         curUserId,
-        chatType,
-        chat,
-        msg
+        convertChat,
+        msg,
+        members
     }
 }
 

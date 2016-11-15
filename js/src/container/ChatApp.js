@@ -49,18 +49,23 @@ class ChatApp extends Component {
         this.setState({selectedContactId: contactId})
     }
 
-    startChat(contactId) {
+    startChat(contactId, chatType) {
         this.setState({selectedChatId: contactId})
+        if (chatType == ChatType.CHAT) {
+            this.props.startSingleChat(contactId)
+        } else {
+            this.props.startRoomChat(contactId)
+        }
     }
 
     startChatFromContact(contact, chatType) {
         let contactId
         if (chatType == ChatType.CHAT) {
             contactId = contact.name
-            this.props.startSingleChat(contact)
+            this.props.startSingleChat(contactId)
         } else {
             contactId = contact.id
-            this.props.startRoomChat(contact)
+            this.props.startRoomChat(contactId)
         }
         this.setState({
             selectedChatId: contactId,
@@ -104,7 +109,7 @@ class ChatApp extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.newMessage && !this.props.newMessage) {
             if (this.state.appSoundState == APP_SOUND.ON) {
-                this.newMessageAudio.playAudio().then(()=> {
+                this.newMessageAudio.playAudio().then(() => {
                     this.props.newMessageHinted()
                 })
             } else {
@@ -123,13 +128,13 @@ class ChatApp extends Component {
         return (
             <div className="main">
                 <div className="hidden" style={{height: 0}}>
-                    <SimpleAudio audioUrl="audio/new-message.wav" ref={c=>this.newMessageAudio = c}/>
+                    <SimpleAudio audioUrl="audio/new-message.wav" ref={c => this.newMessageAudio = c}/>
                 </div>
                 <div className="main_inner">
                     <div className="panel">
                         <Header curUserId={this.props.curUserId}
-                                toggle={()=>this.setState({showSystemMenu: !this.state.showSystemMenu})}
-                                close={()=>this.setState({showSystemMenu: false})}/>
+                                toggle={() => this.setState({showSystemMenu: !this.state.showSystemMenu})}
+                                close={() => this.setState({showSystemMenu: false})}/>
 
                         <SearchBar/>
 
@@ -142,9 +147,9 @@ class ChatApp extends Component {
                                                                                  selectedContactId={this.state.selectedContactId}/>}
 
                         {this.state.showSystemMenu && <SystemMenu appSoundState={this.state.appSoundState}
-                                                                  closeSound={()=>this.setState({appSoundState: APP_SOUND.OFF})}
-                                                                  openSound={()=>this.setState({appSoundState: APP_SOUND.ON})}
-                                                                  exit={()=>this.exit()}/>}
+                                                                  closeSound={() => this.setState({appSoundState: APP_SOUND.OFF})}
+                                                                  openSound={() => this.setState({appSoundState: APP_SOUND.ON})}
+                                                                  exit={() => this.exit()}/>}
                     </div>
 
                     {
