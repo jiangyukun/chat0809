@@ -3,17 +3,31 @@
  */
 import React, {Component, PropTypes} from 'react'
 import {findDOMNode} from 'react-dom'
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
+import CSSTransitionGroup from 'react-addons-css-transition-group'
 import {events} from 'dom-helpers'
 
 import webImUtil from '../../core/webImUtil'
 
 class Emoji extends Component {
-
     constructor() {
         super()
+        this.state = {show: false}
         this.handleEmojiContainerClick = this.handleEmojiContainerClick.bind(this)
         this.handleDocumentClick = this.handleDocumentClick.bind(this)
+    }
+
+    toggle() {
+        this.keepEmoji = true
+        this.setState({show: !this.state.show})
+    }
+
+    close() {
+        this.setState({show: false})
+    }
+
+    selectEmoji(key) {
+        this.props.selectEmoji(key)
+        this.close()
     }
 
     handleEmojiContainerClick() {
@@ -25,7 +39,7 @@ class Emoji extends Component {
             this.keepEmoji = false
             return
         }
-        this.props.close()
+        this.close()
     }
 
     componentDidMount() {
@@ -40,7 +54,7 @@ class Emoji extends Component {
 
     render() {
         let getEmojiIcon = () => {
-            let emotions = WebIM.Emoji, emtMap = emotions.map, emtPath = emotions.path;
+            let emotions = WebIM.Emoji, emtMap = emotions.map
 
             let icon = []
             for (let key in emtMap) {
@@ -48,7 +62,7 @@ class Emoji extends Component {
                     icon.push(
                         <a key={key} title="" type="qq" className="face"
                            style={webImUtil.getEmojiStyle(key)}
-                           onClick={e => this.props.selectEmoji(key)}></a>
+                           onClick={e => this.selectEmoji(key)}></a>
                     )
                 }
             }
@@ -56,31 +70,37 @@ class Emoji extends Component {
         }
 
         return (
-            <div className="mmpop slide-top" style={{top: '-272px', left: '15px'}}>
-                <div className="expression">
-                    <ul className="exp_hd">
-                        <li className="exp_hd_item active">
-                            <a href="javascript:">默认</a>
-                        </li>
-                    </ul>
-                    <div className="scroll-wrapper exp_bd scrollbar-dynamic">
-                        <div className="exp_bd scrollbar-dynamic scroll-content">
-                            <div className="exp_cont active">
-                                <div className="qq_face">
-                                    {getEmojiIcon()}
+            <CSSTransitionGroup transitionName="slide-top"
+                                     transitionEnterTimeout={250}
+                                     transitionLeaveTimeout={250}>
+                {
+                    this.state.show && (
+                        <div className="mmpop" style={{top: '-272px', left: '15px'}}>
+                            <div className="expression">
+                                <ul className="exp_hd">
+                                    <li className="exp_hd_item active">
+                                        <a href="javascript:">默认</a>
+                                    </li>
+                                </ul>
+                                <div className="scroll-wrapper exp_bd scrollbar-dynamic">
+                                    <div className="exp_bd scrollbar-dynamic scroll-content">
+                                        <div className="exp_cont active">
+                                            <div className="qq_face">
+                                                {getEmojiIcon()}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
+                    )
+                }
+            </CSSTransitionGroup>
         )
     }
 }
 
 Emoji.propTypes = {
-    show: PropTypes.bool,
-    close: PropTypes.func,
     selectEmoji: PropTypes.func
 }
 

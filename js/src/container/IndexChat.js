@@ -9,8 +9,7 @@ import NoChat from '../components/chat/NoChat'
 import busHelper from '../core/busHelper'
 import {sendTextMessage, sendImageMessage, sendAudioMessage} from '../actions/chat'
 
-class ChatManage extends Component {
-
+class IndexChat extends Component {
     render() {
         return (
             <div style={{height: '100%'}}>
@@ -34,7 +33,7 @@ class ChatManage extends Component {
     }
 }
 
-ChatManage.propTypes = {
+IndexChat.propTypes = {
     selectedChatId: PropTypes.string,
     selectedContactId: PropTypes.string,
     startChat: PropTypes.func
@@ -67,4 +66,4 @@ export default connect(mapStateToProps, {
     sendTextMessage,
     sendImageMessage,
     sendAudioMessage
-})(ChatManage)
+})(IndexChat)

@@ -3,6 +3,7 @@
  */
 import React, {Component, PropTypes} from 'react'
 import {findDOMNode} from 'react-dom'
+import CssTransitionGroup from 'react-addons-css-transition-group'
 import {events} from 'dom-helpers'
 
 class RoomMembers extends Component {
@@ -36,33 +37,38 @@ class RoomMembers extends Component {
 
     render() {
         return (
-            <div>
-                <div className="mmpop members_wrp slide-down" tabIndex="-1">
-                    <div className="members">
-                        <div className="scroll-wrapper scrollbar-dynamic members_inner">
-                            <div className="scrollbar-dynamic members_inner scroll-content">
-                                {
-                                    this.props.members.map(member => {
-                                        return (
-                                            <div key={member.jid} className="member">
-                                                <img src="img/default.jpg" className="avatar"/>
-                                                <p className="nickname">{member.name}</p>
-                                            </div>
-                                        )
-                                    })
-                                }
+            <CssTransitionGroup transitionName="slide-down" transitionEnterTimeout={250} transitionLeaveTimeout={250}>
+                {
+                    this.props.showRoomMember && (
+                        <div className="mmpop members_wrp slide-down" tabIndex="-1">
+                            <div className="members">
+                                <div className="scroll-wrapper scrollbar-dynamic members_inner">
+                                    <div className="scrollbar-dynamic members_inner scroll-content">
+                                        {
+                                            this.props.members.map(member => {
+                                                return (
+                                                    <div key={member.jid} className="member">
+                                                        <img src="img/default.jpg" className="avatar"/>
+                                                        <p className="nickname">{member.name}</p>
+                                                    </div>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
+                    )
+                }
+            </CssTransitionGroup>
         )
     }
 }
 
 RoomMembers.propTypes = {
-    members: PropTypes.array,
-    close: PropTypes.func
+    showRoomMember: PropTypes.bool,
+    close: PropTypes.func,
+    members: PropTypes.array
 }
 
 export default RoomMembers

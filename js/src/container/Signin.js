@@ -11,10 +11,6 @@ import util from '../components/core/util'
 import {checkAutoLogin, loginToHuanxin, clearLoginFailure} from '../actions/login'
 
 class Signin extends Component {
-    static contextTypes = {
-        router: routerShape
-    }
-
     constructor(props) {
         super(props)
         this.state = {
@@ -28,11 +24,19 @@ class Signin extends Component {
     }
 
     handlePasswordChange(event) {
-        var state = this.state
         this.setState({password: event.target.value})
     }
 
+    handlePasswordEnter(event) {
+        if (event.which == 13) {
+            this.login()
+        }
+    }
+
     login() {
+        if (!this.state.username || !this.state.password) {
+            return
+        }
         this.props.loginToHuanxin(this.state.username, this.state.password)
     }
 
@@ -63,15 +67,15 @@ class Signin extends Component {
                         <input type="text" autoComplete="off" className="username"
                                placeholder="输入聊天系统账号"
                                value={this.state.username}
-                               onChange={e=>this.handleUserNameChange(e)}/>
+                               onChange={e => this.handleUserNameChange(e)}/>
                         <input
                             type="password" autoComplete="off" className="password"
                             placeholder="输入聊天系统密码"
                             value={this.state.password}
-                            onChange={e=>this.handlePasswordChange(e)}/>
-                        <a className="login-btn" href="javascript:;" onClick={e=>this.login()}>登录</a>
+                            onChange={e => this.handlePasswordChange(e)}
+                            onKeyDown={e => this.handlePasswordEnter(e)}/>
+                        <a className="login-btn" href="javascript:" onClick={e => this.login()}>登录</a>
                     </form>
-
                 </div>
 
                 <div className="copyright">
@@ -80,6 +84,10 @@ class Signin extends Component {
             </div>
         )
     }
+}
+
+Signin.contextTypes = {
+    router: routerShape
 }
 
 function mapStateToProps(state) {

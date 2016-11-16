@@ -12,7 +12,6 @@ class SendBox extends Component {
     constructor(props) {
         super(props)
         this.handlePreKeyDown = this.handlePreKeyDown.bind(this)
-        this.state = {showEmoji: false, txt: 'aa'}
     }
 
     sendText() {
@@ -32,7 +31,6 @@ class SendBox extends Component {
 
     selectEmoji(key) {
         this.preDom.innerHTML = this.preDom.innerHTML + '<img class="send-box-emoji" src="' + webImUtil.getEmojiUrl(key) + "\"/>"
-        this.setState({showEmoji: false})
         this.preDom.focus()
     }
 
@@ -58,8 +56,8 @@ class SendBox extends Component {
         return (
             <div className="box_ft">
                 <div className="toolbar">
-                    <a className="web_wechat_face" href="javascript:;" onClick={e => this.setState({showEmoji: !this.state.showEmoji})}></a>
-                    <a className="web_wechat_pic webuploader-container" href="javascript:;" title="图片" onClick={e => this.fileInput.click()}>
+                    <a className="web_wechat_face" href="javascript:" onClick={e => this.emoji.toggle()}></a>
+                    <a className="web_wechat_pic webuploader-container" href="javascript:" title="图片" onClick={e => this.fileInput.click()}>
                         <div className="file_input_wrapper">
                             <input type="file" name="file" className="webuploader-element-invisible" multiple="multiple"
                                    ref={c => this.fileInput = c}
@@ -69,19 +67,13 @@ class SendBox extends Component {
                     </a>
                 </div>
                 <div className="content">
-                    <pre ref={c => this.preDom = c} contentEditable="true" className="flex edit_area">
-                        {this.state.txt}
-                    </pre>
+                    <pre ref={c => this.preDom = c} contentEditable="true" className="flex edit_area"></pre>
                 </div>
                 <div className="action">
                     <span className="desc">按下Ctrl+Enter换行</span>
-                    <a className="btn btn_send" onClick={e => this.sendText()} href="javascript:;">发送</a>
+                    <a className="btn btn_send" onClick={e => this.sendText()} href="javascript:">发送</a>
                 </div>
-                {
-                    this.state.showEmoji && <Emoji show={this.state.showEmoji}
-                                                   close={() => this.setState({showEmoji: false})}
-                                                   selectEmoji={key => this.selectEmoji(key)}/>
-                }
+                <Emoji ref={c => this.emoji = c} selectEmoji={key => this.selectEmoji(key)}/>
             </div>
         )
     }

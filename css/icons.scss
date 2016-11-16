@@ -88,9 +88,10 @@
 }
 
 .web_wechat_nomes_icon {
-    background: url(../img/icons.png) 0 -1332px;
-    width: 100px;
-    height: 90px;
+    background: url(../img/icon/logo-01.png);
+    background-size: cover;
+    width: 80px;
+    //height: 80px;
     vertical-align: middle;
     display: inline-block;
 }
