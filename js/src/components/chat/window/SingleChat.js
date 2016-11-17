@@ -34,7 +34,6 @@ class SingleChat extends Component {
                     <div className="title_wrap">
                         <div className="title poi">
                             <a className="title_name">{convertChat.nickname || convertChat.id}</a>
-                            <i className="web_wechat_down_icon"></i>
                         </div>
                     </div>
                 </div>

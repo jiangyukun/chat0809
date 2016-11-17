@@ -9,7 +9,7 @@ import {events} from 'dom-helpers'
 import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
 import SystemMenu from '../components/SystemMenu'
-import SearchBar from '../components/SearchBar'
+import SearchBar from './SearchBar'
 import Tab from '../components/Tab'
 import ChatTab from './tabs/ChatTab'
 import ContactTab from './tabs/ContactTab'
@@ -50,7 +50,7 @@ class ChatApp extends Component {
     }
 
     startChat(contactId, chatType) {
-        this.setState({selectedChatId: contactId})
+        this.setState({selectedChatId: contactId, currentTab: Tab.CHAT_TAB})
         if (chatType == ChatType.CHAT) {
             this.props.startSingleChat(contactId)
         } else {
@@ -76,16 +76,6 @@ class ChatApp extends Component {
     exit() {
         this.props.exitChatSystem()
         this.context.router.push('/signin')
-    }
-
-    getChildContext() {
-        return {
-            curUserId: this.props.curUserId,
-            patients: this.props.patients,
-            doctors: this.props.doctors,
-            rooms: this.props.rooms,
-            members: this.props.members
-        }
     }
 
     componentWillMount() {
@@ -136,7 +126,7 @@ class ChatApp extends Component {
                                 toggle={() => this.setState({showSystemMenu: !this.state.showSystemMenu})}
                                 close={() => this.setState({showSystemMenu: false})}/>
 
-                        <SearchBar/>
+                        <SearchBar startChat={this.startChat}/>
 
                         <Tab currentTab={this.state.currentTab} selectTab={this.selectTab}/>
 
@@ -169,14 +159,6 @@ class ChatApp extends Component {
 
 ChatApp.contextTypes = {
     router: routerShape
-}
-
-ChatApp.childContextTypes = {
-    curUserId: PropTypes.string,
-    patients: PropTypes.array,
-    rooms: PropTypes.array,
-    doctors: PropTypes.array,
-    members: PropTypes.array
 }
 
 function mapStateToProps(state) {

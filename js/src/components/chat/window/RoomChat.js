@@ -14,6 +14,11 @@ class RoomChat extends Component {
         this.state = {showRoomMember: false}
     }
 
+    toggleRoomMembers() {
+        this.setState({showRoomMember: !this.state.showRoomMember})
+        this._roomMembers.toggle()
+    }
+
     render() {
         let {convertChat, msg} = this.props
         let empty = !msg || ( msg.reads.length == 0 && msg.unreads.length == 0)
@@ -38,15 +43,16 @@ class RoomChat extends Component {
             <div className="box chat">
                 <div className="box_hd">
                     <div className="title_wrap">
-                        <div className="title poi" onClick={e => this.setState({showRoomMember: !this.state.showRoomMember})}>
+                        <div className="title poi" onClick={e => this.toggleRoomMembers()}>
                             <a className="title_name">{convertChat.nickname || convertChat.id}</a>
                             <span className="title_count ">({this.props.members.length || ''})</span>
-                            <i className="web_wechat_down_icon"></i>
+                            {
+                                this.state.showRoomMember ? <i className="web_wechat_up_icon"></i> : <i className="web_wechat_down_icon"></i>
+                            }
                         </div>
                     </div>
 
-                    <RoomMembers members={this.props.members} showRoomMember={this.state.showRoomMember}
-                                 close={() => this.setState({showRoomMember: false})}/>
+                    <RoomMembers members={this.props.members} ref={c => this._roomMembers = c}/>
                 </div>
 
                 <div className="scroll-wrapper box_bd chat_bd scrollbar-dynamic">

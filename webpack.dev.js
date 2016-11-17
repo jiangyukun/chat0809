@@ -18,7 +18,8 @@ module.exports = {
         loaders: [
             {test: /\.js$/, loaders: ['babel'], exclude: /node_modules/, include: __dirname},
             {test: /\.scss$/, exclude: /node_modules/, loader: 'style!css!postcss!sass?sourceMap'},
-            {test: /\.(jpg|png)$/, loaders: ['url?limit=8192']}
+            {test: /\.(jpg|png)$/, loaders: ['url?limit=8192']},
+            {test: /\.svg$/, loader: "file"}
         ]
     },
     postcss: [

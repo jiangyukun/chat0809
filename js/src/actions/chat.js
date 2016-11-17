@@ -81,8 +81,8 @@ export function fetchDoctorListFromServer() {
     return dispatch => {
         chatService.fetchDoctorList().then((result) => {
             let doctors = result.map(doctor => {
-                let name = doctor['user_Name']
-                let nickname = doctor['doctor_Name']
+                let name = doctor['user_Name'] || ''
+                let nickname = doctor['doctor_Name'] || ''
                 return {id: name, name: name, nickname}
             })
             dispatch({

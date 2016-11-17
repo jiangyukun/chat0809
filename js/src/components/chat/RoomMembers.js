@@ -11,6 +11,16 @@ class RoomMembers extends Component {
         super(props)
         this.handleContainerClick = this.handleContainerClick.bind(this)
         this.handleDocumentClick = this.handleDocumentClick.bind(this)
+        this.state = {show: false}
+    }
+
+    toggle() {
+        this.keep = true
+        this.setState({show: !this.state.show})
+    }
+
+    close() {
+        this.setState({show: false})
     }
 
     handleContainerClick() {
@@ -22,7 +32,7 @@ class RoomMembers extends Component {
             this.keep = false
             return
         }
-        this.props.close()
+        this.close()
     }
 
     componentDidMount() {
@@ -39,7 +49,7 @@ class RoomMembers extends Component {
         return (
             <CssTransitionGroup transitionName="slide-down" transitionEnterTimeout={250} transitionLeaveTimeout={250}>
                 {
-                    this.props.showRoomMember && (
+                    this.state.show && (
                         <div className="mmpop members_wrp slide-down" tabIndex="-1">
                             <div className="members">
                                 <div className="scroll-wrapper scrollbar-dynamic members_inner">
@@ -66,8 +76,6 @@ class RoomMembers extends Component {
 }
 
 RoomMembers.propTypes = {
-    showRoomMember: PropTypes.bool,
-    close: PropTypes.func,
     members: PropTypes.array
 }
 
