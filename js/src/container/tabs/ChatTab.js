@@ -83,11 +83,18 @@ function mapStateToProps(state) {
         let message = busHelper.getMessage(chat.id, singleMessage, roomMessage)
         let unreadCount = 0, lastContent = ''
         if (message) {
-            unreadCount = message.unreads.length
+            let {reads, unreads} = message
+            unreadCount = unreads.length
             if (unreadCount != 0) {
-                lastContent = message.unreads[message.unreads.length - 1].data
-            } else if (message.reads.length > 0) {
-                lastContent = message.reads[message.reads.length - 1].data
+                let {data} = unreads[unreads.length - 1]
+                if (typeof data == 'string') {
+                    lastContent = data
+                }
+            } else if (reads.length > 0) {
+                let {data} = reads[reads.length - 1]
+                if (typeof data == 'string') {
+                    lastContent = data
+                }
             }
         }
         return {

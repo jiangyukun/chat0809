@@ -2,10 +2,12 @@
  * Created by jiangyukun on 2016/11/11.
  */
 import React, {Component, PropTypes} from 'react'
+import {connect} from 'react-redux'
 
 import SingleChat from './window/SingleChat'
 import RoomChat from './window/RoomChat'
 import {ChatType} from '../../constants/ChatConstants'
+import {sendTextMessage, sendImageMessage, sendAudioMessage} from '../../actions/chat'
 
 class ChatPanel extends Component {
     render() {
@@ -20,12 +22,26 @@ class ChatPanel extends Component {
 
 ChatPanel.propTypes = {
     convertChat: PropTypes.object,
-    msg: PropTypes.object,
+    message: PropTypes.object,
     members: PropTypes.array,
     curUserId: PropTypes.string,
     to: PropTypes.string,
     sendText: PropTypes.func,
-    sendPicture: PropTypes.func
+    sendPicture: PropTypes.func,
+    sendAudio: PropTypes.func
 }
 
-export default ChatPanel
+function mapStateToProps(state, ownProps) {
+    let {convertChat, msg, to} = ownProps
+    let {app, members, curUserId} = state
+    return {
+        convertChat, msg, to,
+        app, members, curUserId
+    }
+}
+
+export default connect(mapStateToProps, {
+    sendText: sendTextMessage,
+    sendPicture: sendImageMessage,
+    sendAudio: sendAudioMessage
+})(ChatPanel)

@@ -6,6 +6,8 @@ import {fromJS} from 'immutable'
 import actionConstants from '../actions/actionConstants'
 
 let defaultState = {
+    autoLogin: false,
+    username: '',
     newMessage: false,
     from: '',
     to: '',
@@ -17,31 +19,56 @@ export function app(state = defaultState, action) {
     return handle()
 
     function handle() {
-        let newIState = iState
+        let nextIState = iState
         switch (action.type) {
+            case actionConstants.app.INIT_SYSTEM:
+                nextIState = initSystem()
+                break
+
+            case actionConstants.app.AUTO_LOGIN:
+                nextIState = autoLogin()
+                break
+
+            case actionConstants.LOGIN_SUCCESS:
+                nextIState = loginSuccess()
+                break
 
             case actionConstants.message.NEW_MSG:
-                newIState = newMessage()
+                nextIState = newMessage()
                 break
 
             case actionConstants.chat.NEW_MESSAGE_HINT_COMPLETE:
-                newIState = newMessageHintComplete()
+                nextIState = newMessageHintComplete()
                 break
 
             case actionConstants.EXIT_CHAT_SYSTEM:
-                newIState = exitChatSystem()
+                nextIState = exitChatSystem()
                 break
 
             default:
                 break
         }
-        if (newIState == iState) {
+        if (nextIState == iState) {
             return state
         }
-        return newIState.toJS()
+        return nextIState.toJS()
     }
 
     //-----------------------------------------
+
+    function initSystem() {
+        let {username} = action
+        return iState.set('username', username)
+    }
+
+    function autoLogin() {
+        let {username} = action
+        return iState.set('autoLogin', true).set('username', username)
+    }
+
+    function loginSuccess() {
+        return iState.set('autoLogin', false)
+    }
 
     function newMessage() {
         let curState = iState

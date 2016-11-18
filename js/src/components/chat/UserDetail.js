@@ -31,11 +31,11 @@ class UserDetail extends Component {
                             <div className="meta_area">
                                 <div className="meta_item">
                                     <label className="label">备注：</label>
-                                    <p className="value">小贝壳</p>
+                                    <p className="value">小贝壳用户</p>
                                 </div>
                             </div>
                             <div className="action_area">
-                                <a className="button" href="javascript:;" onClick={e=>this.props.startChat(match, ChatType.CHAT)}>发消息</a>
+                                <a className="button" href="javascript:" onClick={e => this.props.startChat(match, ChatType.CHAT)}>发消息</a>
                             </div>
                         </div>
                     </div>

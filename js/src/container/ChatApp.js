@@ -4,17 +4,16 @@
 import React, {Component, PropTypes} from 'react'
 import {routerShape} from 'react-router'
 import {connect} from 'react-redux'
-import {events} from 'dom-helpers'
 
-import SimpleAudio from '../components/common/SimpleAudio'
 import Header from './Header'
-import SystemMenu from '../components/SystemMenu'
 import SearchBar from './SearchBar'
 import Tab from '../components/Tab'
 import ChatTab from './tabs/ChatTab'
 import ContactTab from './tabs/ContactTab'
 import IndexChat from './IndexChat'
 import ContactChat from './ContactChat'
+import SystemMenu from '../components/SystemMenu'
+import SimpleAudio from '../components/common/SimpleAudio'
 import {ChatType, APP_SOUND} from '../constants/ChatConstants'
 
 import {
@@ -108,12 +107,6 @@ class ChatApp extends Component {
         }
     }
 
-    componentDidUpdate() {
-        if (this.props.newMessage) {
-            this.props.classifyNewMessage(this.props.app.from, this.props.patients, this.props.doctors)
-        }
-    }
-
     render() {
         return (
             <div className="main">
@@ -165,16 +158,8 @@ function mapStateToProps(state) {
     return {
         login: state.login,
         curUserId: state.curUserId,
-        patients: state.patients,
-        rooms: state.rooms,
-        doctors: state.doctors,
-        members: state.members,
-        app: state.app,
-        newMessage: state.app.newMessage,
-
-        singleMessage: state.singleMessage,
-        roomMessage: state.roomMessage,
-        historyMessage: state.historyMessage
+        chatList: state.chatList,
+        newMessage: state.app.newMessage
     }
 }
 

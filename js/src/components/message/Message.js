@@ -3,6 +3,7 @@
  */
 import React, {Component, PropTypes} from 'react'
 import classnames from 'classnames'
+import moment from 'moment'
 
 import {MessageType, DIR} from '../../constants/ChatConstants'
 
@@ -13,7 +14,7 @@ class Message extends Component {
         return (
             <div className={classnames('message', {'you': dir == DIR.LEFT}, {'me': dir == DIR.RIGHT})}>
                 <p className="message_system">
-                    <span className="content">{this.props.chatTime}</span>
+                    <span className="content">{moment(this.props.chatTime).format('HH:mm')}</span>
                 </p>
                 <img className="avatar" src="img/default.jpg"/>
                 <div className="content">
@@ -38,21 +39,39 @@ Message.propTypes = {
     dir: PropTypes.oneOf([DIR.LEFT, DIR.RIGHT]),
     chatTime: PropTypes.string,
     msgType: PropTypes.oneOf([MessageType.TEXT, MessageType.IMAGE]),
-    data: PropTypes.string
+    data: PropTypes.any
 }
 
 export default Message
-
 
 /**
  * 文本消息
  */
 export class PlainContent extends Component {
+    componentDidMount() {
+        let {data} = this.props
+        let content = ''
+        if (typeof data == 'string') {
+            content = data
+        } else {
+            data && data.forEach(item => {
+                if (item.type == MessageType.TEXT) {
+                    content += item.data
+                } else if (item.type == 'emoji') {
+                    content += `<img class="emoji" src="${item.data}"/>`
+                } else {
+                    content += `<span>未知类型(${item.type})</span>`
+                }
+            })
+        }
+
+        this.preDom.innerHTML = content
+    }
 
     render() {
         return (
             <div className="plain">
-                <pre className="js_message_plain ">{this.props.data}</pre>
+                <pre className="js_message_plain" ref={c => this.preDom = c}></pre>
                 {/*<img src="img/loading.gif" className="ico_loading"/>*/}
                 {/*<i className="ico_fail web_wechat_message_fail ng-hide" title="重新发送"></i>*/}
             </div>

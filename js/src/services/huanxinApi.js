@@ -197,7 +197,7 @@ function init() {
         onOpened () {
             curUserId = conn.context.userId
             util.setSession('accessToken', conn.context.accessToken)
-            util.setSession('username', curUserId)
+            // util.setSession('username', curUserId)
             conn.setPresence()
             loginSuccessList.map(loginSuccess => loginSuccess(curUserId))
         },

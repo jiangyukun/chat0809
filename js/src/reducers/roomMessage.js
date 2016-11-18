@@ -54,11 +54,11 @@ export function roomMessage(state = defaultState, action) {
     //-------------------------------------------------------------------
 
     function startGroupChat() {
-        let matchMsg = iState.find(msg=>msg.get('id') == action.roomId)
+        let matchMsg = iState.find(msg => msg.get('id') == action.roomId)
         if (!matchMsg) {
             return iState
         }
-        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
+        return iState.update(iState.indexOf(matchMsg), msg => _readMsg(msg))
     }
 
     function sendTextMessage() {
@@ -67,8 +67,8 @@ export function roomMessage(state = defaultState, action) {
         if (chatType != ChatType.GROUP_CHAT) {
             return curState
         }
-        curState = _update(curState, to, msg=>_readMsg(msg))
-        return _update(curState, to, msg=> msg.update('reads', reads=>reads.push(Map({
+        curState = _update(curState, to, msg => _readMsg(msg))
+        return _update(curState, to, msg => msg.update('reads', reads => reads.push(Map({
             id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now()
         }))))
     }
@@ -79,8 +79,8 @@ export function roomMessage(state = defaultState, action) {
         if (chatType != ChatType.GROUP_CHAT) {
             return curState
         }
-        curState = _update(curState, to, msg=>_readMsg(msg))
-        return _update(curState, to, msg=>msg.update('reads', reads=>reads.push(Map({
+        curState = _update(curState, to, msg => _readMsg(msg))
+        return _update(curState, to, msg => msg.update('reads', reads => reads.push(Map({
             id: util.getUID(), from, to, type: MessageType.IMAGE, data: url, chatTime: util.now()
         }))))
     }
@@ -100,7 +100,7 @@ export function roomMessage(state = defaultState, action) {
         } else if (msg.hasOwnProperty('filename')) {
             let filename = msg.filename
             if (filename == 'audio' || filename.indexOf('.amr') != -1 || filename.indexOf('.mp3') != -1) {
-                var extension = filename.substr(filename.lastIndexOf('.') + 1)
+                let extension = filename.substr(filename.lastIndexOf('.') + 1)
                 data = {
                     url: msg.url, type: extension
                 }
@@ -108,7 +108,7 @@ export function roomMessage(state = defaultState, action) {
             }
         }
 
-        return _update(curState, to, msg=>msg.update('unreads', unreads=>unreads.push(Map({
+        return _update(curState, to, msg => msg.update('unreads', unreads => unreads.push(Map({
             id, from, to, type: msgType, data: data, chatTime: util.now()
         }))))
     }
@@ -118,11 +118,11 @@ export function roomMessage(state = defaultState, action) {
         if (chatType != ChatType.GROUP_CHAT) {
             return iState
         }
-        let matchMsg = iState.find(msg=>msg.get('id') == selectedId)
+        let matchMsg = iState.find(msg => msg.get('id') == selectedId)
         if (!matchMsg) {
             return iState
         }
-        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
+        return iState.update(iState.indexOf(matchMsg), msg => _readMsg(msg))
     }
 
     function exitChatSystem() {
@@ -142,17 +142,20 @@ export function roomMessage(state = defaultState, action) {
     }
 
     function _update(iState, id, callback) {
-        let matchMsg = iState.find(msg=>msg.get('id') == id)
+        let matchMsg = iState.find(msg => msg.get('id') == id)
         if (!matchMsg) {
             iState = _createMsg(id)
-            matchMsg = iState.find(msg=>msg.get('id') == id)
+            matchMsg = iState.find(msg => msg.get('id') == id)
+        }
+        if (!callback) {
+            return iState
         }
         return iState.update(iState.indexOf(matchMsg), callback)
     }
 
     function _readMsg(msg) {
         let reads = msg.get('reads')
-        msg.get('unreads').forEach(unread=> {
+        msg.get('unreads').forEach(unread => {
             reads = reads.push(unread)
         })
         return msg.set('unreads', List([])).set('reads', reads)

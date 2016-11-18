@@ -15,12 +15,24 @@ function removeSession(key) {
     window.sessionStorage.removeItem(key)
 }
 
+function setLocal(key, value) {
+    window.localStorage.setItem(key, JSON.stringify(value))
+}
+
+function getLocal(key) {
+    return JSON.parse(window.localStorage.getItem(key))
+}
+
 let uid = getSession('uid') || 1
 
 export default  {
     setSession,
 
     getSession,
+
+    setLocal,
+
+    getLocal,
 
     removeSession,
 
@@ -29,7 +41,7 @@ export default  {
             let fileReader = new FileReader()
 
             fileReader.readAsDataURL(file)
-            fileReader.onload = (e)=> {
+            fileReader.onload = (e) => {
                 resolve(e.target.result)
             }
         })
@@ -40,7 +52,7 @@ export default  {
     },
 
     now() {
-        return moment().format('MM-DD HH:mm')
+        return moment().format()
     },
 
     getUID() {

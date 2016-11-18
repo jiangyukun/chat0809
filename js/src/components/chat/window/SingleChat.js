@@ -2,26 +2,57 @@
  * Created by jiangyukun on 2016/11/16.
  */
 import React, {Component} from 'react'
+import {findDOMNode} from 'react-dom'
 
 import Message from '../../message/Message'
 import SendBox from '../SendBox'
 import {DIR} from '../../../constants/ChatConstants'
 
 class SingleChat extends Component {
-    render() {
-        let {convertChat, msg} = this.props
-        let empty = !msg || ( msg.reads.length == 0 && msg.unreads.length == 0)
+    constructor(props) {
+        super(props)
+        this.sendText = this.sendText.bind(this)
+        this.sendPicture = this.sendPicture.bind(this)
+    }
 
-        let showMessage = message => {
-            let dir = message.from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
+    sendText(...args) {
+        this.props.sendText(...args)
+        this._scrollToBottom()
+    }
+
+    sendPicture(...args) {
+        this.props.sendPicture(...args)
+        this._scrollToBottom()
+    }
+
+    componentDidMount() {
+        if (!this._wrap) {
+            return
+        }
+        this._scrollToBottom()
+    }
+
+    componentDidUpdate() {
+        let {newMessage, from} = this.props.app
+        if (newMessage && from == this.props.to) {
+            this._scrollToBottom()
+        }
+    }
+
+    render() {
+        let {convertChat, message} = this.props
+        let empty = !message || ( message.reads.length == 0 && message.unreads.length == 0)
+
+        let showMessage = msg => {
+            let dir = msg.from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
             return (
-                <div key={message.id}>
+                <div key={msg.id}>
                     <div className="clearfix">
                         <div>
                             <Message dir={dir}
-                                     chatTime={message.chatTime}
-                                     msgType={message.type}
-                                     data={message.data}/>
+                                     chatTime={msg.chatTime}
+                                     msgType={msg.type}
+                                     data={msg.data}/>
                         </div>
                     </div>
                 </div>
@@ -39,15 +70,15 @@ class SingleChat extends Component {
                 </div>
 
                 <div className="scroll-wrapper box_bd chat_bd scrollbar-dynamic">
-                    <div className="box_bd chat_bd scrollbar-dynamic scroll-content">
+                    <div className="box_bd chat_bd scrollbar-dynamic scroll-content" ref={c => this._container = c}>
                         {
                             !empty && (
-                                <div>
+                                <div ref={c => this._wrap = c}>
                                     {
-                                        msg.reads.map(read => showMessage(read))
+                                        message.reads.map(read => showMessage(read))
                                     }
                                     {
-                                        msg.unreads.map(unread => showMessage(unread))
+                                        message.unreads.map(unread => showMessage(unread))
                                     }
                                 </div>
                             )
@@ -62,9 +93,19 @@ class SingleChat extends Component {
                     </div>
                 </div>
 
-                <SendBox {...this.props} chatType={convertChat.chatType}/>
+                <SendBox {...this.props}
+                         sendText={this.sendText}
+                         sendPicture={this.sendPicture}
+                         chatType={convertChat.chatType}/>
             </div>
         )
+    }
+
+    _scrollToBottom() {
+        let container = findDOMNode(this._container)
+        let wrap = findDOMNode(this._wrap)
+        let containerHeight = container.clientHeight
+        container.scrollTop = wrap.clientHeight - containerHeight
     }
 }
 

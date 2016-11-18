@@ -26,6 +26,8 @@ export default {
     FETCH_HISTORY_MESSAGE: 'FETCH_HISTORY_MESSAGE',
 
     app: {
+        INIT_SYSTEM: 'INIT_SYSTEM',
+        AUTO_LOGIN: 'AUTO_LOGIN'
     },
 
     message: {

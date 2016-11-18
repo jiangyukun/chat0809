@@ -6,7 +6,7 @@ import {fromJS, Map, List} from 'immutable'
 import actionConstants from '../actions/actionConstants'
 import {ChatType} from '../constants/ChatConstants'
 
-let defaultState = []
+let defaultState = [], defaultIState = fromJS(defaultState)
 
 export default function chatList(state = defaultState, action) {
     let iState = fromJS(state)
@@ -26,6 +26,10 @@ export default function chatList(state = defaultState, action) {
 
             case actionConstants.message.NEW_MSG:
                 nextIState = newMessage()
+                break
+
+            case actionConstants.EXIT_CHAT_SYSTEM:
+                nextIState = exitChatSystem()
                 break
 
             default:
@@ -57,8 +61,15 @@ export default function chatList(state = defaultState, action) {
     }
 
     function newMessage() {
-        let {from, type} = action.msg
-        return _sort(iState, from, type)
+        let {from, to, type} = action.msg
+        if (type == ChatType.CHAT) {
+            return _sort(iState, from, type)
+        }
+        return _sort(iState, to, type)
+    }
+
+    function exitChatSystem() {
+        return defaultIState
     }
 
     // ------------------------------------------
@@ -88,10 +99,10 @@ export default function chatList(state = defaultState, action) {
         let matchChat = curState.find(chat => chat.get('id') == id)
         if (!matchChat) {
             curState = _createMsg(curState, id, chatType)
-            if (!callback) {
-                return curState
-            }
             matchChat = curState.find(msg => msg.get('id') == id)
+        }
+        if (!callback) {
+            return curState
         }
         return curState.update(curState.indexOf(matchChat), callback)
     }

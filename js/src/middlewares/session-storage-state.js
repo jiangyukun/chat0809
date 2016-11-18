@@ -5,7 +5,7 @@
 import actionConstants from '../actions/actionConstants'
 import util from '../components/core/util'
 
-export default ({dispatch, getState}) => next => action=> {
+export default ({dispatch, getState}) => next => action => {
     try {
         return next(action)
     } finally {

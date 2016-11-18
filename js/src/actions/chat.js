@@ -204,13 +204,6 @@ export function sendImageMessage(from, to, chatType, fileInput) {
     }
 }
 
-export function classifyNewMessage(from, patients, doctors) {
-    return {
-        type: actionConstants.chat.CLASSIFY_NEW_MESSAGE,
-        from, patients, doctors
-    }
-}
-
 export function newMessageHinted() {
     return {
         type: actionConstants.chat.NEW_MESSAGE_HINT_COMPLETE

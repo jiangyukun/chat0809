@@ -40,10 +40,6 @@ export function singleMessage(state = defaultState, action) {
                 newIState = newMessage()
                 break
 
-            case actionConstants.chat.CLASSIFY_NEW_MESSAGE:
-                newIState = classifyNewMessage()
-                break
-
             case actionConstants.chat.HANDLE_CURRENT_CHAT:
                 newIState = handleCurrentChat()
                 break
@@ -65,24 +61,24 @@ export function singleMessage(state = defaultState, action) {
     //-------------------------------------------------------------------
 
     function initPatientSuccess() {
-        return iState.map(msg=> msg.set('isStranger',
-            action.patients.filter(patient=>patient.name == msg.get('name')).length == 0)
+        return iState.map(msg => msg.set('isStranger',
+            action.patients.filter(patient => patient.name == msg.get('name')).length == 0)
         )
     }
 
     function initDoctorSuccess() {
-        return iState.map(msg=> msg.set('isStranger',
-            action.doctors.filter(doctor=>doctor.name == msg.get('name')).length == 0)
+        return iState.map(msg => msg.set('isStranger',
+            action.doctors.filter(doctor => doctor.name == msg.get('name')).length == 0)
         )
     }
 
     function startSingleChat() {
         let {name} = action
-        let matchMsg = iState.find(msg=>msg.get('name') == name)
+        let matchMsg = iState.find(msg => msg.get('name') == name)
         if (!matchMsg) {
             return iState
         }
-        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
+        return iState.update(iState.indexOf(matchMsg), msg => _readMsg(msg))
     }
 
     function sendTextMessage() {
@@ -91,8 +87,8 @@ export function singleMessage(state = defaultState, action) {
         if (chatType != ChatType.CHAT) {
             return curState
         }
-        curState = _update(curState, to, msg=>_readMsg(msg))
-        return _update(curState, to, msg=> msg.update('reads', reads=>reads.push(Map({
+        curState = _update(curState, to, msg => _readMsg(msg))
+        return _update(curState, to, msg => msg.update('reads', reads => reads.push(Map({
             id: util.getUID(), from, to, type: MessageType.TEXT, data: textContent, chatTime: util.now()
         }))))
     }
@@ -103,18 +99,18 @@ export function singleMessage(state = defaultState, action) {
         if (chatType != ChatType.CHAT) {
             return curState
         }
-        curState = _update(curState, to, msg=>_readMsg(msg))
-        return _update(curState, to, msg=>msg.update('reads', reads=>reads.push(Map({
+        curState = _update(curState, to, msg => _readMsg(msg))
+        return _update(curState, to, msg => msg.update('reads', reads => reads.push(Map({
             id: util.getUID(), from, to, type: MessageType.IMAGE, data: url, chatTime: util.now()
         }))))
     }
 
     function newMessage() {
+        let {msg, patients, doctors} = action
         let curState = iState
-        let msg = action.msg
         let {id, type, from, to} = msg
         if (type != ChatType.CHAT) {
-            return iState
+            return curState
         }
         let msgType = MessageType.TEXT
         let data = msg.data
@@ -124,7 +120,7 @@ export function singleMessage(state = defaultState, action) {
         } else if (msg.hasOwnProperty('filename')) {
             let filename = msg.filename
             if (filename == 'audio' || filename.indexOf('.amr') != -1 || filename.indexOf('.mp3') != -1) {
-                var extension = filename.substr(filename.lastIndexOf('.') + 1)
+                let extension = filename.substr(filename.lastIndexOf('.') + 1)
                 data = {
                     url: msg.url, type: extension
                 }
@@ -132,18 +128,11 @@ export function singleMessage(state = defaultState, action) {
             }
         }
 
-        return _update(curState, from, msg=> msg.update('unreads', unreads=> unreads.push(Map({
+        curState = _update(curState, from, msg => msg.update('unreads', unreads => unreads.push(Map({
             id, from, to, type: msgType, data: data, chatTime: util.now()
         }))))
-    }
 
-    function classifyNewMessage() {
-        const {from, patients, doctors} = action
-        return _update(iState, from, msg=> msg.set('isStranger',
-                patients.filter(patient=>patient.name == msg.get('name')).length == 0 &&
-                doctors.filter(doctor=>doctor.name == msg.get('name')).length == 0
-            )
-        )
+        return _classifyNewMessage(curState, from, patients, doctors)
     }
 
     function handleCurrentChat() {
@@ -151,11 +140,11 @@ export function singleMessage(state = defaultState, action) {
         if (chatType != ChatType.CHAT) {
             return iState
         }
-        let matchMsg = iState.find(msg=>msg.get('name') == selectedId)
+        let matchMsg = iState.find(msg => msg.get('name') == selectedId)
         if (!matchMsg) {
             return iState
         }
-        return iState.update(iState.indexOf(matchMsg), msg=> _readMsg(msg))
+        return iState.update(iState.indexOf(matchMsg), msg => _readMsg(msg))
     }
 
     function exitChatSystem() {
@@ -175,22 +164,30 @@ export function singleMessage(state = defaultState, action) {
     }
 
     function _update(iState, name, callback) {
-        let matchMsg = iState.find(msg=>msg.get('name') == name)
+        let matchMsg = iState.find(msg => msg.get('name') == name)
         if (!matchMsg) {
             iState = _createMsg(iState, name)
-            if (!callback) {
-                return iState
-            }
-            matchMsg = iState.find(msg=>msg.get('name') == name)
+            matchMsg = iState.find(msg => msg.get('name') == name)
+        }
+        if (!callback) {
+            return iState
         }
         return iState.update(iState.indexOf(matchMsg), callback)
     }
 
     function _readMsg(msg) {
         let reads = msg.get('reads')
-        msg.get('unreads').forEach(unread=> {
+        msg.get('unreads').forEach(unread => {
             reads = reads.push(unread)
         })
         return msg.set('unreads', List([])).set('reads', reads)
+    }
+
+    function _classifyNewMessage(iState, from, patients, doctors) {
+        return _update(iState, from, msg => msg.set('isStranger',
+                patients.filter(patient => patient.name == msg.get('name')).length == 0 &&
+                doctors.filter(doctor => doctor.name == msg.get('name')).length == 0
+            )
+        )
     }
 }

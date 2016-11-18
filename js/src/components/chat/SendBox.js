@@ -20,8 +20,23 @@ class SendBox extends Component {
         if (!txt || !txt.trim()) {
             return
         }
-        this.props.sendText(curUserId, to, chatType, this.preDom.innerText)
+        this.props.sendText(curUserId, to, chatType, this.getPreContent(this.preDom))
         this.preDom.innerHTML = ''
+    }
+
+    getPreContent(preDom) {
+        let content = ''
+        let children = preDom.childNodes
+        for (let i = 0; i < children.length; i++) {
+            let child = children[i]
+            if (child.nodeType == 3) {
+                content += child.data.trim()
+            }
+            if (child.nodeType == 1 && child.nodeName == 'SPAN') {
+                content += child.innerText
+            }
+        }
+        return content
     }
 
     handleFile(event) {
@@ -30,16 +45,16 @@ class SendBox extends Component {
     }
 
     selectEmoji(key) {
-        this.preDom.innerHTML = this.preDom.innerHTML + '<img class="send-box-emoji" src="' + webImUtil.getEmojiUrl(key) + "\"/>"
+        this.preDom.innerHTML = this.preDom.innerHTML +
+            `<img class="send-box-emoji" src="${webImUtil.getEmojiUrl(key)}"/><span class="hidden">${key}</span>`
         this.preDom.focus()
     }
 
     handlePreKeyDown(event) {
         if (event.keyCode == 13) {
-            if (event.ctrlKey) {
-                this.preDom.innerHTML = this.preDom.innerHTML + '<div><br></div>'
-            } else {
+            if (!event.ctrlKey) {
                 this.sendText()
+                event.preventDefault()
             }
         }
     }
@@ -70,7 +85,7 @@ class SendBox extends Component {
                     <pre ref={c => this.preDom = c} contentEditable="true" className="flex edit_area"></pre>
                 </div>
                 <div className="action">
-                    <span className="desc">按下Ctrl+Enter换行</span>
+                    {/*<span className="desc">按下Ctrl+Enter换行</span>*/}
                     <a className="btn btn_send" onClick={e => this.sendText()} href="javascript:">发送</a>
                 </div>
                 <Emoji ref={c => this.emoji = c} selectEmoji={key => this.selectEmoji(key)}/>

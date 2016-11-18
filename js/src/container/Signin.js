@@ -14,7 +14,7 @@ class Signin extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            username: '',
+            username: props.app.username || '',
             password: ''
         }
     }
@@ -54,6 +54,14 @@ class Signin extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        let {app} = nextProps
+        this.setState({
+            username: app.username || '',
+            password: app.autoLogin ? '..........................' : ''
+        })
+    }
+
     render() {
         return (
             <div className="login">
@@ -74,7 +82,11 @@ class Signin extends Component {
                             value={this.state.password}
                             onChange={e => this.handlePasswordChange(e)}
                             onKeyDown={e => this.handlePasswordEnter(e)}/>
-                        <a className="login-btn" href="javascript:" onClick={e => this.login()}>登录</a>
+                        <a className="login-btn" href="javascript:" onClick={e => this.login()}>
+                            {
+                                this.props.app.autoLogin ? '自动登录中...' : '登录'
+                            }
+                        </a>
                     </form>
                 </div>
 
@@ -92,6 +104,7 @@ Signin.contextTypes = {
 
 function mapStateToProps(state) {
     return {
+        app: state.app,
         loading: state.login.loading,
         success: state.login.success,
         failure: state.login.failure,
