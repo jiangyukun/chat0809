@@ -60,7 +60,7 @@ class Emoji extends Component {
             for (let key in emtMap) {
                 if (emtMap.hasOwnProperty(key)) {
                     icon.push(
-                        <a key={key} title="" type="qq" className="face"
+                        <a key={key} title={webImUtil.getEmojiTitle(key)} type="qq" className="face"
                            style={webImUtil.getEmojiStyle(key)}
                            onClick={e => this.selectEmoji(key)}></a>
                     )

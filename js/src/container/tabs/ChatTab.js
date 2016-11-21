@@ -6,7 +6,8 @@ import {connect} from 'react-redux'
 import classnames from 'classnames'
 
 import busHelper from '../../core/busHelper'
-import {ChatType} from "../../constants/ChatConstants";
+import {MessageType, ChatType} from "../../constants/ChatConstants"
+import huanxinUtils from '../../core/huanxinUtils'
 
 class ChatTab extends Component {
     render() {
@@ -36,9 +37,6 @@ class ChatTab extends Component {
         return (
             <div className="nav_view">
                 <div className="chat_list scrollbar-dynamic scroll-content scroll-scrolly_visible">
-                    {/*<p className="ico_loading ng-hide">
-                     <img src="img/loading.gif" alt=""/>正在获取最近的聊天...
-                     </p>*/}
                     <div>
                         {
                             this.props.convertChatList.map(convertChat => {
@@ -76,32 +74,43 @@ class ChatTab extends Component {
     }
 }
 
+function handleContent(type, data) {
+    let lastContent
+    if (type == MessageType.TEXT) {
+        if (typeof data == 'string') {
+            lastContent = huanxinUtils.parseProbablyEmojiTitle(data)
+        } else {
+            lastContent = huanxinUtils.parseEmojiObj(data)
+        }
+    } else if (type == MessageType.IMAGE) {
+        lastContent = '[图片]'
+    }
+    return lastContent
+}
+
 function mapStateToProps(state) {
     let {chatList, patients, rooms, doctors, singleMessage, roomMessage} = state
-    let convertChatList = chatList.map(chat => {
-        let nickname = busHelper.getNickname(chat.id, chat.chatType, patients, doctors, rooms)
-        let message = busHelper.getMessage(chat.id, singleMessage, roomMessage)
+    let convertChatList = chatList.map(chatItem => {
+        let {id, chatType, txt} = chatItem
+        let nickname = busHelper.getNickname(id, chatType, patients, doctors, rooms)
+        let message = busHelper.getMessage(id, singleMessage, roomMessage)
         let unreadCount = 0, lastContent = ''
         if (message) {
             let {reads, unreads} = message
             unreadCount = unreads.length
             if (unreadCount != 0) {
-                let {data} = unreads[unreads.length - 1]
-                if (typeof data == 'string') {
-                    lastContent = data
-                }
+                let {type, data} = unreads[unreads.length - 1]
+                lastContent = handleContent(type, data)
             } else if (reads.length > 0) {
-                let {data} = reads[reads.length - 1]
-                if (typeof data == 'string') {
-                    lastContent = data
-                }
+                let {type, data} = reads[reads.length - 1]
+                lastContent = handleContent(type, data)
             }
         }
         return {
-            id: chat.id,
-            chatType: chat.chatType,
+            id,
+            chatType,
             nickname,
-            txt: chat.txt,
+            txt,
             unreadCount,
             lastContent
         }

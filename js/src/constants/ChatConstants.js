@@ -26,6 +26,7 @@ export let MessageType = {
     TEXT: 'txt',
     IMAGE: 'image',
     EMOTION: 'emotion',
+    EMOJI: 'emoji',
     VOICE: 'voice',
     AUDIO: 'audio'
 }

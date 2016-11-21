@@ -80,12 +80,18 @@ class SendBox extends Component {
                             <label className="input_label"></label>
                         </div>
                     </a>
+                    {
+                        this.props.toggleHistoryMessage && (
+                            <a className="history_message" href="javascript:" onClick={e => this.props.toggleHistoryMessage()}>
+                                <img className="history_message_icon" src="img/icon/history-message.png"/>历史消息
+                            </a>
+                        )
+                    }
                 </div>
                 <div className="content">
                     <pre ref={c => this.preDom = c} contentEditable="true" className="flex edit_area"></pre>
                 </div>
                 <div className="action">
-                    {/*<span className="desc">按下Ctrl+Enter换行</span>*/}
                     <a className="btn btn_send" onClick={e => this.sendText()} href="javascript:">发送</a>
                 </div>
                 <Emoji ref={c => this.emoji = c} selectEmoji={key => this.selectEmoji(key)}/>
@@ -97,7 +103,10 @@ class SendBox extends Component {
 SendBox.propTypes = {
     curUserId: PropTypes.string,
     to: PropTypes.string,
-    chatType: PropTypes.oneOf([ChatType.CHAT, ChatType.GROUP_CHAT])
+    chatType: PropTypes.oneOf([ChatType.CHAT, ChatType.GROUP_CHAT]),
+    sendText: PropTypes.func,
+    sendPicture: PropTypes.func,
+    toggleHistoryMessage: PropTypes.func
 }
 
 export default SendBox

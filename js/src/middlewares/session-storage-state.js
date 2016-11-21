@@ -28,6 +28,7 @@ export default ({dispatch, getState}) => next => action => {
 
                 case actionConstants.chat.START_SINGLE_CHAT:
                 case actionConstants.chat.START_GROUP_CHAT:
+                case actionConstants.message.NEW_MSG:
                     if (state.chatList.length) {
                         util.setSession(key, state.chatList)
                     }

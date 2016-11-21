@@ -21,6 +21,7 @@ class RoomMembers extends Component {
 
     close() {
         this.setState({show: false})
+        this.props.onClose()
     }
 
     handleContainerClick() {
@@ -76,7 +77,8 @@ class RoomMembers extends Component {
 }
 
 RoomMembers.propTypes = {
-    members: PropTypes.array
+    members: PropTypes.array,
+    onClose: PropTypes.func
 }
 
 export default RoomMembers

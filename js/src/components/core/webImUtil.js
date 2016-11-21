@@ -2,7 +2,7 @@
  * Created by jiangyukun on 2016/11/15.
  */
 
-let emotions = WebIM.Emoji, emtMap = emotions.map, emtPath = emotions.path;
+let emotions = WebIM.Emoji, emtMap = emotions.map, emtPath = emotions.path, title = emotions.title
 
 export default {
     getEmojiUrl(key) {
@@ -13,5 +13,9 @@ export default {
         return {
             'background': 'url(' + this.getEmojiUrl(key) + ')', 'backgroundSize': 'cover'
         }
+    },
+
+    getEmojiTitle(key) {
+        return title[key] || ''
     }
 }

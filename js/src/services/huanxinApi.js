@@ -4,6 +4,7 @@
 import {NotificationType, ChatType} from '../constants/ChatConstants'
 import Env from '../constants/Env'
 import util from '../components/core/util'
+import huanxinUtils from '../core/huanxinUtils'
 
 let Strophe = window.Strophe
 let WebIM = window.WebIM
@@ -137,7 +138,7 @@ export function sendTextMessage({type, to, txt}) {
     let body = msg.body
     body.chatType = chatType
     conn.send(body)
-    return convertTextMessage(txt)
+    return huanxinUtils.convertTextMessage(txt)
 }
 
 export function sendPicture(to, chatType, fileDom) {
@@ -173,7 +174,7 @@ export function closeConn() {
     try {
         conn.close()
     } catch (e) {
-        console.log('连接关闭');
+        console.log('连接关闭')
     }
 }
 
@@ -253,21 +254,7 @@ function init() {
     })
 }
 
-function encode(str) {
-    if (!str || str.length === 0) return "";
-    var s = '';
-    s = str.replace(/&amp;/g, "&");
-    s = s.replace(/<(?=[^o][^)])/g, "&lt;");
-    s = s.replace(/>/g, "&gt;");
-    //s = s.replace(/\'/g, "&#39;");
-    s = s.replace(/\"/g, "&quot;");
-    s = s.replace(/\n/g, "<br>");
-    return s;
-}
 
-export function convertTextMessage(msg) {
-    return WebIM.utils.parseLink(WebIM.utils.parseEmoji(encode(msg)))
-}
 
 Strophe.log = function (level, msg) {
     if (level >= 3) {

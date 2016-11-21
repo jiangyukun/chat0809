@@ -7,14 +7,21 @@ import {findDOMNode} from 'react-dom'
 import Message from '../../message/Message'
 import SendBox from '../SendBox'
 import RoomMembers from '../RoomMembers'
-import {DIR} from '../../../constants/ChatConstants'
+import {MessageType, DIR} from '../../../constants/ChatConstants'
+import huanxinUtils from '../../../core/huanxinUtils'
 
 class RoomChat extends Component {
     constructor() {
         super()
         this.sendText = this.sendText.bind(this)
         this.sendPicture = this.sendPicture.bind(this)
+        this.pictureLoaded = this.pictureLoaded.bind(this)
+        this.onRoomMemberClose = this.onRoomMemberClose.bind(this)
         this.state = {showRoomMember: false}
+    }
+
+    onRoomMemberClose() {
+        this.setState({showRoomMember: false})
     }
 
     toggleRoomMembers() {
@@ -23,12 +30,17 @@ class RoomChat extends Component {
     }
 
     sendText(...args) {
+        console.log(...args)
         this.props.sendText(...args)
         this._scrollToBottom()
     }
 
     sendPicture(...args) {
         this.props.sendPicture(...args)
+        this._scrollToBottom()
+    }
+
+    pictureLoaded() {
         this._scrollToBottom()
     }
 
@@ -39,7 +51,20 @@ class RoomChat extends Component {
         this._scrollToBottom()
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (this.props.to != nextProps.to) {
+            this._scrollBottomFlag = true
+        }
+    }
+
     componentDidUpdate() {
+        //切换联系人时
+        if (this._scrollBottomFlag) {
+            this._scrollToBottom()
+            return
+        }
+
+        //收到新消息时
         let {newMessage, to} = this.props.app
         if (newMessage && to == this.props.to) {
             this._scrollToBottom()
@@ -51,15 +76,19 @@ class RoomChat extends Component {
         let empty = !message || ( message.reads.length == 0 && message.unreads.length == 0)
 
         let showMessage = msg => {
-            let dir = msg.from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
+            let {id, from, chatTime, type, data} = msg
+            let dir = from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
+            if (type == MessageType.TEXT && typeof data == 'string') {
+                data = huanxinUtils.parseTextMessage(data)
+            }
             return (
-                <div key={msg.id}>
+                <div key={id}>
                     <div className="clearfix">
                         <div>
                             <Message dir={dir}
-                                     chatTime={msg.chatTime}
-                                     msgType={msg.type}
-                                     data={msg.data}/>
+                                     chatTime={chatTime}
+                                     msgType={type}
+                                     data={data}/>
                         </div>
                     </div>
                 </div>
@@ -79,7 +108,7 @@ class RoomChat extends Component {
                         </div>
                     </div>
 
-                    <RoomMembers members={this.props.members} ref={c => this._roomMembers = c}/>
+                    <RoomMembers members={this.props.members} onClose={this.onRoomMemberClose} ref={c => this._roomMembers = c}/>
                 </div>
 
                 <div className="scroll-wrapper box_bd chat_bd scrollbar-dynamic">
@@ -106,7 +135,8 @@ class RoomChat extends Component {
                     </div>
                 </div>
 
-                <SendBox {...this.props}
+                <SendBox curUserId={this.props.curUserId}
+                         to={this.props.to}
                          sendText={this.sendText}
                          sendPicture={this.sendPicture}
                          chatType={convertChat.chatType}/>
@@ -114,6 +144,7 @@ class RoomChat extends Component {
         )
     }
 
+    //滚动到底部
     _scrollToBottom() {
         let container = findDOMNode(this._container)
         let wrap = findDOMNode(this._wrap)

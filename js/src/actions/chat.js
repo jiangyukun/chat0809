@@ -161,17 +161,17 @@ export function sendTextMessage(from, to, chatType, content) {
             from,
             to,
             chatType,
-            textContent
+            textContent: content
         }
     }
 
-    let textContent = conn.sendTextMessage({type: chatType, to: to, txt: content})
+    conn.sendTextMessage({type: chatType, to: to, txt: content})
     return {
         type: actionConstants.SEND_TEXT_MESSAGE,
         from,
         to,
         chatType,
-        textContent
+        textContent: content
     }
 }
 

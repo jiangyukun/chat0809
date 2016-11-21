@@ -33,10 +33,10 @@ ChatPanel.propTypes = {
 
 function mapStateToProps(state, ownProps) {
     let {convertChat, msg, to} = ownProps
-    let {app, members, curUserId} = state
+    let {app, members, curUserId, historyMessage} = state
     return {
         convertChat, msg, to,
-        app, members, curUserId
+        app, members, curUserId, historyMessage
     }
 }
 

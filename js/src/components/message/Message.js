@@ -5,16 +5,20 @@ import React, {Component, PropTypes} from 'react'
 import classnames from 'classnames'
 import moment from 'moment'
 
+import ImagePreview from '../tools/ImagePreview'
 import {MessageType, DIR} from '../../constants/ChatConstants'
+import huanxinUtils from '../../core/huanxinUtils'
+
+function defaultPictureLoaded() {
+}
 
 class Message extends Component {
-
     render() {
-        let {dir} = this.props
+        let {msgType, dir, data, chatTime, pictureLoaded} = this.props
         return (
             <div className={classnames('message', {'you': dir == DIR.LEFT}, {'me': dir == DIR.RIGHT})}>
                 <p className="message_system">
-                    <span className="content">{moment(this.props.chatTime).format('HH:mm')}</span>
+                    <span className="content">{moment(chatTime).format('HH:mm')}</span>
                 </p>
                 <img className="avatar" src="img/default.jpg"/>
                 <div className="content">
@@ -22,10 +26,11 @@ class Message extends Component {
                         className={classnames('bubble ', {'bubble_default': dir == DIR.LEFT}, {'bubble_primary': dir == DIR.RIGHT}, {'left': dir == DIR.LEFT}, {'right': dir == DIR.RIGHT})}>
                         <div className="bubble_cont">
                             {
-                                this.props.msgType == MessageType.TEXT && <PlainContent data={this.props.data}/>
+                                msgType == MessageType.TEXT && <PlainContent data={data}/>
                             }
                             {
-                                this.props.msgType == MessageType.IMAGE && <PictureContent data={this.props.data}/>
+                                msgType == MessageType.IMAGE &&
+                                <PictureContent data={this.props.data} pictureLoaded={pictureLoaded || defaultPictureLoaded}/>
                             }
                         </div>
                     </div>
@@ -39,7 +44,8 @@ Message.propTypes = {
     dir: PropTypes.oneOf([DIR.LEFT, DIR.RIGHT]),
     chatTime: PropTypes.string,
     msgType: PropTypes.oneOf([MessageType.TEXT, MessageType.IMAGE]),
-    data: PropTypes.any
+    data: PropTypes.any,
+    pictureLoaded: PropTypes.func
 }
 
 export default Message
@@ -49,23 +55,15 @@ export default Message
  */
 export class PlainContent extends Component {
     componentDidMount() {
-        let {data} = this.props
-        let content = ''
-        if (typeof data == 'string') {
-            content = data
-        } else {
-            data && data.forEach(item => {
-                if (item.type == MessageType.TEXT) {
-                    content += item.data
-                } else if (item.type == 'emoji') {
-                    content += `<img class="emoji" src="${item.data}"/>`
-                } else {
-                    content += `<span>未知类型(${item.type})</span>`
-                }
-            })
-        }
-
-        this.preDom.innerHTML = content
+        this.preDom.innerHTML = this.props.data.reduce((result, item) => {
+            if (item.type == MessageType.TEXT) {
+                return result + item.data
+            } else if (item.type == 'emoji') {
+                return result + `<img class="emoji" src="${huanxinUtils.getEmojiUrl(item.data)}" data-key="${item.data}"/>`
+            } else {
+                return result + `<span>未知类型(${item.type})</span>`
+            }
+        }, '')
     }
 
     render() {
@@ -83,12 +81,16 @@ export class PlainContent extends Component {
  * 图片消息
  */
 export class PictureContent extends Component {
-
     render() {
         return (
-            <div className="picture">
-                <img className="msg-img" src={this.props.data}/>
+            <div className="picture" onClick={e => this._imagePreview.open()}>
+                <img className="msg-img" src={this.props.data} onLoad={e => this.props.pictureLoaded(e)}/>
+                <ImagePreview ref={c => this._imagePreview = c} url={this.props.data}/>
             </div>
         )
     }
+}
+
+PictureContent.propTypes = {
+    pictureLoaded: PropTypes.func
 }

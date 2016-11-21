@@ -6,13 +6,13 @@ const moment = require('moment')
 
 module.exports = {
     entry: [
-        './js/src/app-prod.js'
+        './js/src/index.js'
     ],
 
     output: {
         path: __dirname + '/build/',
         filename: 'bundle-' + moment().format('MMDD') + '.js',
-        publicPath: '/static/'
+        publicPath: 'build/'
     },
 
     module: {
