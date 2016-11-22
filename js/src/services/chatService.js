@@ -8,7 +8,7 @@ import util from '../components/core/util'
 import huanxinUtils from '../core/huanxinUtils'
 
 export default {
-    fetchHistoryMessage(user1, user2, start) {
+    fetchHistoryMessage(user1, user2, start = 0) {
         return new Promise(function (resolve, reject) {
             let url = 'res/history-message.json'
             if (user2 == 'test0') {
@@ -28,7 +28,7 @@ export default {
                     let type = historyItem.chat_Msg_Type
                     let chatTime
                     try {
-                        chatTime = moment(parseInt(historyItem.chat_Time)).format('YYYY-MM-DD HH:mm')
+                        chatTime = moment(parseInt(historyItem.chat_Time)).format()
                     } catch (e) {
                     }
                     let history = {

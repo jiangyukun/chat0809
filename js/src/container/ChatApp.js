@@ -61,10 +61,10 @@ class ChatApp extends Component {
         let contactId
         if (chatType == ChatType.CHAT) {
             contactId = contact.name
-            this.props.startSingleChat(contactId)
+            this.props.startSingleChat(contactId, true)
         } else {
             contactId = contact.id
-            this.props.startRoomChat(contactId)
+            this.props.startRoomChat(contactId, true)
         }
         this.setState({
             selectedChatId: contactId,

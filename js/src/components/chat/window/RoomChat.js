@@ -146,10 +146,10 @@ class RoomChat extends Component {
 
     //滚动到底部
     _scrollToBottom() {
-        let container = findDOMNode(this._container)
-        let wrap = findDOMNode(this._wrap)
-        let containerHeight = container.clientHeight
-        container.scrollTop = wrap.clientHeight - containerHeight
+        if (!this._wrap) {
+            return
+        }
+        this._container.scrollTop = this._wrap.clientHeight - this._container.clientHeight
     }
 }
 

@@ -4,21 +4,12 @@
 import React, {Component} from 'react'
 import classnames from 'classnames'
 
-import {loadMore} from '../../constants/constants'
+import SimpleListComponent from '../abstract/SimpleListComponent'
 import {ChatType} from '../../constants/ChatConstants'
 
-class RoomList extends Component {
-    constructor() {
-        super()
-        this.state = {maxCount: loadMore.init}
-    }
-
-    loadMore() {
-        this.setState({maxCount: this.state.maxCount + loadMore.increase})
-    }
-
+class RoomList extends SimpleListComponent {
     render() {
-        let currentCount = 0, filterCount = 0
+        this.initRender()
 
         return (
             <div>
@@ -31,11 +22,9 @@ class RoomList extends Component {
                 }
                 {
                     this.props.rooms.map(room => {
-                        filterCount++
-                        if (currentCount >= this.state.maxCount) {
+                        if (!this.isContinueLoad()) {
                             return null
                         }
-                        currentCount++
 
                         return (
                             <div key={room.id}
@@ -55,7 +44,7 @@ class RoomList extends Component {
                     })
                 }
                 {
-                    currentCount < filterCount && (
+                    this.haveMoreListItem() && (
                         <a href="javascript:" className="load-more" onClick={e => this.loadMore()}>加载更多</a>
                     )
                 }

@@ -45,16 +45,16 @@ export default function chatList(state = defaultState, action) {
     //--------------------------------------
 
     function startSingleChat() {
-        let {name} = action
-        if (iState.find(chat => chat.get('id') == name)) {
+        let {name, isSort} = action
+        if (!isSort && iState.find(chat => chat.get('id') == name)) {
             return iState
         }
         return _sort(iState, name, ChatType.CHAT)
     }
 
     function startGroupChat() {
-        let {roomId} = action
-        if (iState.find(chat => chat.get('id') == roomId)) {
+        let {roomId, isSort} = action
+        if (!isSort && iState.find(chat => chat.get('id') == roomId)) {
             return iState
         }
         return _sort(iState, roomId, ChatType.GROUP_CHAT)

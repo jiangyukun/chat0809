@@ -45,10 +45,11 @@ class Signin extends Component {
     }
 
     componentDidUpdate() {
-        if (this.props.success) {
+        let {success, failure} = this.props.login
+        if (success) {
             this.context.router.push('/chat/index')
         }
-        if (this.props.failure) {
+        if (failure) {
             this.props.clearLoginFailure()
             util.tip(NotificationType.ERROR, '用户名或密码错误!')
         }
@@ -56,19 +57,23 @@ class Signin extends Component {
 
     componentWillReceiveProps(nextProps) {
         let {app} = nextProps
-        this.setState({
-            username: app.username || '',
-            password: app.autoLogin ? '..........................' : ''
-        })
+        if (app.autoLogin) {
+            this.setState({
+                username: app.username,
+                password: '..........................'
+            })
+        }
     }
 
     render() {
+        let {app} = this.props
+        let {loading} = this.props.login
         return (
             <div className="login">
                 <div className="logo">
                     <i className="chat_system_login_logo"></i>
                 </div>
-                {this.props.loading && <div className="loading-container"><Loading /></div>}
+                {loading && <div className="loading-container"><Loading /></div>}
 
                 <div className="login_box">
                     <form className="login-form" autoComplete="off">
@@ -84,7 +89,7 @@ class Signin extends Component {
                             onKeyDown={e => this.handlePasswordEnter(e)}/>
                         <a className="login-btn" href="javascript:" onClick={e => this.login()}>
                             {
-                                this.props.app.autoLogin ? '自动登录中...' : '登录'
+                                app.autoLogin ? '自动登录中...' : loading ? '登录中...' : '登录'
                             }
                         </a>
                     </form>
@@ -105,10 +110,7 @@ Signin.contextTypes = {
 function mapStateToProps(state) {
     return {
         app: state.app,
-        loading: state.login.loading,
-        success: state.login.success,
-        failure: state.login.failure,
-        message: state.login.message
+        login: state.login
     }
 }
 

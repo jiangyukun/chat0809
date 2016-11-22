@@ -8,7 +8,7 @@ import {render} from 'react-dom'
 import {hashHistory} from 'react-router'
 import {syncHistoryWithStore} from 'react-router-redux'
 
-import Root from './container/Root'
+import Root from './container/root/Root'
 import configureStore from './stores/configureStore'
 import actionConstants from './actions/actionConstants'
 import util from './components/core/util'

@@ -102,7 +102,7 @@ export function fetchDoctorListFromServer() {
     }
 }
 
-export function startSingleChat(name) {
+export function startSingleChat(name, isSort) {
     return (dispatch, getState) => {
         let {curUserId} = getState()
         chatService.fetchHistoryMessage(curUserId, name).then(result => {
@@ -114,12 +114,12 @@ export function startSingleChat(name) {
 
         dispatch({
             type: actionConstants.chat.START_SINGLE_CHAT,
-            name
+            name, isSort
         })
     }
 }
 
-export function startRoomChat(roomId) {
+export function startRoomChat(roomId, isSort) {
     return dispatch => {
         conn.queryRoomMember(roomId).then(result => {
             let groupMembers = result.map(member => {
@@ -140,7 +140,7 @@ export function startRoomChat(roomId) {
 
         dispatch({
             type: actionConstants.chat.START_GROUP_CHAT,
-            roomId: roomId
+            roomId, isSort
         })
     }
 }

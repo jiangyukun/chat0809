@@ -32,8 +32,8 @@ class SendBox extends Component {
             if (child.nodeType == 3) {
                 content += child.data.trim()
             }
-            if (child.nodeType == 1 && child.nodeName == 'SPAN') {
-                content += child.innerText
+            if (child.nodeType == 1 && child.nodeName == 'IMG') {
+                content += child.dataset.key
             }
         }
         return content
@@ -45,8 +45,7 @@ class SendBox extends Component {
     }
 
     selectEmoji(key) {
-        this.preDom.innerHTML = this.preDom.innerHTML +
-            `<img class="send-box-emoji" src="${webImUtil.getEmojiUrl(key)}"/><span class="hidden">${key}</span>`
+        this.preDom.innerHTML = this.preDom.innerHTML + `<img class="send-box-emoji" src="${webImUtil.getEmojiUrl(key)}"data-key="${key}"/>`
         this.preDom.focus()
     }
 
@@ -83,7 +82,7 @@ class SendBox extends Component {
                     {
                         this.props.toggleHistoryMessage && (
                             <a className="history_message" href="javascript:" onClick={e => this.props.toggleHistoryMessage()}>
-                                <img className="history_message_icon" src="img/icon/history-message.png"/>历史消息
+                                <img className="history_message_icon" src="img/svg/history-message.svg"/>历史消息
                             </a>
                         )
                     }

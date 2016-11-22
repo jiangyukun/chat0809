@@ -34,9 +34,6 @@ class SingleChat extends Component {
     }
 
     componentDidMount() {
-        if (!this._wrap) {
-            return
-        }
         this._scrollToBottom()
     }
 
@@ -55,7 +52,6 @@ class SingleChat extends Component {
             this._scrollToBottom()
             return
         }
-
         //收到新消息时
         let {newMessage, from} = this.props.app
         if (newMessage && from == this.props.to) {
@@ -104,15 +100,6 @@ class SingleChat extends Component {
 export default SingleChat
 
 class CurrentChatMessage extends Component {
-    constructor() {
-        super()
-        this.pictureLoaded = this.pictureLoaded.bind(this)
-    }
-
-    pictureLoaded() {
-        this.scrollToBottom()
-    }
-
     render() {
         let {message} = this.props
         let empty = !message || ( message.reads.length == 0 && message.unreads.length == 0)
@@ -133,7 +120,7 @@ class CurrentChatMessage extends Component {
                                      chatTime={chatTime}
                                      msgType={type}
                                      data={data}
-                                     pictureLoaded={this.pictureLoaded}/>
+                                     pictureLoaded={() => this.scrollToBottom()}/>
                         </div>
                     </div>
                 </div>
@@ -168,10 +155,7 @@ class CurrentChatMessage extends Component {
         if (!this._wrap) {
             return
         }
-        let container = findDOMNode(this._container)
-        let wrap = findDOMNode(this._wrap)
-        let containerHeight = container.clientHeight
-        container.scrollTop = wrap.clientHeight - containerHeight
+        this._container.scrollTop = this._wrap.clientHeight - this._container.clientHeight
     }
 }
 
