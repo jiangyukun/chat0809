@@ -7,6 +7,7 @@ import {connect} from 'react-redux'
 import SingleChat from './window/SingleChat'
 import RoomChat from './window/RoomChat'
 import {ChatType} from '../../constants/ChatConstants'
+import busHelper from '../../core/busHelper'
 import {sendTextMessage, sendImageMessage, sendAudioMessage} from '../../actions/chat'
 
 class ChatPanel extends Component {
@@ -34,6 +35,9 @@ ChatPanel.propTypes = {
 function mapStateToProps(state, ownProps) {
     let {convertChat, msg, to} = ownProps
     let {app, members, curUserId, historyMessage} = state
+    members = members.map(member => {
+        return {jid: member.jid, name: busHelper.getDisplayName(member.name)}
+    })
     return {
         convertChat, msg, to,
         app, members, curUserId, historyMessage

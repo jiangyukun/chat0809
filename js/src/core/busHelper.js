@@ -4,6 +4,12 @@
 import {ChatType} from '../constants/ChatConstants'
 
 export default {
+    getDisplayName(id) {
+        if (!id) {
+            return ''
+        }
+        return id.replace('zxys', '在线医生').replace('bkkf', '贝壳客服').replace('bkzs', '贝壳助手').replace('test', '测试')
+    },
     getNickname(id, chatType, patients, doctors, rooms) {
         if (chatType == ChatType.CHAT) {
             let p = patients.find(patient => patient.name == id)

@@ -4,18 +4,19 @@
 import actionConstants from './actionConstants'
 import {ChatType} from '../constants/ChatConstants'
 import util from '../components/core/util'
+import busHelper from '../core/busHelper'
 
 import chatService from '../services/chatService'
 import * as conn from '../services/huanxinApi'
 
 export function fetchPatientListFromHuanXin() {
-
     return dispatch => {
         conn.getRoster().then((patients) => {
             patients = patients.map(patient => {
                 return {
                     id: patient.jid,
-                    name: patient.name
+                    name: patient.name,
+                    nickname: busHelper.getDisplayName(patient.name)
                 }
             })
             dispatch({
@@ -34,7 +35,7 @@ export function fetchPatientListFromServer() {
         chatService.fetchPatientList().then((result) => {
             let patients = result.map(patient => {
                 let name = patient['user_Name']
-                let nickname = patient['patient_Name']
+                let nickname = busHelper.getDisplayName(patient['patient_Name'])
                 return {
                     id: name, name, nickname
                 }
@@ -55,9 +56,7 @@ export function fetchPatientListFromServer() {
 }
 
 export function fetchGroupListFromHuanXin() {
-
     return dispatch => {
-
         conn.listRooms().then(result => {
             let rooms = result.map(room => {
                 return {

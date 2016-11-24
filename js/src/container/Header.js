@@ -5,6 +5,8 @@ import React, {Component, PropTypes} from 'react'
 import {findDOMNode} from 'react-dom'
 import {events} from 'dom-helpers'
 
+import busHelper from '../core/busHelper'
+
 class Header extends Component {
     constructor(props) {
         super(props)
@@ -37,15 +39,7 @@ class Header extends Component {
 
     render() {
         function getLoginName(id) {
-            switch (id) {
-                case 'zxys':
-                    return '在线医生'
-                case 'bkkf':
-                    return '贝壳客服'
-                default:
-                    break
-            }
-            return id
+            return busHelper.getDisplayName(id)
         }
 
         return (

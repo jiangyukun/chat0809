@@ -96,7 +96,10 @@ class Signin extends Component {
                 </div>
 
                 <div className="copyright">
-                    <p className="desc">© 2016 WangJi Inc. All Rights Reserved</p>
+                    <p className="desc">
+                        © 2016 WangJi Inc. All Rights Reserved
+                        <a href="../chat-system/chat.html" className="use_old_version">使用旧版</a>
+                    </p>
                 </div>
             </div>
         )

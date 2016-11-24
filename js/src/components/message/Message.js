@@ -14,16 +14,19 @@ function defaultPictureLoaded() {
 
 class Message extends Component {
     render() {
-        let {msgType, dir, data, chatTime, pictureLoaded} = this.props
+        let {from, msgType, dir, data, chatTime, pictureLoaded} = this.props
         return (
             <div className={classnames('message', {'you': dir == DIR.LEFT}, {'me': dir == DIR.RIGHT})}>
                 <p className="message_system">
                     <span className="content">{moment(chatTime).format('HH:mm')}</span>
                 </p>
-                <img className="avatar" src="img/default.jpg"/>
+                <img className="avatar" src="img/default.jpg" title={from}/>
                 <div className="content">
-                    <div
-                        className={classnames('bubble ', {'bubble_default': dir == DIR.LEFT}, {'bubble_primary': dir == DIR.RIGHT}, {'left': dir == DIR.LEFT}, {'right': dir == DIR.RIGHT})}>
+                    <div className={classnames('bubble ',
+                        {'bubble_default': dir == DIR.LEFT},
+                        {'bubble_primary': dir == DIR.RIGHT},
+                        {'left': dir == DIR.LEFT},
+                        {'right': dir == DIR.RIGHT})}>
                         <div className="bubble_cont">
                             {
                                 msgType == MessageType.TEXT && <PlainContent data={data}/>
@@ -41,6 +44,7 @@ class Message extends Component {
 }
 
 Message.propTypes = {
+    from: PropTypes.string,
     dir: PropTypes.oneOf([DIR.LEFT, DIR.RIGHT]),
     chatTime: PropTypes.string,
     msgType: PropTypes.oneOf([MessageType.TEXT, MessageType.IMAGE]),

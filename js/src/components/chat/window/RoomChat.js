@@ -30,7 +30,6 @@ class RoomChat extends Component {
     }
 
     sendText(...args) {
-        console.log(...args)
         this.props.sendText(...args)
         this._scrollToBottom()
     }
@@ -85,10 +84,8 @@ class RoomChat extends Component {
                 <div key={id}>
                     <div className="clearfix">
                         <div>
-                            <Message dir={dir}
-                                     chatTime={chatTime}
-                                     msgType={type}
-                                     data={data}/>
+                            <Message from={from} dir={dir} chatTime={chatTime} msgType={type} data={data}
+                                     pictureLoaded={() => this._scrollToBottom()}/>
                         </div>
                     </div>
                 </div>

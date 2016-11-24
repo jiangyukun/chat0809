@@ -116,10 +116,7 @@ class CurrentChatMessage extends Component {
                 <div key={id}>
                     <div className="clearfix">
                         <div>
-                            <Message dir={dir}
-                                     chatTime={chatTime}
-                                     msgType={type}
-                                     data={data}
+                            <Message from={from} dir={dir} chatTime={chatTime} msgType={type} data={data}
                                      pictureLoaded={() => this.scrollToBottom()}/>
                         </div>
                     </div>

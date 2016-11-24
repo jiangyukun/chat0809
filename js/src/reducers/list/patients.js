@@ -38,15 +38,15 @@ export function patients(state = [], action) {
 
     function initPatientSuccess() {
         let {patients, singleMessage} = action
-        let curState = fromJS(patients.map(patient=> {
+        let curState = fromJS(patients.map(patient => {
             return {
                 id: patient.id,
                 name: patient.name,
-                nickname: patient.name
+                nickname: patient.nickname
             }
         }))
 
-        singleMessage.forEach(msg=> {
+        singleMessage.forEach(msg => {
             curState = _sort(curState, msg.name)
         })
         return curState
@@ -64,7 +64,7 @@ export function patients(state = [], action) {
     //-----------------------------------------
 
     function _sort(curState, name) {
-        let patient = curState.find(patient=>patient.get('name') == name)
+        let patient = curState.find(patient => patient.get('name') == name)
         if (!patient) {
             return curState
         }
