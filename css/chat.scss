@@ -1,7 +1,14 @@
-@media (max-width: 1000px), (max-height: 800px) {
+@media (max-height: 800px) {
     .main {
         padding-top: 0;
         height: 100%;
+    }
+}
+
+@media (min-height: 801px) {
+    .main {
+        margin: auto 0;
+        height: 800px;
     }
 }
 

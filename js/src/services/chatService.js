@@ -20,8 +20,7 @@ export default {
 
             fetch(url).then(response => response.json()).then(function (serverHistoryMessage) {
                 if (serverHistoryMessage.status != 0) {
-                    util.tip(NotificationType.ERROR, '获取历史记录失败！')
-                    reject()
+                    reject('获取历史记录失败！')
                     return
                 }
                 let historyMessageList = serverHistoryMessage.data.map(historyItem => {
@@ -64,11 +63,9 @@ export default {
         return new Promise(function (resolve, reject) {
             fetch(url).then(response => response.json()).then(function (result) {
                 if (result.status != 0) {
-                    util.tip(NotificationType.ERROR, '获取医生列表失败！')
-                    reject()
+                    reject('获取医生列表失败！')
                     return
                 }
-
                 resolve(result.data)
             })
         })
@@ -82,8 +79,7 @@ export default {
             }
             fetch(url).then(response => response.json()).then(function (result) {
                 if (result.status != 0) {
-                    util.tip(NotificationType.ERROR, '获取患者列表失败！')
-                    reject()
+                    reject('获取患者列表失败！')
                     return
                 }
 

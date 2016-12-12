@@ -30,8 +30,11 @@ export function fetchPatientListFromHuanXin() {
     }
 }
 
-export function fetchPatientListFromServer() {
-    return dispatch => {
+export let fetchPatientListFromServer = dispatch => () => {
+    dispatch({
+        type: actionConstants.chat.INIT_PATIENT_START
+    })
+    return new Promise((resolve, reject) => {
         chatService.fetchPatientList().then((result) => {
             let patients = result.map(patient => {
                 let name = patient['user_Name']
@@ -48,11 +51,7 @@ export function fetchPatientListFromServer() {
                 type: actionConstants.chat.INIT_PATIENT_FAILURE
             })
         })
-
-        dispatch({
-            type: actionConstants.chat.INIT_PATIENT_START
-        })
-    }
+    })
 }
 
 export function fetchGroupListFromHuanXin() {
@@ -76,8 +75,11 @@ export function fetchGroupListFromHuanXin() {
     }
 }
 
-export function fetchDoctorListFromServer() {
-    return dispatch => {
+export let fetchDoctorListFromServer = dispatch => () => {
+    dispatch({
+        type: actionConstants.chat.INIT_DOCTOR_START
+    })
+    return new Promise((resolve, reject) => {
         chatService.fetchDoctorList().then((result) => {
             let doctors = result.map(doctor => {
                 let name = doctor['user_Name'] || ''
@@ -87,35 +89,25 @@ export function fetchDoctorListFromServer() {
             dispatch({
                 type: actionConstants.chat.INIT_DOCTOR_SUCCESS, doctors
             })
-
-        }, () => {
-            dispatch({
-                type: actionConstants.chat.INIT_DOCTOR_FAILURE
-            })
-        })
-
-        dispatch({
-            type: actionConstants.chat.INIT_DOCTOR_START
-        })
-
-    }
+        }, err => reject(err))
+    })
 }
 
-export function startSingleChat(name, isSort) {
-    return (dispatch, getState) => {
-        let {curUserId} = getState()
-        chatService.fetchHistoryMessage(curUserId, name).then(result => {
+export let startSingleChat = dispatch => (from, to, isSort) => {
+    dispatch({
+        type: actionConstants.chat.START_SINGLE_CHAT,
+        name: to, isSort
+    })
+    return new Promise((resolve, reject) => {
+        chatService.fetchHistoryMessage(from, to).then(result => {
             dispatch({
                 type: actionConstants.message.FETCH_HISTORY_MESSAGE_SUCCESS,
                 historyMessages: result
             })
+        }, err => {
+            reject(err)
         })
-
-        dispatch({
-            type: actionConstants.chat.START_SINGLE_CHAT,
-            name, isSort
-        })
-    }
+    })
 }
 
 export function startRoomChat(roomId, isSort) {

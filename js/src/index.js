@@ -12,8 +12,12 @@ import Root from './container/root/Root'
 import configureStore from './stores/configureStore'
 import actionConstants from './actions/actionConstants'
 import util from './components/core/util'
-import NotificationContainer from './components/common/NotificationContainer'
 
+import 'antd/lib/style/index.less'
+import 'antd/lib/button/style/index.less'
+import 'antd/lib/modal/style/index.less'
+import 'antd/lib/notification/style/index.less'
+import 'antd/lib/tooltip/style/index.less'
 import '../../css/index.scss'
 
 let username = util.getSession('username')
@@ -35,8 +39,4 @@ store.dispatch({type: actionConstants.app.INIT_SYSTEM, username})
 
 render(
     <Root store={store} history={history}/>, document.getElementById('container')
-)
-
-render(
-    <NotificationContainer/>, document.querySelector('.notification-container')
 )

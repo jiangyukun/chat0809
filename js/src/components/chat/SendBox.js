@@ -45,7 +45,7 @@ class SendBox extends Component {
     }
 
     selectEmoji(key) {
-        this.preDom.innerHTML = this.preDom.innerHTML + `<img class="send-box-emoji" src="${webImUtil.getEmojiUrl(key)}"data-key="${key}"/>`
+        this.preDom.innerHTML = this.preDom.innerHTML + `<img class="send-box-emoji" src="${webImUtil.getEmojiUrl(key)}" data-key="${key}"/>`
         this.preDom.focus()
     }
 
@@ -56,6 +56,11 @@ class SendBox extends Component {
                 event.preventDefault()
             }
         }
+    }
+
+    handlePrePaste(e) {
+        this.preDom.innerHTML += e.nativeEvent.clipboardData.getData('text').trim()
+        e.preventDefault()
     }
 
     componentDidMount() {
@@ -88,7 +93,7 @@ class SendBox extends Component {
                     }
                 </div>
                 <div className="content">
-                    <pre ref={c => this.preDom = c} contentEditable="true" className="flex edit_area"></pre>
+                    <pre ref={c => this.preDom = c} contentEditable="true" className="flex edit_area" onPaste={e => this.handlePrePaste(e)}></pre>
                 </div>
                 <div className="action">
                     <a className="btn btn_send" onClick={e => this.sendText()} href="javascript:">发送</a>

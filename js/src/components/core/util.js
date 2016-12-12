@@ -1,8 +1,5 @@
 import moment from 'moment'
 
-import notificationActions from '../../actions/NotificationActions'
-
-
 function setSession(key, value) {
     window.sessionStorage.setItem(key, JSON.stringify(value))
 }
@@ -45,10 +42,6 @@ export default  {
                 resolve(e.target.result)
             }
         })
-    },
-
-    tip(...arg) {
-        notificationActions.addNotification(...arg)
     },
 
     now() {

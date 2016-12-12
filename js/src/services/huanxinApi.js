@@ -8,7 +8,7 @@ import huanxinUtils from '../core/huanxinUtils'
 
 let Strophe = window.Strophe
 let WebIM = window.WebIM
-let USER_NOT_FOUND = 1, CONNECT_CLOSE = 7
+let USER_NOT_FOUND = 1, CONNECT_CLOSE = 8
 
 let conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
@@ -29,16 +29,15 @@ function empty(message) {
     if (!message.type || message.type == CONNECT_CLOSE) {
         return
     }
-    if (Env.isDev()) {
-        util.tip(NotificationType.ERROR, '暂不支持的类型：' + message.type)
-    } else {
-        console.log('暂不支持的类型：' + message.type)
+    console.log('暂不支持的类型：' + message.type)
+    if (process.env.NODE_ENV == 'dev') {
+        // util.tip(NotificationType.ERROR, '暂不支持的类型：' + message.type)
     }
 }
 
 let loginSuccessList = [], loginFailureList = []
 
-export function login(username, password, onReceiveMessage) {
+export function login(username, password, onReceiveMessage, onClose) {
     if (conn.isOpening()) {
         return
     }
@@ -47,6 +46,7 @@ export function login(username, password, onReceiveMessage) {
         return
     }
     receiveMessageCallback = onReceiveMessage
+    closeCallback = onClose
 
     conn.open({
         user: username,
@@ -69,10 +69,11 @@ export function isOpening() {
     return conn.isOpening()
 }
 
-export function reOpen(onReceiveMessage) {
+export function reOpen(onReceiveMessage, onClose) {
     let accessToken = util.getSession('accessToken')
     let username = util.getSession('username')
     receiveMessageCallback = onReceiveMessage
+    closeCallback = onClose
     conn.open({user: username, accessToken, appKey: WebIM.config.appkey})
     return new Promise(function (resolve, reject) {
         loginSuccessList.push(function (userId) {
@@ -187,10 +188,7 @@ export function onLoginFailure(callback) {
 }
 
 let error = empty
-let close = empty
-export function onClose(callback) {
-    close = callback
-}
+let closeCallback = empty
 
 function init() {
     //初始化连接
@@ -208,8 +206,8 @@ function init() {
             receiveMessageCallback = empty
 
             util.removeSession('accessToken')
-            close()
-            close = noop
+            closeCallback()
+            closeCallback = noop
         },
         onTextMessage (message) {
             receiveMessageCallback(message)
@@ -253,8 +251,6 @@ function init() {
         }
     })
 }
-
-
 
 Strophe.log = function (level, msg) {
     if (level >= 3) {

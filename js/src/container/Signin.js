@@ -4,10 +4,9 @@
 import React, {Component} from 'react'
 import {routerShape} from 'react-router'
 import {connect} from 'react-redux'
+import notification from 'antd/lib/notification'
 
 import Loading from '../components/common/Loading'
-import {NotificationType} from '../constants/ChatConstants'
-import util from '../components/core/util'
 import {checkAutoLogin, loginToHuanxin, clearLoginFailure} from '../actions/login'
 
 class Signin extends Component {
@@ -51,7 +50,7 @@ class Signin extends Component {
         }
         if (failure) {
             this.props.clearLoginFailure()
-            util.tip(NotificationType.ERROR, '用户名或密码错误!')
+            notification.error({message: '提示', description: '用户名或密码错误！'})
         }
     }
 

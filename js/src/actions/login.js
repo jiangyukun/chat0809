@@ -10,7 +10,7 @@ export function checkAutoLogin() {
         let accessToken = util.getSession('accessToken')
         let username = util.getSession('username')
         if (accessToken && !conn.isOpening()) {
-            conn.reOpen(onReceiveMessage).then(userId => {
+            conn.reOpen(onReceiveMessage, onClose).then(userId => {
                 dispatch({
                     type: actionConstants.LOGIN_SUCCESS, userId
                 })
@@ -23,11 +23,18 @@ export function checkAutoLogin() {
                 type: actionConstants.app.AUTO_LOGIN, username
             })
 
+            //----------------------------------
             function onReceiveMessage(msg) {
                 let {patients, doctors} = getState()
                 dispatch({
                     type: actionConstants.message.NEW_MSG,
                     msg, patients, doctors
+                })
+            }
+
+            function onClose() {
+                dispatch({
+                    type: actionConstants.CONN_CLOSED
                 })
             }
         }
@@ -40,6 +47,14 @@ export function loginToHuanxin(username, password) {
             type: actionConstants.LOGIN_START
         })
 
+        conn.login(username, password, onReceiveMessage, onClose).then(userId => {
+            util.setSession('username', userId)
+            dispatch({type: actionConstants.LOGIN_SUCCESS, userId})
+        }, () => {
+            dispatch({type: actionConstants.LOGIN_FAILURE})
+        })
+
+        //----------------------------------
         function onReceiveMessage(msg) {
             let {patients, doctors} = getState()
             dispatch({
@@ -48,12 +63,11 @@ export function loginToHuanxin(username, password) {
             })
         }
 
-        conn.login(username, password, onReceiveMessage).then(userId => {
-            util.setSession('username', userId)
-            dispatch({type: actionConstants.LOGIN_SUCCESS, userId})
-        }, () => {
-            dispatch({type: actionConstants.LOGIN_FAILURE})
-        })
+        function onClose() {
+            dispatch({
+                type: actionConstants.CONN_CLOSED
+            })
+        }
     }
 }
 

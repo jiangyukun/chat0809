@@ -4,23 +4,25 @@
 import React, {Component, PropTypes} from 'react'
 import classnames from 'classnames'
 import moment from 'moment'
+import Tooltip from 'antd/lib/tooltip'
 
 import ImagePreview from '../tools/ImagePreview'
 import {MessageType, DIR} from '../../constants/ChatConstants'
 import huanxinUtils from '../../core/huanxinUtils'
 
-function defaultPictureLoaded() {
-}
-
 class Message extends Component {
     render() {
         let {from, msgType, dir, data, chatTime, pictureLoaded} = this.props
+
         return (
             <div className={classnames('message', {'you': dir == DIR.LEFT}, {'me': dir == DIR.RIGHT})}>
                 <p className="message_system">
                     <span className="content">{moment(chatTime).format('HH:mm')}</span>
                 </p>
-                <img className="avatar" src="img/default.jpg" title={from}/>
+                <Tooltip overlay={<span>{from}</span>}>
+                    <img ref={c => this.img = c} className="avatar" src="img/default.jpg"/>
+                </Tooltip>
+
                 <div className="content">
                     <div className={classnames('bubble ',
                         {'bubble_default': dir == DIR.LEFT},
@@ -33,13 +35,18 @@ class Message extends Component {
                             }
                             {
                                 msgType == MessageType.IMAGE &&
-                                <PictureContent data={this.props.data} pictureLoaded={pictureLoaded || defaultPictureLoaded}/>
+                                <PictureContent data={this.props.data} pictureLoaded={pictureLoaded}/>
                             }
                         </div>
                     </div>
                 </div>
             </div>
         )
+    }
+}
+
+Message.defaultProps = {
+    pictureLoaded: () => {
     }
 }
 

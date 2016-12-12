@@ -7,6 +7,7 @@ import actionConstants from '../actions/actionConstants'
 
 let defaultState = {
     autoLogin: false,
+    connClosed: false,
     username: '',
     newMessage: false,
     from: '',
@@ -45,6 +46,11 @@ export function app(state = defaultState, action) {
                 nextIState = exitChatSystem()
                 break
 
+            case actionConstants.CONN_CLOSED:
+                nextIState = connClosed()
+                break
+
+
             default:
                 break
         }
@@ -67,7 +73,7 @@ export function app(state = defaultState, action) {
     }
 
     function loginSuccess() {
-        return iState.set('autoLogin', false)
+        return iState.set('autoLogin', false).set('connClosed', false)
     }
 
     function newMessage() {
@@ -82,6 +88,10 @@ export function app(state = defaultState, action) {
     }
 
     function exitChatSystem() {
-        return fromJS(defaultState)
+        return fromJS(defaultState).set('connClosed', false)
+    }
+
+    function connClosed() {
+        return iState.set('connClosed', true)
     }
 }

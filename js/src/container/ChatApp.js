@@ -3,7 +3,10 @@
  */
 import React, {Component, PropTypes} from 'react'
 import {routerShape} from 'react-router'
+import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import {merge} from 'lodash'
+import notification from 'antd/lib/notification'
 
 import Header from './Header'
 import SearchBar from './SearchBar'
@@ -16,12 +19,9 @@ import SystemMenu from '../components/SystemMenu'
 import SimpleAudio from '../components/common/SimpleAudio'
 import {ChatType, APP_SOUND} from '../constants/ChatConstants'
 
-import {
-    fetchPatientListFromHuanXin, fetchGroupListFromHuanXin, fetchPatientListFromServer, fetchDoctorListFromServer,
-    classifyNewMessage, newMessageHinted,
-    startSingleChat, startRoomChat, handleCurrentChat,
-    exitChatSystem
-} from '../actions/chat'
+import * as actions from '../actions/chat'
+
+let closeNotificationId = null
 
 class ChatApp extends Component {
     constructor(props) {
@@ -51,7 +51,7 @@ class ChatApp extends Component {
     startChat(contactId, chatType) {
         this.setState({selectedChatId: contactId, currentTab: Tab.CHAT_TAB})
         if (chatType == ChatType.CHAT) {
-            this.props.startSingleChat(contactId)
+            this.props.startSingleChat(this.props.curUserId, contactId).then(null, err => notification.error({message: '提示', description: err}))
         } else {
             this.props.startRoomChat(contactId)
         }
@@ -61,7 +61,8 @@ class ChatApp extends Component {
         let contactId
         if (chatType == ChatType.CHAT) {
             contactId = contact.name
-            this.props.startSingleChat(contactId, true)
+            this.props.startSingleChat(this.props.curUserId, contactId, true)
+                .then(null, err => notification.error({message: '提示', description: err}))
         } else {
             contactId = contact.id
             this.props.startRoomChat(contactId, true)
@@ -85,18 +86,18 @@ class ChatApp extends Component {
         let curUserId = this.props.curUserId
         this.props.fetchGroupListFromHuanXin()
         if (curUserId.indexOf('bkkf') != -1 || curUserId.indexOf('bkzs') != -1) {
-            this.props.fetchPatientListFromServer()
-            this.props.fetchDoctorListFromServer()
+            this.props.fetchPatientListFromServer().then(null, err => notification.error({message: '提示', description: err}))
+            this.props.fetchDoctorListFromServer().then(null, err => notification.error({message: '提示', description: err}))
         } else if (curUserId.indexOf('zxys') != -1) {
-            this.props.fetchPatientListFromServer()
+            this.props.fetchPatientListFromServer().then(null, err => notification.error({message: '提示', description: err}))
         } else {
             this.props.fetchPatientListFromHuanXin()
-            this.props.fetchDoctorListFromServer()
+            this.props.fetchDoctorListFromServer().then(null, err => notification.error({message: '提示', description: err}))
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.newMessage && !this.props.newMessage) {
+        if (nextProps.app.newMessage && !this.props.app.newMessage) {
             if (this.state.appSoundState == APP_SOUND.ON) {
                 this.newMessageAudio.playAudio().then(() => {
                     this.props.newMessageHinted()
@@ -104,6 +105,17 @@ class ChatApp extends Component {
             } else {
                 this.props.newMessageHinted()
             }
+        }
+        if (nextProps.app.connClosed) {
+            closeNotificationId = 'closeNotificationId'
+            notification.error({message: '提示', description: '已退出登录，请重新登录！', duration: 0, key: closeNotificationId})
+            this.exit()
+        }
+    }
+
+    componentDidMount() {
+        if (closeNotificationId) {
+            notification.close(closeNotificationId)
         }
     }
 
@@ -156,23 +168,28 @@ ChatApp.contextTypes = {
 
 function mapStateToProps(state) {
     return {
+        app: state.app,
         login: state.login,
         curUserId: state.curUserId,
-        chatList: state.chatList,
-        newMessage: state.app.newMessage
+        chatList: state.chatList
     }
 }
 
-export default connect(mapStateToProps, {
-    fetchPatientListFromHuanXin,
-    fetchGroupListFromHuanXin,
-    fetchPatientListFromServer,
-    fetchDoctorListFromServer,
-    classifyNewMessage,
-    newMessageHinted,
+function mapActionToProps(dispatch) {
+    return merge(bindActionCreators({
+        fetchPatientListFromHuanXin: actions.fetchPatientListFromHuanXin,
+        fetchGroupListFromHuanXin: actions.fetchGroupListFromHuanXin,
+        classifyNewMessage: actions.classifyNewMessage,
+        newMessageHinted: actions.newMessageHinted,
 
-    startSingleChat,
-    startRoomChat,
-    handleCurrentChat,
-    exitChatSystem
-})(ChatApp)
+        startRoomChat: actions.startRoomChat,
+        handleCurrentChat: actions.handleCurrentChat,
+        exitChatSystem: actions.exitChatSystem
+    }, dispatch), {
+        fetchPatientListFromServer: actions.fetchPatientListFromServer(dispatch),
+        fetchDoctorListFromServer: actions.fetchDoctorListFromServer(dispatch),
+        startSingleChat: actions.startSingleChat(dispatch)
+    })
+}
+
+export default connect(mapStateToProps, mapActionToProps)(ChatApp)

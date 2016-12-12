@@ -17,6 +17,7 @@ module.exports = {
     module: {
         loaders: [
             {test: /\.js$/, loaders: ['babel'], exclude: /node_modules/, include: __dirname},
+            {test: /\.less$/, loader: 'style!css!autoprefixer!less'},
             {test: /\.scss$/, exclude: /node_modules/, loader: 'style!css!postcss!sass?sourceMap'},
             {test: /\.(jpg|png)$/, loaders: ['url?limit=8192']},
             {test: /\.svg$/, loader: "file"}
