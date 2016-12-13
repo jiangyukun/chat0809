@@ -6,7 +6,7 @@ import {findDOMNode} from 'react-dom'
 import CSSTransitionGroup from 'react-addons-css-transition-group'
 import {events} from 'dom-helpers'
 
-import webImUtil from '../../core/webImUtil'
+import webImUtil from '../../../core/utils/webImUtil'
 
 class Emoji extends Component {
     constructor() {

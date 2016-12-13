@@ -3,7 +3,7 @@
  */
 import actionConstants from './actionConstants'
 import {ChatType} from '../constants/ChatConstants'
-import util from '../components/core/util'
+import util from '../core/utils/util'
 import busHelper from '../core/busHelper'
 
 import chatService from '../services/chatService'

@@ -3,7 +3,7 @@
  */
 import * as conn from '../services/huanxinApi'
 import actionConstants from './actionConstants'
-import util from '../components/core/util'
+import util from '../core/utils/util'
 
 export function checkAutoLogin() {
     return (dispatch, getState) => {

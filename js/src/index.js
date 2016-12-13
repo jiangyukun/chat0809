@@ -2,6 +2,7 @@
  * jiangyukun on 2016/07/27 10:00
  */
 import 'babel-polyfill'
+import 'whatwg-fetch'
 
 import React from 'react'
 import {render} from 'react-dom'
@@ -11,7 +12,7 @@ import {syncHistoryWithStore} from 'react-router-redux'
 import Root from './container/root/Root'
 import configureStore from './stores/configureStore'
 import actionConstants from './actions/actionConstants'
-import util from './components/core/util'
+import util from './core/utils/util'
 
 import 'antd/lib/style/index.less'
 import 'antd/lib/button/style/index.less'

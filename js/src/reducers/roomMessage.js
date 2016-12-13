@@ -3,7 +3,7 @@
  */
 import {Map, List, fromJS} from 'immutable'
 
-import util from '../components/core/util'
+import util from '../core/utils/util'
 import {MessageType, ChatType} from '../constants/ChatConstants'
 import actionConstants from '../actions/actionConstants'
 

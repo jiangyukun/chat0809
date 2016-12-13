@@ -3,8 +3,6 @@
  */
 import {Map, List, fromJS} from 'immutable'
 
-import util from '../components/core/util'
-import {MessageType, ChatType} from '../constants/ChatConstants'
 import actionConstants from '../actions/actionConstants'
 
 export function historyMessage(state = [], action) {

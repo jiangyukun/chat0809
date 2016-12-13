@@ -3,7 +3,7 @@
  */
 
 import actionConstants from '../actions/actionConstants'
-import util from '../components/core/util'
+import util from '../core/utils/util'
 
 export default ({dispatch, getState}) => next => action => {
     try {

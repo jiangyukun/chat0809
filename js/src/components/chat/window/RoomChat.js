@@ -8,7 +8,8 @@ import Message from '../../message/Message'
 import SendBox from '../SendBox'
 import RoomMembers from '../RoomMembers'
 import {MessageType, DIR} from '../../../constants/ChatConstants'
-import huanxinUtils from '../../../core/huanxinUtils'
+import {fromNow} from '../../../core/utils/dateUtil'
+import huanxinUtils from '../../../core/utils/huanxinUtils'
 
 class RoomChat extends Component {
     constructor() {
@@ -44,6 +45,9 @@ class RoomChat extends Component {
     }
 
     componentDidMount() {
+        // 每60秒更新时间显示
+        this.taskId = setInterval(() => this.forceUpdate(), 60 * 1000)
+
         if (!this._wrap) {
             return
         }
@@ -70,21 +74,32 @@ class RoomChat extends Component {
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.taskId)
+    }
+
     render() {
         let {convertChat, message} = this.props
         let empty = !message || ( message.reads.length == 0 && message.unreads.length == 0)
+        let lastChatTime = null
 
         let showMessage = msg => {
-            let {id, from, chatTime, type, data} = msg
+            const {id, from, chatTime, type, data} = msg
+            let convertData = data, convertChatTime = fromNow(chatTime)
             let dir = from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
             if (type == MessageType.TEXT && typeof data == 'string') {
-                data = huanxinUtils.parseTextMessage(data)
+                convertData = huanxinUtils.parseTextMessage(data)
             }
+            let showTime = true
+            if (lastChatTime == convertChatTime) {
+                showTime = false
+            }
+            lastChatTime = convertChatTime
             return (
                 <div key={id}>
                     <div className="clearfix">
                         <div>
-                            <Message from={from} dir={dir} chatTime={chatTime} msgType={type} data={data}
+                            <Message from={from} dir={dir} chatTime={convertChatTime} msgType={type} data={convertData}
                                      pictureLoaded={() => this._scrollToBottom()}/>
                         </div>
                     </div>

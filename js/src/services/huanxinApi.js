@@ -1,10 +1,9 @@
 /**
  * Created by jiangyukun on 2016/8/8.
  */
-import {NotificationType, ChatType} from '../constants/ChatConstants'
-import Env from '../constants/Env'
-import util from '../components/core/util'
-import huanxinUtils from '../core/huanxinUtils'
+import {ChatType} from '../constants/ChatConstants'
+import util from '../core/utils/util'
+import huanxinUtils from '../core/utils/huanxinUtils'
 
 let Strophe = window.Strophe
 let WebIM = window.WebIM

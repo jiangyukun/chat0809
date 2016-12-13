@@ -1,7 +1,7 @@
 /**
  * Created by jiangyukun on 2016/11/21.
  */
-import {MessageType} from '../constants/ChatConstants'
+import {MessageType} from '../../constants/ChatConstants'
 
 let WebIM = window.WebIM,
     emoji = WebIM.Emoji, path = emoji.path, map = emoji.map, title = emoji.title

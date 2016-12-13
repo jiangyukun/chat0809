@@ -3,9 +3,8 @@
  */
 import moment from 'moment'
 
-import {NotificationType, MessageType} from '../constants/ChatConstants'
-import util from '../components/core/util'
-import huanxinUtils from '../core/huanxinUtils'
+import {MessageType} from '../constants/ChatConstants'
+import huanxinUtils from '../core/utils/huanxinUtils'
 
 export default {
     fetchHistoryMessage(user1, user2, start = 0) {

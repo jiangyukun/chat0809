@@ -8,7 +8,8 @@ import CssTransitionGroup from 'react-addons-css-transition-group'
 import Message from '../../message/Message'
 import SendBox from '../SendBox'
 import {MessageType, DIR} from '../../../constants/ChatConstants'
-import huanxinUtils from '../../../core/huanxinUtils'
+import {fromNow} from '../../../core/utils/dateUtil'
+import huanxinUtils from '../../../core/utils/huanxinUtils'
 
 class SingleChat extends Component {
     constructor(props) {
@@ -35,9 +36,13 @@ class SingleChat extends Component {
 
     componentDidMount() {
         this._scrollToBottom()
+
+        // 每60秒更新时间显示
+        this.taskId = setInterval(() => this.forceUpdate(), 60 * 1000)
     }
 
     componentWillReceiveProps(nextProps) {
+        this.setState({showHistory: false})
         if (this.props.to != nextProps.to) {
             this._scrollBottomFlag = true
         }
@@ -59,19 +64,26 @@ class SingleChat extends Component {
         }
     }
 
-    _scrollToBottom() {
-        this._currentChatMessage.scrollToBottom()
+    componentWillUnmount() {
+        clearInterval(this.taskId)
     }
 
     render() {
         let {convertChat} = this.props
+
+        function getUserInfo(convertChat) {
+            if (!convertChat.nickname) {
+                return convertChat.id
+            }
+            return convertChat.nickname + ' (' + convertChat.id + ')'
+        }
 
         return (
             <div className="box chat">
                 <div className="box_hd">
                     <div className="title_wrap">
                         <div className="title poi">
-                            {!this.state.showHistory && <a className="title_name">{convertChat.nickname || convertChat.id}</a>}
+                            {!this.state.showHistory && <a className="title_name">{getUserInfo(convertChat)}</a>}
                             {this.state.showHistory && <a className="title_name">与 {convertChat.nickname || convertChat.id} 的历史记录</a>}
                         </div>
                     </div>
@@ -95,29 +107,40 @@ class SingleChat extends Component {
             </div>
         )
     }
+
+    _scrollToBottom() {
+        this._currentChatMessage.scrollToBottom()
+    }
 }
 
 export default SingleChat
 
 class CurrentChatMessage extends Component {
     render() {
-        let {message} = this.props
-        let empty = !message || ( message.reads.length == 0 && message.unreads.length == 0)
+        const {message} = this.props
+        const empty = !message || ( message.reads.length == 0 && message.unreads.length == 0)
+        let lastChatTime = null
 
         let showMessage = msg => {
-            let {id, from, chatTime, type, data} = msg
+            const {id, from, chatTime, type, data} = msg
+            let convertData = data, convertChatTime = fromNow(chatTime)
             let dir = from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
             if (type == MessageType.TEXT) {
                 if (typeof data == 'string') {
-                    data = huanxinUtils.parseTextMessage(data)
+                    convertData = huanxinUtils.parseTextMessage(data)
                 }
             }
+            let showTime = true
+            if (lastChatTime == convertChatTime) {
+                showTime = false
+            }
+            lastChatTime = convertChatTime
             return (
                 <div key={id}>
                     <div className="clearfix">
                         <div>
-                            <Message from={from} dir={dir} chatTime={chatTime} msgType={type} data={data}
-                                     pictureLoaded={() => this.scrollToBottom()}/>
+                            <Message from={from} dir={dir} chatTime={convertChatTime} msgType={type} data={convertData}
+                                     showTime={showTime} pictureLoaded={() => this.scrollToBottom()}/>
                         </div>
                     </div>
                 </div>
@@ -160,24 +183,30 @@ class HistoryMessage extends Component {
     render() {
         let {historyMessage} = this.props
         let empty = !historyMessage || historyMessage.length == 0
+        let lastChatTime = null
 
         let showMessage = msg => {
-            let {id, from, chatTime, type, data} = msg
+            const {id, from, chatTime, type, data} = msg
+            let convertData = data, convertChatTime = fromNow(chatTime)
             let dir = from == this.props.curUserId ? DIR.RIGHT : DIR.LEFT
             if (type == MessageType.TEXT) {
                 if (typeof data == 'string') {
-                    data = huanxinUtils.parseTextMessage(data)
+                    convertData = huanxinUtils.parseTextMessage(data)
                 }
             }
+            let showTime = true
+            if (lastChatTime == convertChatTime) {
+                showTime = false
+            }
+            lastChatTime = convertChatTime
             return (
                 <div key={id}>
                     <div className="clearfix">
                         <div>
-                            <Message dir={dir}
-                                     chatTime={chatTime}
+                            <Message dir={dir} showTime={showTime} from={from}
+                                     chatTime={convertChatTime}
                                      msgType={type}
-                                     data={data}
-                                     pictureLoaded={this.pictureLoaded}/>
+                                     data={convertData}/>
                         </div>
                     </div>
                 </div>

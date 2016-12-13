@@ -4,7 +4,7 @@
 import React, {Component, PropTypes} from 'react'
 import {events} from 'dom-helpers'
 
-import webImUtil from '../core/webImUtil'
+import webImUtil from '../../core/utils/webImUtil'
 import Emoji from './toolbar/Emoji'
 import {ChatType} from '../../constants/ChatConstants'
 
@@ -59,7 +59,7 @@ class SendBox extends Component {
     }
 
     handlePrePaste(e) {
-        this.preDom.innerHTML += e.nativeEvent.clipboardData.getData('text').trim()
+        this.preDom.innerHTML += e.clipboardData.getData('text').trim()
         e.preventDefault()
     }
 
@@ -78,7 +78,7 @@ class SendBox extends Component {
                     <a className="web_wechat_face" href="javascript:" onClick={e => this.emoji.toggle()}></a>
                     <a className="web_wechat_pic webuploader-container" href="javascript:" title="图片" onClick={e => this.fileInput.click()}>
                         <div className="file_input_wrapper">
-                            <input type="file" name="file" className="webuploader-element-invisible" multiple="multiple"
+                            <input type="file" name="file" accept="image/gif, image/jpeg, image/png" className="webuploader-element-invisible" multiple="multiple"
                                    ref={c => this.fileInput = c}
                                    onChange={e => this.handleFile(e)}/>
                             <label className="input_label"></label>

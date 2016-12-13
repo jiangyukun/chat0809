@@ -71,3 +71,23 @@
         opacity: 0.5;
     }
 }
+
+.slide-right-enter {
+    transform: translateX(0);
+    transition-duration: 400ms;
+    opacity: 0.5;
+    &.slide-right-enter-active {
+        transform: translateX(720px);
+        opacity: 1;
+    }
+}
+
+.slide-right-leave {
+    transform: translateX(720px);
+    transition-duration: 400ms;
+    opacity: 1;
+    &.slide-right-leave-active {
+        transform: translateX(0);
+        opacity: 0.5;
+    }
+}

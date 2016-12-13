@@ -104,7 +104,7 @@ body {
         top: 1px;
     }
     .frm_search {
-        width: 214px;
+        width: 244px;
         height: 32px;
         line-height: 32px;
         border: 0;
@@ -181,7 +181,6 @@ body {
 
     .tab_item {
         float: left;
-        //width: 33.33333333%;
         width: 50%;
         position: relative;
 
@@ -266,7 +265,7 @@ body {
                 display: inline-block;
             }
             .meta_area {
-                width: 250px;
+                width: 410px;
                 padding-left: 160px;
                 text-align: left;
                 margin: 30px auto 40px;
@@ -299,8 +298,6 @@ body {
                 font-size: 14px;
                 text-decoration: none;
                 border-radius: 4px;
-                -moz-border-radius: 4px;
-                -webkit-border-radius: 4px;
             }
         }
     }

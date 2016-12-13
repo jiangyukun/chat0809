@@ -7,7 +7,7 @@ import classnames from 'classnames'
 
 import busHelper from '../../core/busHelper'
 import {MessageType, ChatType} from "../../constants/ChatConstants"
-import huanxinUtils from '../../core/huanxinUtils'
+import huanxinUtils from '../../core/utils/huanxinUtils'
 
 class ChatTab extends Component {
     render() {

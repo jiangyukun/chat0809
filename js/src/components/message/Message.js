@@ -3,12 +3,11 @@
  */
 import React, {Component, PropTypes} from 'react'
 import classnames from 'classnames'
-import moment from 'moment'
 import Tooltip from 'antd/lib/tooltip'
 
 import ImagePreview from '../tools/ImagePreview'
 import {MessageType, DIR} from '../../constants/ChatConstants'
-import huanxinUtils from '../../core/huanxinUtils'
+import huanxinUtils from '../../core/utils/huanxinUtils'
 
 class Message extends Component {
     render() {
@@ -16,9 +15,13 @@ class Message extends Component {
 
         return (
             <div className={classnames('message', {'you': dir == DIR.LEFT}, {'me': dir == DIR.RIGHT})}>
-                <p className="message_system">
-                    <span className="content">{moment(chatTime).format('HH:mm')}</span>
-                </p>
+                {
+                    this.props.showTime && (
+                        <p className="message_system">
+                            <span className="content">{chatTime}</span>
+                        </p>
+                    )
+                }
                 <Tooltip overlay={<span>{from}</span>}>
                     <img ref={c => this.img = c} className="avatar" src="img/default.jpg"/>
                 </Tooltip>
@@ -28,7 +31,8 @@ class Message extends Component {
                         {'bubble_default': dir == DIR.LEFT},
                         {'bubble_primary': dir == DIR.RIGHT},
                         {'left': dir == DIR.LEFT},
-                        {'right': dir == DIR.RIGHT})}>
+                        {'right': dir == DIR.RIGHT})}
+                    >
                         <div className="bubble_cont">
                             {
                                 msgType == MessageType.TEXT && <PlainContent data={data}/>
@@ -46,6 +50,7 @@ class Message extends Component {
 }
 
 Message.defaultProps = {
+    showTime: true,
     pictureLoaded: () => {
     }
 }
@@ -54,6 +59,7 @@ Message.propTypes = {
     from: PropTypes.string,
     dir: PropTypes.oneOf([DIR.LEFT, DIR.RIGHT]),
     chatTime: PropTypes.string,
+    showTime: PropTypes.bool,
     msgType: PropTypes.oneOf([MessageType.TEXT, MessageType.IMAGE]),
     data: PropTypes.any,
     pictureLoaded: PropTypes.func
@@ -81,8 +87,6 @@ export class PlainContent extends Component {
         return (
             <div className="plain">
                 <pre className="js_message_plain" ref={c => this.preDom = c}></pre>
-                {/*<img src="img/loading.gif" className="ico_loading"/>*/}
-                {/*<i className="ico_fail web_wechat_message_fail ng-hide" title="重新发送"></i>*/}
             </div>
         )
     }
