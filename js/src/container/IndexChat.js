@@ -5,7 +5,7 @@ import React, {Component, PropTypes} from 'react'
 import {connect} from 'react-redux'
 
 import ChatPanel from '../components/chat/ChatPanel'
-import NoChat from '../components/chat/NoChat'
+import NoChat from '../components/chat/window/NoChat'
 import busHelper from '../core/busHelper'
 
 

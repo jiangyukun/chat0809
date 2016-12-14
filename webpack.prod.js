@@ -26,6 +26,10 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.DllReferencePlugin({
+            context: __dirname,
+            manifest: require('./manifest.json'),
+        }),
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)}),
         new webpack.optimize.UglifyJsPlugin({

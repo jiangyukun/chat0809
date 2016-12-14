@@ -6,7 +6,7 @@ import {findDOMNode} from 'react-dom'
 
 import Message from '../../message/Message'
 import SendBox from '../SendBox'
-import RoomMembers from '../RoomMembers'
+import RoomMembers from './RoomMembers'
 import {MessageType, DIR} from '../../../constants/ChatConstants'
 import {fromNow} from '../../../core/utils/dateUtil'
 import huanxinUtils from '../../../core/utils/huanxinUtils'

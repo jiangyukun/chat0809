@@ -75,6 +75,9 @@ class SingleChat extends Component {
             if (!convertChat.nickname) {
                 return convertChat.id
             }
+            if (convertChat.nickname == convertChat.id) {
+                return convertChat.nickname
+            }
             return convertChat.nickname + ' (' + convertChat.id + ')'
         }
 
@@ -217,7 +220,7 @@ class HistoryMessage extends Component {
             <CssTransitionGroup transitionName="slide-left" transitionEnterTimeout={400} transitionLeaveTimeout={400}>
                 {
                     this.props.show && (
-                        <div className="scroll-wrapper box_bd chat_bd scrollbar-dynamic" style={{background: '#fff'}}>
+                        <div className="scroll-wrapper box_bd chat_bd scrollbar-dynamic" style={{background: '#eaeaea'}}>
                             <div className="box_bd chat_bd scrollbar-dynamic scroll-content" ref={c => this._container = c}>
                                 {
                                     !empty && (

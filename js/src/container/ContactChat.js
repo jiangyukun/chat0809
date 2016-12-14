@@ -4,9 +4,9 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 
-import NoContact from '../components/chat/NoContact'
-import UserDetail from '../components/chat/UserDetail'
-import RoomDetail from '../components/chat/RoomDetail'
+import NoContact from '../components/chat/window/NoContact'
+import UserDetail from '../components/chat/window/UserDetail'
+import RoomDetail from '../components/chat/window/RoomDetail'
 
 import {ContactType} from '../constants/ChatConstants'
 
