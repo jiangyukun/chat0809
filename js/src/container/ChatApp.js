@@ -18,9 +18,11 @@ import ContactChat from './ContactChat'
 import SystemMenu from '../components/SystemMenu'
 import SimpleAudio from '../components/common/SimpleAudio'
 import {ChatType, APP_SOUND} from '../constants/ChatConstants'
+import webImUtil from '../core/utils/webImUtil'
 
 import * as actions from '../actions/chat'
 
+const Notification = window.Notification
 let closeNotificationId = null
 
 class ChatApp extends Component {
@@ -97,16 +99,24 @@ class ChatApp extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.app.newMessage && !this.props.app.newMessage) {
+        const {app} = nextProps
+        const {message} = app
+        if (message.newMessage && !this.props.app.message.newMessage) {
             if (this.state.appSoundState == APP_SOUND.ON) {
                 this.newMessageAudio.playAudio().then(() => {
                     this.props.newMessageHinted()
                 })
+                if (Notification && app.notificationPermissionStatus == 'granted') {
+                    let notification = new Notification(message.from, {body: webImUtil.getMessageContentTip(message.originalMessage)})
+                    setTimeout(() => {
+                        notification.close()
+                    }, 3000)
+                }
             } else {
                 this.props.newMessageHinted()
             }
         }
-        if (nextProps.app.connClosed) {
+        if (app.connClosed) {
             closeNotificationId = 'closeNotificationId'
             notification.error({message: '提示', description: '已退出登录，请重新登录！', duration: 0, key: closeNotificationId})
             this.exit()
@@ -179,7 +189,6 @@ function mapActionToProps(dispatch) {
     return merge(bindActionCreators({
         fetchPatientListFromHuanXin: actions.fetchPatientListFromHuanXin,
         fetchGroupListFromHuanXin: actions.fetchGroupListFromHuanXin,
-        classifyNewMessage: actions.classifyNewMessage,
         newMessageHinted: actions.newMessageHinted,
 
         startRoomChat: actions.startRoomChat,

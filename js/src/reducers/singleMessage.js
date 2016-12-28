@@ -3,9 +3,10 @@
  */
 import {Map, List, fromJS} from 'immutable'
 
-import util from '../core/utils/util'
 import {MessageType, ChatType} from '../constants/ChatConstants'
 import actionConstants from '../actions/actionConstants'
+import util from '../core/utils/util'
+import webImUtil from '../core/utils/webImUtil'
 
 let defaultState = []
 
@@ -112,24 +113,10 @@ export function singleMessage(state = defaultState, action) {
         if (type != ChatType.CHAT) {
             return curState
         }
-        let msgType = MessageType.TEXT
-        let data = msg.data
-        if (msg.hasOwnProperty('thumb')) {
-            data = msg.url
-            msgType = MessageType.IMAGE
-        } else if (msg.hasOwnProperty('filename')) {
-            let filename = msg.filename
-            if (filename == 'audio' || filename.indexOf('.amr') != -1 || filename.indexOf('.mp3') != -1) {
-                let extension = filename.substr(filename.lastIndexOf('.') + 1)
-                data = {
-                    url: msg.url, type: extension
-                }
-                msgType = MessageType.AUDIO
-            }
-        }
+        const {msgType, data} = webImUtil.handleMessage(msg)
 
         curState = _update(curState, from, msg => msg.update('unreads', unreads => unreads.push(Map({
-            id, from, to, type: msgType, data: data, chatTime: util.now()
+            id, from, to, type: msgType, data, chatTime: util.now()
         }))))
 
         return _classifyNewMessage(curState, from, patients, doctors)

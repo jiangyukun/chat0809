@@ -9,9 +9,14 @@ let defaultState = {
     autoLogin: false,
     connClosed: false,
     username: '',
-    newMessage: false,
-    from: '',
-    to: '',
+    notificationPermissionStatus: '',
+    message: {
+        newMessage: false,
+        originalMessage: null,
+        from: '',
+        to: '',
+        content: ''
+    },
     chatType: null,
 }
 
@@ -32,6 +37,10 @@ export function app(state = defaultState, action) {
 
             case actionConstants.LOGIN_SUCCESS:
                 nextIState = loginSuccess()
+                break
+
+            case actionConstants.NOTIFICATION_PERMISSION_CHANGE:
+                nextIState = notificationPermissionChange()
                 break
 
             case actionConstants.message.NEW_MSG:
@@ -76,15 +85,24 @@ export function app(state = defaultState, action) {
         return iState.set('autoLogin', false).set('connClosed', false)
     }
 
+    function notificationPermissionChange() {
+        return iState.set('notificationPermissionStatus', action.status)
+    }
+
     function newMessage() {
-        let curState = iState
         let {type, from, to} = action.msg
 
-        return curState.set('newMessage', true).set('chatType', type).set('from', from).set('to', to)
+        return _updateMessage(iState, message => message
+            .set('newMessage', true)
+            .set('originalMessage', action.msg)
+            .set('chatType', type)
+            .set('from', from)
+            .set('to', to)
+        )
     }
 
     function newMessageHintComplete() {
-        return iState.set('newMessage', false)
+        return _updateMessage(iState, message => message.set('newMessage', false))
     }
 
     function exitChatSystem() {
@@ -93,5 +111,11 @@ export function app(state = defaultState, action) {
 
     function connClosed() {
         return iState.set('connClosed', true)
+    }
+
+//    ---------------------------------------
+
+    function _updateMessage(curState, callback) {
+        return curState.update('message', message => callback(message))
     }
 }

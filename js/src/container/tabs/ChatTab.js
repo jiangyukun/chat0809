@@ -6,8 +6,8 @@ import {connect} from 'react-redux'
 import classnames from 'classnames'
 
 import busHelper from '../../core/busHelper'
-import {MessageType, ChatType} from "../../constants/ChatConstants"
-import huanxinUtils from '../../core/utils/huanxinUtils'
+import {ChatType} from "../../constants/ChatConstants"
+import webImUtil from '../../core/utils/webImUtil'
 
 class ChatTab extends Component {
     render() {
@@ -74,20 +74,6 @@ class ChatTab extends Component {
     }
 }
 
-function handleContent(type, data) {
-    let lastContent
-    if (type == MessageType.TEXT) {
-        if (typeof data == 'string') {
-            lastContent = huanxinUtils.parseProbablyEmojiTitle(data)
-        } else {
-            lastContent = huanxinUtils.parseEmojiObj(data)
-        }
-    } else if (type == MessageType.IMAGE) {
-        lastContent = '[图片]'
-    }
-    return lastContent
-}
-
 function mapStateToProps(state) {
     let {chatList, patients, rooms, doctors, singleMessage, roomMessage} = state
     let convertChatList = chatList.map(chatItem => {
@@ -100,10 +86,10 @@ function mapStateToProps(state) {
             unreadCount = unreads.length
             if (unreadCount != 0) {
                 let {type, data} = unreads[unreads.length - 1]
-                lastContent = handleContent(type, data)
+                lastContent = webImUtil.handleContent(type, data)
             } else if (reads.length > 0) {
                 let {type, data} = reads[reads.length - 1]
-                lastContent = handleContent(type, data)
+                lastContent = webImUtil.handleContent(type, data)
             }
         }
         return {
